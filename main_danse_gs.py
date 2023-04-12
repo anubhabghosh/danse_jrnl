@@ -68,8 +68,7 @@ def main():
 
     batch_size = est_parameters_dict["danse"]["batch_size"] # Set the batch size
     estimator_options = est_parameters_dict["danse"] # Get the options for the estimator
-    estimator_options['H'] = get_H_DANSE(type_=dataset_type, n_states=n_states, n_obs=n_obs)
-
+    
     if not os.path.isfile(datafile):
         
         print("Dataset is not present, run 'generate_data.py / run_generate_data.sh' to create the dataset")
@@ -80,6 +79,9 @@ def main():
         Z_XY = load_saved_dataset(filename=datafile)
     
     Z_XY_dataset = Series_Dataset(Z_XY_dict=Z_XY)
+    ssm_model = Z_XY["ssm_model"]
+    estimator_options['C_w'] = ssm_model.Cw # Get the covariance matrix of the measurement noise from the model information
+    estimator_options['H'] = get_H_DANSE(type_=dataset_type, n_states=n_states, n_obs=n_obs) # Get the sensing matrix from the model info
 
     if not os.path.isfile(splits_file):
         tr_indices, val_indices, test_indices = obtain_tr_val_test_idx(dataset=Z_XY_dataset,
