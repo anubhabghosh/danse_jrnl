@@ -96,7 +96,7 @@ def create_and_save_dataset(T, N_samples, filename, parameters, type_="LinearSSM
     #                                                P=num_realizations, 
     #                                                usenorm_flag=usenorm_flag)
     #np.random.seed(10) # This can be kept at a fixed step for being consistent
-    Z_XY = generate_state_observation_pairs(type_=type_, parameters=parameters, T=T, N_samples=N_samples, sigma_e2=sigma_e2_dB, smnr=smnr_dB)
+    Z_XY = generate_state_observation_pairs(type_=type_, parameters=parameters, T=T, N_samples=N_samples, sigma_e2_dB=sigma_e2_dB, smnr_dB=smnr_dB)
     save_dataset(Z_XY, filename=filename)
 
 if __name__ == "__main__":
@@ -129,8 +129,8 @@ if __name__ == "__main__":
     smnr_dB = args.smnr_dB
 
     # Create the full path for the datafile
-    datafilename = create_filename(T=T, N_samples=N_samples, m=n_states, n=n_obs, dataset_basepath=output_path, type_=type_, sigma_e2=sigma_e2_dB, smnr_dB=smnr_dB)
-    ssm_parameters, _ = get_parameters(N=N_samples, T=T, n_states=n_states, n_obs=n_obs)
+    datafilename = create_filename(T=T, N_samples=N_samples, m=n_states, n=n_obs, dataset_basepath=output_path, type_=type_, sigma_e2_dB=sigma_e2_dB, smnr_dB=smnr_dB)
+    ssm_parameters, _ = get_parameters(n_states=n_states, n_obs=n_obs)
 
     # If the dataset hasn't been already created, create the dataset
     if not os.path.isfile(datafilename):

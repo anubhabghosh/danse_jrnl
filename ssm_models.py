@@ -10,33 +10,33 @@ class LinearSSM(object):
     
     def __init__(self, n_states, n_obs, mu_e=None, mu_w=None, gamma=0.8, beta=1.0, drive_noise=False):
         
-        self.m = n_states
-        self.n = n_obs
+        self.n_states = n_states
+        self.n_obs = n_obs
         self.gamma = gamma
         self.beta = beta
         if not mu_e is None:
             self.mu_e = mu_e
         else:
-            self.mu_e = np.zeros((self.m,))
+            self.mu_e = np.zeros((self.n_states,))
         if not mu_w is None:
             self.mu_w = mu_w
         else:
-            self.mu_w = np.zeros((self.n,))
+            self.mu_w = np.zeros((self.n_obs,))
         self.mu_w = mu_w
         self.drive_noise = drive_noise
         self.construct_F()
         self.construct_H()
         
     def setStateCov(self, sigma_e2):
-        self.Ce = sigma_e2 * np.eye(self.m)
+        self.Ce = sigma_e2 * np.eye(self.n_states)
 
     def setMeasurementCov(self, sigma_w2):
-        self.Cw = sigma_w2 * np.eye(self.m)
+        self.Cw = sigma_w2 * np.eye(self.n_obs)
     
     def construct_F(self):
-        self.F = np.eye(self.m) + np.concatenate((np.zeros((self.m,1)), 
-                                    np.concatenate((np.ones((1,self.m-1)), 
-                                                    np.zeros((self.m-1,self.m-1))), 
+        self.F = np.eye(self.n_states) + np.concatenate((np.zeros((self.n_states,1)), 
+                                    np.concatenate((np.ones((1,self.n_states-1)), 
+                                                    np.zeros((self.n_states-1,self.n_states-1))), 
                                                    axis=0)), 
                                    axis=1)
         
@@ -45,10 +45,10 @@ class LinearSSM(object):
         
     def construct_H(self):
         
-        self.H = np.rot90(np.eye(self.n)) + np.concatenate((np.concatenate((np.ones((1, self.n-1)), 
-                                                              np.zeros((self.n-1, self.n-1))), 
+        self.H = np.rot90(np.eye(self.n_obs)) + np.concatenate((np.concatenate((np.ones((1, self.n_obs-1)), 
+                                                              np.zeros((self.n_obs-1, self.n_obs-1))), 
                                                              axis=0), 
-                                              np.zeros((self.n,1))), 
+                                              np.zeros((self.n_obs,1))), 
                                              axis=1)
         self.H = self.H * self.beta 
         
@@ -63,10 +63,10 @@ class LinearSSM(object):
 
     def generate_state_sequence(self, T, sigma_e2_dB):
         
-        self.G = np.ones((self.m, 1))
+        self.G = np.ones((self.n_states, 1))
         self.sigma_e2 = dB_to_lin(sigma_e2_dB)
         self.setStateCov(sigma_e2=self.sigma_e2)
-        x_arr = np.zeros((T+1, self.m))
+        x_arr = np.zeros((T+1, self.n_states))
         e_k_arr = np.random.multivariate_normal(self.mu_e, self.Ce, size=(T+1,))
         
         # Generate the sequence iteratively
@@ -92,7 +92,7 @@ class LinearSSM(object):
         signal_p = (np.einsum('ij,nj->ni', self.H, x_arr) - np.zeros_like(x_arr)).mean(axis=None)
         self.sigma_w2 = signal_p / dB_to_lin(smnr_dB)
         self.setMeasurementCov(sigma_w2=self.sigma_w2)
-        y_arr = np.zeros((T, self.n))
+        y_arr = np.zeros((T, self.n_obs))
         w_k_arr = np.random.multivariate_normal(self.mu_w, self.Cw, size=(T,))
         
         # Generate the sequence iteratively

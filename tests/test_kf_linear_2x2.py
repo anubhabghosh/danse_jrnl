@@ -165,8 +165,8 @@ def test_linear(device='cpu', model_file_saved=None, model_file_saved_knet=None,
             X_LS[i,j,:] = (torch.pinverse(H_tensor[i]) @ Y[i,j,:].reshape((dy, 1))).reshape((dx,))
 
     # Initialize the Kalman filter model in PyTorch
-    kf_model = KF(n_states=linear_ssm.m,
-                        n_obs=linear_ssm.n,
+    kf_model = KF(n_states=linear_ssm.n_states,
+                        n_obs=linear_ssm.n_obs,
                         F=linear_ssm.F,
                         G=linear_ssm.G,
                         H=linear_ssm.H,
@@ -183,20 +183,20 @@ def test_linear(device='cpu', model_file_saved=None, model_file_saved_knet=None,
     time_elapsed_kf = timer() - start_time_kf
 
     # Initialize the DANSE model in PyTorch
-    ssm_dict, est_dict = get_parameters(n_states=linear_ssm.m,
-                                        n_obs=linear_ssm.n, 
+    ssm_dict, est_dict = get_parameters(n_states=linear_ssm.n_states,
+                                        n_obs=linear_ssm.n_obs, 
                                         device=device)
 
     # Initialize the DANSE model in PyTorch
     danse_model = DANSE(
-        n_states=linear_ssm.m,
-        n_obs=linear_ssm.n,
+        n_states=linear_ssm.n_states,
+        n_obs=linear_ssm.n_obs,
         mu_w=linear_ssm.mu_w,
         C_w=linear_ssm.Cw,
         batch_size=1,
         H=linear_ssm.H,
-        mu_x0=np.zeros((linear_ssm.m,)),
-        C_x0=np.eye(linear_ssm.m),
+        mu_x0=np.zeros((linear_ssm.n_states,)),
+        C_x0=np.eye(linear_ssm.n_states),
         rnn_type=rnn_type,
         rnn_params_dict=est_dict['danse']['rnn_params_dict'],
         device=device
@@ -216,8 +216,8 @@ def test_linear(device='cpu', model_file_saved=None, model_file_saved_knet=None,
     
     # Initialize the KalmanNet model in PyTorch
     knet_model = KalmanNetNN(
-        n_states=linear_ssm.m,
-        n_obs=linear_ssm.n,
+        n_states=linear_ssm.n_states,
+        n_obs=linear_ssm.n_obs,
         n_layers=1,
         device=device
     )
@@ -332,7 +332,6 @@ if __name__ == "__main__":
     model_file_saved_dict = {
         "-10.0dB":'./models/LinearSSM_danse_gru_m_2_n_2_T_500_N_500_-10.0dB_0.0dB/danse_gru_ckpt_epoch_930_best.pt',
         "0.0dB":'./models/LinearSSM_danse_gru_m_2_n_2_T_500_N_500_0.0dB_0.0dB/danse_gru_ckpt_epoch_1642_best.pt',
-        "3.0dB":'./models/LinearSSM_danse_gru_m_2_n_2_T_500_N_500_3.0dB_0.0dB/danse_gru_ckpt_epoch_1304_best.pt',
         "10.0dB":'./models/LinearSSM_danse_gru_m_2_n_2_T_500_N_500_10.0dB_0.0dB/danse_gru_ckpt_epoch_678_best.pt',
         "20.0dB":'./models/LinearSSM_danse_gru_m_2_n_2_T_500_N_500_20.0dB_0.0dB/danse_gru_ckpt_epoch_1185_best.pt',
         "30.0dB":'./models/LinearSSM_danse_gru_m_2_n_2_T_500_N_500_30.0dB_0.0dB/danse_gru_ckpt_epoch_673_best.pt'
@@ -341,7 +340,6 @@ if __name__ == "__main__":
     model_file_saved_dict_knet = {
         "-10.0dB":'./models/LinearSSM_KNetUoffline_m_2_n_2_T_80_N_500_-10.0dB_0.0dB/knet_ckpt_epoch_best.pt',
         "0.0dB":'./models/LinearSSM_KNetUoffline_m_2_n_2_T_80_N_500_0.0dB_0.0dB/knet_ckpt_epoch_best.pt',
-        "3.0dB":'./models/LinearSSM_KNetUoffline_m_2_n_2_T_80_N_500_3.0dB_0.0dB/knet_ckpt_epoch_best.pt',
         "10.0dB":'./models/LinearSSM_KNetUoffline_m_2_n_2_T_80_N_500_10.0dB_0.0dB/knet_ckpt_epoch_best.pt',
         "20.0dB":'./models/LinearSSM_KNetUoffline_m_2_n_2_T_80_N_500_20.0dB_0.0dB/knet_ckpt_epoch_best.pt',
         "30.0dB":'./models/LinearSSM_KNetUoffline_m_2_n_2_T_80_N_500_30.0dB_0.0dB/knet_ckpt_epoch_best.pt'
