@@ -54,19 +54,15 @@ def main():
     print("datafile: {}".format(datafile))
     print(datafile.split('/')[-1])
     # Dataset parameters obtained from the 'datafile' variable
-    _, n_states, n_obs, _, T, N_samples, inverse_r2_dB, nu_dB = parse("{}_m_{:d}_n_{:d}_{}_data_T_{:d}_N_{:d}_r2_{:f}dB_nu_{:f}dB.pkl", datafile.split('/')[-1])
+    _, n_states, n_obs, _, T, N_samples, sigma_e2_dB, smnr_dB = parse("{}_m_{:d}_n_{:d}_{}_data_T_{:d}_N_{:d}_sigmae2_{:f}dB_smnr_{:f}dB.pkl", datafile.split('/')[-1])
     
     ngpu = 1 # Comment this out if you want to run on cpu and the next line just set device to "cpu"
     device = torch.device("cuda:0" if (torch.cuda.is_available() and ngpu>0) else "cpu")
     print("Device Used:{}".format(device))
 
     ssm_parameters_dict, est_parameters_dict = get_parameters(
-                                            N=N_samples,
-                                            T=T,
                                             n_states=n_states,
                                             n_obs=n_obs,
-                                            inverse_r2_dB=inverse_r2_dB,
-                                            nu_dB=nu_dB,
                                             device=device
                                         )
 
@@ -126,15 +122,15 @@ def main():
     modelfile_path = "./models/"
 
     #NOTE: Currently this is hardcoded into the system
-    main_exp_name = "{}_danse_{}_m_{}_n_{}_T_{}_N_{}_{}dB_{}dB".format(
+    main_exp_name = "{}_danse_{}_m_{}_n_{}_T_{}_N_{}_sigmae2_{}dB_smnr_{}dB".format(
                                                             dataset_type,
                                                             model_type,
                                                             n_states,
                                                             n_obs,
                                                             T,
                                                             N_samples,
-                                                            inverse_r2_dB,
-                                                            nu_dB
+                                                            sigma_e2_dB,
+                                                            smnr_dB
                                                             )
 
     #print(params)

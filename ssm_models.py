@@ -63,6 +63,7 @@ class LinearSSM(object):
 
     def generate_state_sequence(self, T, sigma_e2_dB):
         
+        self.G = np.ones((self.m, 1))
         self.sigma_e2 = dB_to_lin(sigma_e2_dB)
         self.setStateCov(sigma_e2=self.sigma_e2)
         x_arr = np.zeros((T+1, self.m))
@@ -82,14 +83,14 @@ class LinearSSM(object):
             e_k = e_k_arr[k]
 
             # Equation for updating the hidden state
-            x_arr[k+1] = (self.F @ x_arr[k].reshape((-1,1)) + u_k + e_k.reshape((-1,1))).reshape((-1,))
+            x_arr[k+1] = (self.F @ x_arr[k].reshape((-1,1)) + self.G @ np.array([u_k]).reshape((-1,1)) + e_k.reshape((-1,1))).reshape((-1,))
         
         return x_arr
     
-    def generate_measurement_sequence(self, x_arr, T, SMNR_dB=10.0):
+    def generate_measurement_sequence(self, x_arr, T, smnr_dB=10.0):
         
         signal_p = (np.einsum('ij,nj->ni', self.H, x_arr) - np.zeros_like(x_arr)).mean(axis=None)
-        self.sigma_w2 = signal_p / dB_to_lin(SMNR_dB)
+        self.sigma_w2 = signal_p / dB_to_lin(smnr_dB)
         self.setMeasurementCov(sigma_w2=self.sigma_w2)
         y_arr = np.zeros((T, self.n))
         w_k_arr = np.random.multivariate_normal(self.mu_w, self.Cw, size=(T,))
@@ -103,10 +104,10 @@ class LinearSSM(object):
         
         return y_arr
     
-    def generate_single_sequence(self, T, sigma_e2_dB, SMNR_dB):
+    def generate_single_sequence(self, T, sigma_e2_dB, smnr_dB):
 
         x_arr = self.generate_state_sequence(T=T, sigma_e2_dB=sigma_e2_dB)
-        y_arr = self.generate_measurement_sequence(x_arr=x_arr, T=T, SMNR_dB=SMNR_dB)
+        y_arr = self.generate_measurement_sequence(x_arr=x_arr, T=T, smnr_dB=smnr_dB)
 
         return x_arr, y_arr
 
@@ -186,15 +187,15 @@ class LorenzSSM(object):
 
         return x_lorenz_d
     
-    def generate_measurement_sequence(self, x_lorenz, T, SMNR_dB=10.0):
+    def generate_measurement_sequence(self, x_lorenz, T, smnr_dB=10.0):
         
         signal_p = ((self.h_fn(x_lorenz) - np.zeros_like(x_lorenz))**2).mean()
-        self.sigma_w2 = signal_p / dB_to_lin(SMNR_dB)
+        self.sigma_w2 = signal_p / dB_to_lin(smnr_dB)
         self.setMeasurementCov(sigma_w2=self.sigma_w2)
         w_k_arr = np.random.multivariate_normal(self.mu_w, self.Cw, size=(T,))
         y_lorenz = np.zeros((T, self.n_obs))
         
-        print("SMNR: {}, signal power: {}, sigma_w: {}".format(SMNR_dB, signal_p, self.sigma_w2))
+        print("smnr: {}, signal power: {}, sigma_w: {}".format(smnr_dB, signal_p, self.sigma_w2))
         
         for t in range(0,T):
             
@@ -208,9 +209,9 @@ class LorenzSSM(object):
 
         return y_lorenz_d
     
-    def generate_single_sequence(self, T, sigma_e2_dB, SMNR_dB):
+    def generate_single_sequence(self, T, sigma_e2_dB, smnr_dB):
 
-        x_arr = self.generate_state_sequence(T=T, sigma_e2_dB=sigma_e2_dB)
-        y_arr = self.generate_measurement_sequence(x_arr=x_arr, T=T, SMNR_dB=SMNR_dB)
+        x_lorenz = self.generate_state_sequence(T=T, sigma_e2_dB=sigma_e2_dB)
+        y_lorenz = self.generate_measurement_sequence(x_arr=x_lorenz, T=T, smnr_dB=smnr_dB)
 
-        return x_arr, y_arr
+        return x_lorenz, y_lorenz

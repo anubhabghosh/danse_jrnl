@@ -12,7 +12,7 @@ import sys
 class KF(nn.Module):
     """ This class implements a Kalman Filter in PyTorch
     """
-    def __init__(self, n_states, n_obs, F=None, G=None, H=None, Q=None, R=None, inverse_r2_dB=None, nu_dB=None, device='cpu') -> None:
+    def __init__(self, n_states, n_obs, F=None, G=None, H=None, Q=None, R=None, device='cpu') -> None:
         super(KF, self).__init__()
         
         # Initialize the device
@@ -24,13 +24,6 @@ class KF(nn.Module):
         self.F_k = self.push_to_device(F) # State transition matrix (relates x_k to x_{k+1})
         self.G_k = self.push_to_device(G) # Input matrix (relates input u_k to x_k)
         self.H_k = self.push_to_device(H) # Output matrix (relates state x_k to output y_k)
-
-        if (not inverse_r2_dB is None) and (not nu_dB is None):
-            r2 = 1.0 / dB_to_lin(inverse_r2_dB)
-            q2 = dB_to_lin(nu_dB - inverse_r2_dB)
-            Q = q2 * np.eye(self.n_states)
-            R = r2 * np.eye(self.n_obs)
-
         self.Q_k = self.push_to_device(Q) # Covariance matrix of the process noise, we assume process noise w_k ~ N(0, Q)
         self.R_k = self.push_to_device(R) # Covariance matrix of the measurement noise, we assume mesaurement noise v_k ~ N(0, R)
         
