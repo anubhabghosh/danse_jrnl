@@ -10,7 +10,7 @@ class RNN_model(nn.Module):
     """ This super class defines the specific model to be used i.e. LSTM or GRU or RNN
     """
     def __init__(self, input_size, output_size, n_hidden, n_layers, 
-        model_type, lr, num_epochs, n_hidden_dense=32, num_directions=1, batch_first = True, min_delta=1e-2):
+        model_type, lr, num_epochs, n_hidden_dense=32, num_directions=1, batch_first = True, min_delta=1e-2, device='cpu'):
         super(RNN_model, self).__init__()
         """
         Args:
@@ -34,6 +34,7 @@ class RNN_model(nn.Module):
         self.model_type = model_type
         self.lr = lr
         self.num_epochs = num_epochs
+        self.device=device
         
         # Predefined:
         ## Use only the forward direction 
@@ -59,9 +60,9 @@ class RNN_model(nn.Module):
         # Fully connected layer to be used for mapping the output
         #self.fc = nn.Linear(self.hidden_dim * self.num_directions, self.output_size)
         
-        self.fc = nn.Linear(self.hidden_dim * self.num_directions, n_hidden_dense)
-        self.fc_mean = nn.Linear(n_hidden_dense, self.output_size)
-        self.fc_vars = nn.Linear(n_hidden_dense, self.output_size)
+        self.fc = nn.Linear(self.hidden_dim * self.num_directions, n_hidden_dense).to(self.device)
+        self.fc_mean = nn.Linear(n_hidden_dense, self.output_size).to(self.device)
+        self.fc_vars = nn.Linear(n_hidden_dense, self.output_size).to(self.device)
         # Add a dropout layer with 20% probability
         #self.d1 = nn.Dropout(p=0.2)
 
@@ -69,7 +70,7 @@ class RNN_model(nn.Module):
         """ This function defines the initial hidden state of the RNN
         """
         # This method generates the first hidden state of zeros (h0) which is used in the forward pass
-        h0 = torch.zeros(self.num_layers, batch_size, self.hidden_dim)
+        h0 = torch.randn(self.num_layers, batch_size, self.hidden_dim, device=self.device)
         return h0
     
     def forward(self, x):
@@ -78,31 +79,32 @@ class RNN_model(nn.Module):
         batch_size = x.shape[0]
         
         # Obtain the RNN output
-        r_out, hn_all = self.rnn(x)
+        r_out, _ = self.rnn(x)
         
         # Reshaping the output appropriately
-        r_out = r_out.contiguous().view(batch_size, -1, self.num_directions, self.hidden_dim)
-        
-        # Select the last time-step
-        r_out = r_out[:, -1, :, :]
-        r_out_last_step = r_out.reshape((-1, self.hidden_dim))
-        
-        # Pass this through dropout layer
-        #r_out_last_step = self.d1(r_out_last_step)
+        r_out_all_steps = r_out.contiguous().view(batch_size, -1, self.num_directions * self.hidden_dim)
 
-        # Passing the output to the fully connected layer
-        y = F.relu(self.fc(r_out_last_step))
+        # Passing the output to one fully connected layer
+        y = F.relu(self.fc(r_out_all_steps))
 
-        # Means and variances are computed       
-        mu = self.fc_mean(y)
-        vars = F.relu(self.fc_vars(y))
+        # Means and variances are computed for time instants t=2, ..., T+1 using the available sequence
+        mu_2T_1 = self.fc_mean(y) # A second linear projection to get the means
+        vars_2T_1 = F.softplus(self.fc_vars(y)) # A second linear projection followed by an activation function to get variances
+
+        # The mean and variances at the first time step need to be computed only based on the previous hidden state
+        mu_1 = self.fc_mean(F.relu(self.fc(self.init_h0(batch_size)[-1,:,:]))).view(batch_size, 1, -1)
+        var_1 = F.softplus(self.fc_vars(F.relu(self.fc(self.init_h0(batch_size)[-1,:,:]))).view(batch_size, 1, -1))
+
+        # To get the means and variances for the time instants t=1, ..., T, we take the previous result and concatenate 
+        # all but last value to the value found at t=1. Concatenation is done along the sequence dimension
+        mu = torch.cat(
+            (mu_1, mu_2T_1[:,:-1,:]),
+            dim=1
+        )
+
+        vars = torch.cat(
+            (var_1, vars_2T_1[:,:-1,:]),
+            dim=1
+        )
 
         return mu, vars
-
-def save_model(model, filepath):
-    torch.save(model.state_dict(), filepath)
-    return None
-
-def push_model(nets, device='cpu'):
-    nets = nets.to(device=device)
-    return nets
