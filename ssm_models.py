@@ -89,11 +89,14 @@ class LinearSSM(object):
     
     def generate_measurement_sequence(self, x_arr, T, smnr_dB=10.0):
         
-        signal_p = (np.einsum('ij,nj->ni', self.H, x_arr) - np.zeros_like(x_arr)).mean(axis=None)
+        signal_p = ((np.einsum('ij,nj->ni', self.H, x_arr) - np.zeros_like(x_arr))**2).mean(axis=None)
         self.sigma_w2 = signal_p / dB_to_lin(smnr_dB)
         self.setMeasurementCov(sigma_w2=self.sigma_w2)
         y_arr = np.zeros((T, self.n_obs))
+        
+        #print("sigma_w2: {}".format(self.sigma_w2))
         w_k_arr = np.random.multivariate_normal(self.mu_w, self.Cw, size=(T,))
+
         
         # Generate the sequence iteratively
         for k in range(T):
