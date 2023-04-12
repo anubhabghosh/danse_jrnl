@@ -11,7 +11,7 @@ from utils.utils import dB_to_lin, mse_loss
 class EKF(nn.Module):
     """ This class implements an extended Kalman filter in PyTorch
     """
-    def __init__(self, n_states, n_obs, J=5, delta=0.02, f=None, h=None, Q=None, R=None, inverse_r2_dB=None, nu_dB=None, device='cpu', use_Taylor=False):
+    def __init__(self, n_states, n_obs, J=5, delta=0.02, f=None, h=None, Q=None, R=None, device='cpu', use_Taylor=False):
         super(EKF, self).__init__()
 
         self.n_states = n_states
@@ -25,12 +25,6 @@ class EKF(nn.Module):
         self.f_k = f # State transition function (relates x_k, u_k to x_{k+1})
         self.h_k = h # Output function (relates state x_k to output y_k)
         self.use_Taylor = use_Taylor # Flag to use Taylor series approximation or not
-        
-        if (not inverse_r2_dB is None) and (not nu_dB is None) and (Q is None) and (R is None):
-            r2 = 1.0 / dB_to_lin(inverse_r2_dB)
-            q2 = dB_to_lin(nu_dB - inverse_r2_dB)
-            Q = q2 * np.eye(self.n_states)
-            R = r2 * np.eye(self.n_obs)
         
         self.Q_k = self.push_to_device(Q) # Covariance matrix of the process noise, we assume process noise w_k ~ N(0, Q)
         self.R_k = self.push_to_device(R) # Covariance matrix of the measurement noise, we assume mesaurement noise v_k ~ N(0, R)

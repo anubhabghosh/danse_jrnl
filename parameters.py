@@ -152,9 +152,9 @@ def get_parameters(n_states=5, n_obs=5, device='cpu'):
             "n_obs":n_obs,
             "J":J_gen,
             "delta":delta_t,
-            "A_fn":A_fn,
-            "h_fn":h_fn,
-            "delta_d":0.02,
+            "alpha":0.0, # alpha = 0.0, implies a Lorenz model
+            "H":None, # By default, H is initialized to an identity matrix
+            "delta_d":0.002,
             "decimate":False,
             "mu_e":np.zeros((n_states,)),
             "mu_w":np.zeros((n_obs,)),

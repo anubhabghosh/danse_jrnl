@@ -46,8 +46,7 @@ class UKF_Aliter(nn.Module):
     """ This class implements an unscented Kalman filter in PyTorch
     """
     def __init__(self, n_states, n_obs, f=None, h=None, Q=None, R=None, kappa=-1, 
-                alpha=0.1, beta=2, n_sigma=None, delta_t=1.0, inverse_r2_dB=None, 
-                nu_dB=None, device='cpu', init_cond=None):
+                alpha=0.1, beta=2, delta_t=1.0, device='cpu', init_cond=None):
         super(UKF_Aliter, self).__init__()
 
         # Initialize the device
@@ -59,11 +58,6 @@ class UKF_Aliter(nn.Module):
         self.f_k = f # State transition function (relates x_k, u_k to x_{k+1})
         self.h_k = h # Output function (relates state x_k to output y_k)
          
-        if (not inverse_r2_dB is None) and (not nu_dB is None) and (Q is None) and (R is None):
-            r2 = 1.0 / dB_to_lin(inverse_r2_dB)
-            q2 = dB_to_lin(nu_dB - inverse_r2_dB)
-            Q = q2 * np.eye(self.n_states)
-            R = r2 * np.eye(self.n_obs)
 
         self.Q_k = self.push_to_device(Q) # Covariance matrix of the process noise, we assume process noise w_k ~ N(0, Q)
         self.R_k = self.push_to_device(R) # Covariance matrix of the measurement noise, we assume mesaurement noise v_k ~ N(0, R)

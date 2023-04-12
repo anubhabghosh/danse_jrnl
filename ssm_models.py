@@ -195,10 +195,9 @@ class LorenzSSM(object):
         w_k_arr = np.random.multivariate_normal(self.mu_w, self.Cw, size=(T,))
         y_lorenz = np.zeros((T, self.n_obs))
         
-        print("smnr: {}, signal power: {}, sigma_w: {}".format(smnr_dB, signal_p, self.sigma_w2))
+        #print("smnr: {}, signal power: {}, sigma_w: {}".format(smnr_dB, signal_p, self.sigma_w2))
         
         for t in range(0,T):
-            
             y_lorenz[t] = self.h_fn(x_lorenz[t]) + w_k_arr[t]
         
         if self.decimate == True:
@@ -212,6 +211,6 @@ class LorenzSSM(object):
     def generate_single_sequence(self, T, sigma_e2_dB, smnr_dB):
 
         x_lorenz = self.generate_state_sequence(T=T, sigma_e2_dB=sigma_e2_dB)
-        y_lorenz = self.generate_measurement_sequence(x_arr=x_lorenz, T=T, smnr_dB=smnr_dB)
+        y_lorenz = self.generate_measurement_sequence(x_lorenz=x_lorenz, T=T, smnr_dB=smnr_dB)
 
         return x_lorenz, y_lorenz
