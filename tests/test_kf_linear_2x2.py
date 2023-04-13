@@ -3,6 +3,7 @@
 # Feb 2023
 #####################################################
 import numpy as np
+import glob
 import torch
 from torch.utils.data import DataLoader, Dataset
 from torch.autograd import Variable
@@ -18,7 +19,7 @@ from utils.utils import generate_normal, dB_to_lin, lin_to_dB, \
     mse_loss, nmse_loss, nmse_loss_std, mse_loss_dB, mse_loss_dB_std, \
         load_saved_dataset, save_dataset, NDArrayEncoder
 from parameters import get_parameters
-from generate_data import LinearSSM, generate_SSM_data
+from generate_data import LinearSSM
 from src.kf import KF
 from src.danse import DANSE, push_model
 from src.k_net import KalmanNetNN
@@ -83,14 +84,6 @@ def test_linear(device='cpu', model_file_saved=None, model_file_saved_knet=None,
 
     _, rnn_type, m, n, T, _, sigma_e2_dB, smnr_dB = parse("{}_danse_{}_m_{:d}_n_{:d}_T_{:d}_N_{:d}_sigmae2_{:f}dB_SMNR_{:f}dB", model_file_saved.split('/')[-2])
     
-    #m = 10
-    #n = 10
-    q2 = 1.0
-    r2 = 1.0
-    T_test = 500
-    #T = 6_000
-    #nu_dB = 0
-    #inverse_r2_dB = 40
     orig_stdout = sys.stdout
     f_tmp = open(test_logfile, 'a')
     sys.stdout = f_tmp
@@ -110,7 +103,7 @@ def test_linear(device='cpu', model_file_saved=None, model_file_saved_knet=None,
 
         print("Test data generated using sigma_e2: {} dB, SMNR: {} dB".format(sigma_e2_dB_test, smnr_dB_test))
         for i in range(N_test):
-            x_lin_i, y_lin_i = linear_ssm.generate_single_sequence(T=T_test, sigma_e2=sigma_e2_dB_test, SMNR=smnr_dB_test)
+            x_lin_i, y_lin_i = linear_ssm.generate_single_sequence(T=T_test, sigma_e2_dB=sigma_e2_dB_test, smnr_dB=smnr_dB_test)
             X[i, :, :] = torch.from_numpy(x_lin_i).type(torch.FloatTensor)
             Y[i, :, :] = torch.from_numpy(y_lin_i).type(torch.FloatTensor)
 
@@ -123,22 +116,8 @@ def test_linear(device='cpu', model_file_saved=None, model_file_saved_knet=None,
     else:
 
         print("Dataset at {} already present!".format(test_data_file))
-        #linear_ssm = LinearSSM(n_states=m, n_obs=n, F=None, G=np.zeros((m,1)), H=None, 
-        #                    mu_e=np.zeros((m,)), mu_w=np.zeros((n,)), q2=q2, r2=r2, 
-        #                    Q=None, R=None) # Related to KalmanNet data importing
         m, n, T_test, N_test, sigma_e2_dB_test, smnr_dB_test = parse("test_trajectories_m_{:d}_n_{:d}_LinearSSM_data_T_{:d}_N_{:d}_sigmae2_{:f}dB_SMNR_{:f}dB.pkl", test_data_file.split('/')[-1])
         test_data_dict = load_saved_dataset(filename=test_data_file)
-        #data_file_name = 'Datasets'+'\\' + data_file_specification.format(ratio,rdB,T) + '.pt'
-        '''
-        # KalmanNet data importing part begins 
-        [train_dataset,cv_dataset,test_dataset] = DataLoader(test_data_file)
-        Y = test_dataset.input.to( torch.device('cpu')).transpose(1,2)
-        X = test_dataset.target.to(torch.device('cpu')).transpose(1,2)
-        Nx, Tx, dx = X.shape
-        X = torch.cat((torch.zeros(Nx,1,dx), X), dim=1)
-        nu_dB_test, inverse_r2_dB_test, T_test = parse("Ratio_{:d}---R_{:d}---T_{:d}.pt", test_data_file.split('\\')[-1])
-        # KalmanNet data importing part ends
-        '''
         X = test_data_dict["X"]
         Y = test_data_dict["Y"]
         linear_ssm = test_data_dict["model"]
@@ -155,8 +134,8 @@ def test_linear(device='cpu', model_file_saved=None, model_file_saved_knet=None,
     N_test, Ty, dy = Y.shape
     N_test, Tx, dx = X.shape
 
-    # Get the estimate using the baseline
-    H_tensor = torch.from_numpy(linear_ssm.construct_H()).type(torch.FloatTensor)
+    # Get the estimate using the LS baseline
+    H_tensor = torch.from_numpy(linear_ssm.H).type(torch.FloatTensor)
     H_tensor = torch.repeat_interleave(H_tensor.unsqueeze(0),N_test,dim=0)
     #X_LS = torch.einsum('ijj,ikj->ikj',torch.pinverse(H_tensor),Y)#torch.einsum('ijj,ikj->ikj',H_tensor,Y)
     X_LS = torch.zeros_like(Y)
@@ -287,14 +266,14 @@ def test_linear(device='cpu', model_file_saved=None, model_file_saved_knet=None,
                         X_est_KF=torch.squeeze(X_estimated_kf[0,1:,:], 0), 
                         X_est_DANSE=torch.squeeze(X_estimated_filtered[0], 0),
                         X_est_KNET=torch.squeeze(X_estimated_filtered_knet[0], 0),
-                        savefig=False,
+                        savefig=True,
                         savefig_name="./figs/LinearModel/{}/AxesWisePlot_sigma_e2_{}dB_smnr_{}dB.pdf".format(evaluation_mode, sigma_e2_dB_test, smnr_dB_test))
     
     plot_state_trajectory(X=torch.squeeze(X[0,1:,:],0), 
                         X_est_KF=torch.squeeze(X_estimated_kf[0,1:,:], 0), 
                         X_est_DANSE=torch.squeeze(X_estimated_filtered[0], 0),
                         X_est_KNET=torch.squeeze(X_estimated_filtered_knet[0], 0),
-                        savefig=False,
+                        savefig=True,
                         savefig_name="./figs/LinearModel/{}/3dPlot_sigma_e2_{}dB_smnr_{}dB.pdf".format(evaluation_mode, sigma_e2_dB_test, smnr_dB_test))
     
     sys.stdout = orig_stdout
@@ -305,10 +284,15 @@ def test_linear(device='cpu', model_file_saved=None, model_file_saved_knet=None,
 
 if __name__ == "__main__":
 
+    # Testing parameters 
+    T_test = 1000
+    N_test = 100
+    sigma_e2_dB_test = -10.0
     device = 'cpu'
-    evaluation_mode = 'Full'
+    evaluation_mode = 'full'
     smnr_dB_arr = np.array([-10.0,0.0,10.0,20.0,30.0])
-    #smnr_dB_arr = np.array([0.0])
+    
+    # Creating arrays for storing the results for post-processing and analysis
     nmse_ls_arr = np.zeros((len(smnr_dB_arr,)))
     nmse_kf_arr = np.zeros((len(smnr_dB_arr,)))
     nmse_danse_arr = np.zeros((len(smnr_dB_arr,)))
@@ -329,25 +313,12 @@ if __name__ == "__main__":
     t_danse_arr = np.zeros((len(smnr_dB_arr,)))
     t_knet_arr = np.zeros((len(smnr_dB_arr,)))
 
-    model_file_saved_dict = {
-        "-10.0dB":'./models/LinearSSM_danse_gru_m_2_n_2_T_500_N_500_-10.0dB_0.0dB/danse_gru_ckpt_epoch_930_best.pt',
-        "0.0dB":'./models/LinearSSM_danse_gru_m_2_n_2_T_500_N_500_0.0dB_0.0dB/danse_gru_ckpt_epoch_1642_best.pt',
-        "10.0dB":'./models/LinearSSM_danse_gru_m_2_n_2_T_500_N_500_10.0dB_0.0dB/danse_gru_ckpt_epoch_678_best.pt',
-        "20.0dB":'./models/LinearSSM_danse_gru_m_2_n_2_T_500_N_500_20.0dB_0.0dB/danse_gru_ckpt_epoch_1185_best.pt',
-        "30.0dB":'./models/LinearSSM_danse_gru_m_2_n_2_T_500_N_500_30.0dB_0.0dB/danse_gru_ckpt_epoch_673_best.pt'
-    }
+    model_file_saved_dict = {}
+    model_file_saved_dict_knet = {}
 
-    model_file_saved_dict_knet = {
-        "-10.0dB":'./models/LinearSSM_KNetUoffline_m_2_n_2_T_80_N_500_-10.0dB_0.0dB/knet_ckpt_epoch_best.pt',
-        "0.0dB":'./models/LinearSSM_KNetUoffline_m_2_n_2_T_80_N_500_0.0dB_0.0dB/knet_ckpt_epoch_best.pt',
-        "10.0dB":'./models/LinearSSM_KNetUoffline_m_2_n_2_T_80_N_500_10.0dB_0.0dB/knet_ckpt_epoch_best.pt',
-        "20.0dB":'./models/LinearSSM_KNetUoffline_m_2_n_2_T_80_N_500_20.0dB_0.0dB/knet_ckpt_epoch_best.pt',
-        "30.0dB":'./models/LinearSSM_KNetUoffline_m_2_n_2_T_80_N_500_30.0dB_0.0dB/knet_ckpt_epoch_best.pt'
-    }
-    
-    T_test = 1000
-    N_test = 100
-    sigma_e2_dB_test = -10
+    for smnr_dB in smnr_dB_arr:
+        model_file_saved_dict["{}dB".format(smnr_dB)] = glob.glob("./models/*Linear*danse*sigmae2_{}dB_smnr_{}dB*/*best*".format(sigma_e2_dB_test, smnr_dB))[-1]
+        model_file_saved_dict_knet["{}dB".format(smnr_dB)] = glob.glob("./models/*Linear*KNetUoffline*sigmae2_{}dB_smnr_{}dB*/*best*".format(sigma_e2_dB_test, smnr_dB))[-1]
 
     test_data_file_dict = {}
 
@@ -393,6 +364,7 @@ if __name__ == "__main__":
         t_danse_arr[i] = time_elapsed_danse_i
         t_knet_arr[i] = time_elapsed_knet_i
 
+    # Collect stats in a large json file
     test_stats = {}
     test_stats['KF_mean_nmse'] = nmse_kf_arr
     test_stats['DANSE_mean_nmse'] = nmse_danse_arr
@@ -414,81 +386,43 @@ if __name__ == "__main__":
     test_stats['DANSE_time'] = t_danse_arr
     test_stats['KNET_time'] = t_knet_arr
     test_stats['SMNR'] = smnr_dB_arr
-    '''
+    
     with open(test_jsonfile, 'w') as f:
         f.write(json.dumps(test_stats, cls=NDArrayEncoder, indent=2))
 
-    # Plotting the NMSE Curve
     plt.rcParams['font.family'] = 'serif'
+    # Plotting figures for later use
     plt.figure()
-    plt.plot(smnr_dB_arr, nmse_ls_arr, 'gp--', linewidth=1.5, label="NMSE-LS")
-    plt.plot(smnr_dB_arr, nmse_kf_arr, 'rd--', linewidth=1.5, label="NMSE-KF")
-    plt.plot(smnr_dB_arr, nmse_danse_arr, 'bo-', linewidth=2.0, label="NMSE-DANSE")
-    plt.plot(smnr_dB_arr, nmse_knet_arr, 'ys-', linewidth=1.0, label="NMSE-KNET")
-    plt.xlabel('$\\frac{1}{r^2}$ (in dB)')
+    plt.plot(smnr_dB_arr, nmse_ls_arr, 'gp--', linewidth=1.5, label="LS")
+    plt.plot(smnr_dB_arr, nmse_kf_arr, 'rd--', linewidth=1.5, label="KF")
+    plt.plot(smnr_dB_arr, nmse_danse_arr, 'bo-', linewidth=2.0, label="DANSE")
+    plt.plot(smnr_dB_arr, nmse_knet_arr, 'ys-', linewidth=1.0, label="KalmanNet")
+    plt.xlabel('SMNR (in dB)')
     plt.ylabel('NMSE (in dB)')
     plt.grid(True)
     plt.legend()
-    #plt.subplot(212)
-    plt.savefig('./figs/LinearModel/{}/NMSE_vs_inverse_r2dB_Linear_2x2.pdf'.format(evaluation_mode))
-
-    plt.figure()
-    plt.plot(snr_arr, nmse_ls_arr, 'gp--', linewidth=1.5, label="NMSE-LS")
-    plt.plot(snr_arr, nmse_kf_arr, 'rd--', linewidth=1.5, label="NMSE-KF")
-    plt.plot(snr_arr, nmse_danse_arr, 'bo-', linewidth=2.0, label="NMSE-DANSE")
-    plt.plot(snr_arr, nmse_knet_arr, 'ys-', linewidth=1.0, label="NMSE-KNET")
-    plt.xlabel('SNR (in dB)')
-    plt.ylabel('NMSE (in dB)')
-    plt.grid(True)
-    plt.legend()
-    plt.savefig('./figs/LinearModel/{}/NMSE_vs_SNR_Linear_2x2.pdf'.format(evaluation_mode))
+    plt.savefig('./figs/LinearModel/{}/NMSE_vs_SMNR_Linear_2x2.pdf'.format(evaluation_mode))
     
-    # Plotting the MSE Curve
-    plt.rcParams['font.family'] = 'serif'
     plt.figure()
-    plt.plot(smnr_dB_arr, mse_ls_dB_arr, 'gp--', linewidth=1.5, label="MSE-LS")
-    plt.plot(smnr_dB_arr, mse_kf_dB_arr, 'rd--', linewidth=1.5, label="MSE-KF")
-    plt.plot(smnr_dB_arr, mse_danse_dB_arr, 'bo-', linewidth=2.0, label="MSE-DANSE")
-    plt.plot(smnr_dB_arr, mse_knet_dB_arr, 'ys-', linewidth=1.0, label="MSE-KNET")
-    plt.xlabel('$\\frac{1}{r^2}$ (in dB)')
+    plt.plot(smnr_dB_arr, mse_ls_dB_arr, 'gp--', linewidth=1.5, label="LS")
+    plt.plot(smnr_dB_arr, mse_kf_dB_arr, 'rd--', linewidth=1.5, label="KF")
+    plt.plot(smnr_dB_arr, mse_danse_dB_arr, 'bo-', linewidth=2.0, label="DANSE")
+    plt.plot(smnr_dB_arr, mse_knet_dB_arr, 'ys-', linewidth=1.0, label="KalmanNet")
+    plt.xlabel('SMNR (in dB)')
     plt.ylabel('MSE (in dB)')
     plt.grid(True)
     plt.legend()
-    #plt.subplot(212)
-    plt.savefig('./figs/LinearModel/{}/MSE_vs_inverse_r2dB_Linear_2x2.pdf'.format(evaluation_mode))
-
-    plt.figure()
-    plt.plot(snr_arr, mse_ls_dB_arr, 'gp--', linewidth=1.5, label="MSE-LS")
-    plt.plot(snr_arr, mse_kf_dB_arr, 'rd--', linewidth=1.5, label="MSE-KF")
-    plt.plot(snr_arr, mse_danse_dB_arr, 'bo-', linewidth=2.0, label="MSE-DANSE")
-    plt.plot(snr_arr, mse_knet_dB_arr, 'ys-', linewidth=1.0, label="MSE-KNET")
-    plt.xlabel('SNR (in dB)')
-    plt.ylabel('MSE (in dB)')
-    plt.grid(True)
-    plt.legend()
-    plt.savefig('./figs/LinearModel/{}/MSE_vs_SNR_Linear_2x2.pdf'.format(evaluation_mode))
-
-    # Plotting the Time-elapsed Curve
-    plt.figure()
-    #plt.subplot(211)
-    plt.plot(smnr_dB_arr, t_kf_arr, 'rd--', linewidth=1.5, label="Inference time-KF")
-    plt.plot(smnr_dB_arr, t_danse_arr, 'bo-', linewidth=2.0, label="Inference time-DANSE")
-    plt.plot(smnr_dB_arr, t_knet_arr, 'ys-', linewidth=1.0, label="Inference time-KNET")
-    plt.xlabel('$\\frac{1}{r^2}$ (in dB)')
-    plt.ylabel('Time (in s)')
-    plt.grid(True)
-    plt.legend()
-    plt.savefig('./figs/LinearModel/{}/InferTime_vs_inverse_r2dB_Linear_2x2.pdf'.format(evaluation_mode))
+    plt.savefig('./figs/LinearModel/{}/MSE_vs_SMNR_Linear_2x2.pdf'.format(evaluation_mode))
 
     #plt.subplot(212)
     plt.figure()
-    plt.plot(snr_arr, t_kf_arr, 'rd--', linewidth=1.5, label="Inference time-KF")
-    plt.plot(snr_arr, t_danse_arr, 'bo-', linewidth=2.0, label="Inference time-DANSE")
-    plt.plot(snr_arr, t_knet_arr, 'ys-', linewidth=1.0, label="Inference time-KNET")
-    plt.xlabel('SNR (in dB)')
-    plt.ylabel('Time (in s)')
+    plt.plot(smnr_dB_arr, t_kf_arr, 'rd--', linewidth=1.5, label="KF")
+    plt.plot(smnr_dB_arr, t_danse_arr, 'bo-', linewidth=2.0, label="DANSE")
+    plt.plot(smnr_dB_arr, t_knet_arr, 'ys-', linewidth=1.0, label="KalmanNet")
+    plt.xlabel('SMNR (in dB)')
+    plt.ylabel('Inference time (in s)')
     plt.grid(True)
     plt.legend()
-    plt.savefig('./figs/LinearModel/{}/InferTime_vs_SNR_Linear_2x2.pdf'.format(evaluation_mode))
-    '''
+    plt.savefig('./figs/LinearModel/{}/InferTime_vs_SMNR_Linear_2x2.pdf'.format(evaluation_mode))
+    
     #plt.show()
