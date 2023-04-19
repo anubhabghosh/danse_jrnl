@@ -4,6 +4,7 @@
 #####################################################
 import numpy as np
 import math
+import torch
 from utils.utils import dB_to_lin
 
 class LinearSSM(object):
@@ -89,7 +90,8 @@ class LinearSSM(object):
     
     def generate_measurement_sequence(self, x_arr, T, smnr_dB=10.0):
         
-        signal_p = ((np.einsum('ij,nj->ni', self.H, x_arr) - np.zeros_like(x_arr))**2).mean(axis=None)
+        #signal_p = ((np.einsum('ij,nj->ni', self.H, x_arr) - np.zeros_like(x_arr))**2).mean(axis=None)
+        signal_p = np.var(np.einsum('ij,nj->ni', self.H, x_arr)) 
         self.sigma_w2 = signal_p / dB_to_lin(smnr_dB)
         self.setMeasurementCov(sigma_w2=self.sigma_w2)
         y_arr = np.zeros((T, self.n_obs))
@@ -151,10 +153,18 @@ class LorenzSSM(object):
         """ 
         Linear measurement setup y = x + w
         """
+        if type(x).__module__ == np.__name__:
+            H_ = np.copy(self.H)
+        elif type(x).__module__ == torch.__name__:
+            H_ = torch.from_numpy(self.H).type(torch.FloatTensor)
+
         if len(x.shape) == 1:   
-            y_ = self.H @ x
+            y_ = H_ @ x
         elif len(x.shape) > 1:
-            y_ = np.einsum('ij,nj->ni', self.H, x)
+            if type(x).__module__ == np.__name__:
+                y_ = np.einsum('ij,nj->ni', H_, x)
+            elif type(x).__module__ == torch.__name__:
+                y_ = H_ @ x
         return y_
             
     def f_linearize(self, x):
@@ -192,7 +202,8 @@ class LorenzSSM(object):
     
     def generate_measurement_sequence(self, x_lorenz, T, smnr_dB=10.0):
         
-        signal_p = ((self.h_fn(x_lorenz) - np.zeros_like(x_lorenz))**2).mean()
+        #signal_p = ((self.h_fn(x_lorenz) - np.zeros_like(x_lorenz))**2).mean()
+        signal_p = np.var(self.h_fn(x_lorenz))
         self.sigma_w2 = signal_p / dB_to_lin(smnr_dB)
         self.setMeasurementCov(sigma_w2=self.sigma_w2)
         w_k_arr = np.random.multivariate_normal(self.mu_w, self.Cw, size=(T,))

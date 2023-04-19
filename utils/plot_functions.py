@@ -28,7 +28,7 @@ def plot_state_trajectory(X, X_est_KF=None, X_est_EKF=None, X_est_UKF=None, X_es
         if not X_est_DANSE is None:
             ax.plot(X_est_DANSE[:,0], X_est_DANSE[:,1],'r--',label='$\\hat{\mathbf{x}}_{DANSE}$')
         if not X_est_KNET is None:
-            ax.plot(X_est_KNET[:,0], X_est_KNET[:,1], 'c--.',label='$\\hat{\mathbf{x}}_{KNET}$')
+            ax.plot(X_est_KNET[:,0], X_est_KNET[:,1], 'c--.',label='$\\hat{\mathbf{x}}_{KalmanNet}$')
         ax.set_xlabel('$X_1$')
         ax.set_ylabel('$X_2$')
         plt.legend()
@@ -44,7 +44,7 @@ def plot_state_trajectory(X, X_est_KF=None, X_est_EKF=None, X_est_UKF=None, X_es
         if not X_est_UKF is None:
             ax.plot(X_est_UKF[:,0], X_est_UKF[:,1], X_est_UKF[:,2], 'x-', ms=4, color="orange", label='$\\hat{\mathbf{x}}_{UKF}$', lw=1.3)
         if not X_est_KNET is None:
-            ax.plot(X_est_KNET[:,0], X_est_KNET[:,1], X_est_KNET[:,2], 'c--.',label='$\\hat{\mathbf{x}}_{KNET}$', lw=1.3)
+            ax.plot(X_est_KNET[:,0], X_est_KNET[:,1], X_est_KNET[:,2], 'c--.',label='$\\hat{\mathbf{x}}_{KalmanNet}$', lw=1.3)
         if not X_est_DANSE is None:
             ax.plot(X_est_DANSE[:,0], X_est_DANSE[:,1], X_est_DANSE[:,2], 'r--',label='$\\hat{\mathbf{x}}_{DANSE}$', lw=1.3)
         ax.set_xlabel('$X_1$')
@@ -54,7 +54,7 @@ def plot_state_trajectory(X, X_est_KF=None, X_est_EKF=None, X_est_UKF=None, X_es
         order=None
         if order is None:
             order=range(len(handles))
-        ax.legend([handles[idx] for idx in order], [labels[idx] for idx in order],ncol=5,fontsize=12)
+        ax.legend([handles[idx] for idx in order], [labels[idx] for idx in order],ncol=5,fontsize=10)
         #ax.get_legend().set_bbox_to_anchor(bbox=(1,0))
         plt.tight_layout()
 
@@ -114,7 +114,7 @@ def plot_state_trajectory_axes(X, X_est_KF=None, X_est_EKF=None, X_est_UKF=None,
         if not X_est_DANSE is None:
             plt.plot(X_est_DANSE[:T_end,0], 'r--',label='$\\hat{\mathbf{x}}_{DANSE} (x-component) $')
         if not X_est_KNET is None:
-            plt.plot(X_est_KNET[:T_end,0], 'c--.',label='$\\hat{\mathbf{x}}_{KNET} (x-component) $')
+            plt.plot(X_est_KNET[:T_end,0], 'c--.',label='$\\hat{\mathbf{x}}_{KalmanNet} (x-component) $')
         if not X_est_EKF is None:
             plt.plot(X_est_EKF[:T_end,0], 'b.-',label='$\\hat{\mathbf{x}}_{EKF} (x-component) $')
         if not X_est_UKF is None:
@@ -128,7 +128,7 @@ def plot_state_trajectory_axes(X, X_est_KF=None, X_est_EKF=None, X_est_UKF=None,
         if not X_est_DANSE is None:
             plt.plot(X_est_DANSE[:T_end,1], 'r--',label='$\\hat{\mathbf{x}}_{DANSE} (y-component) $')
         if not X_est_KNET is None:
-            plt.plot(X_est_KNET[:T_end,1], 'c--.',label='$\\hat{\mathbf{x}}_{KNET} (y-component) $')
+            plt.plot(X_est_KNET[:T_end,1], 'c--.',label='$\\hat{\mathbf{x}}_{KalmanNet} (y-component) $')
         if not X_est_KF is None:
             plt.plot(X_est_KF[:T_end,1], 'g:',label='$\\hat{\mathbf{x}}_{KF} (y-component) $')
         if not X_est_EKF is None:
@@ -153,7 +153,7 @@ def plot_state_trajectory_axes(X, X_est_KF=None, X_est_EKF=None, X_est_UKF=None,
         if not X_est_DANSE is None:
             ax.plot(X_est_DANSE[T_start:T_end,idim], 'rs-',label='$\\hat{\mathbf{x}}_{DANSE}$',lw=lw, ms=4)
         if not X_est_KNET is None:
-            plt.plot(X_est_KNET[T_start:T_end,idim], 'c--.',label='$\\hat{\mathbf{x}}_{KNET} $', lw=lw)
+            plt.plot(X_est_KNET[T_start:T_end,idim], 'c--.',label='$\\hat{\mathbf{x}}_{KalmanNet} $', lw=lw)
         if not X_est_KF is None:
             ax.plot(X_est_KF[T_start:T_end,idim], 'g:',label='$\\hat{\mathbf{x}}_{KF}$',lw=lw)
         if not X_est_EKF is None:
@@ -167,7 +167,7 @@ def plot_state_trajectory_axes(X, X_est_KF=None, X_est_EKF=None, X_est_UKF=None,
         order=None
         if order is None:
             order=range(len(handles))
-        ax.legend([handles[idx] for idx in order], [labels[idx] for idx in order],ncol=5,loc=(-0.02,1.01),fontsize=16)
+        ax.legend([handles[idx] for idx in order], [labels[idx] for idx in order],ncol=5,loc=(-0.02,1.01),fontsize=14)
         plt.tight_layout()
         
         '''

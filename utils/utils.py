@@ -23,8 +23,9 @@ def partial_corrupt(x, p=0.7, bias=0.0):
 
     if x < 0:
         p *= -1
+        bias *= 1
     #return np.random.uniform(x, x*(1+p)) + bias
-    return x*(1+p)
+    return x*(1+p) + bias
 
 def generate_normal(N, mean, Sigma2):
 

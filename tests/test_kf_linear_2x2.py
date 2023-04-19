@@ -336,7 +336,7 @@ if __name__ == "__main__":
 
         nmse_kf_i, nmse_kf_std_i, nmse_danse_i, nmse_danse_std_i, nmse_knet_i, nmse_knet_std_i, nmse_ls_i, nmse_ls_std_i, \
             mse_dB_kf_i, mse_dB_kf_std_i, mse_dB_danse_i, mse_dB_danse_std_i, mse_dB_knet_i, mse_dB_knet_std_i, mse_dB_ls_i, mse_dB_ls_std_i, \
-            time_elapsed_kf_i, time_elapsed_danse_i, time_elapsed_knet_i, snr_i = test_linear(device=device, 
+            time_elapsed_kf_i, time_elapsed_danse_i, time_elapsed_knet_i, smnr_i = test_linear(device=device, 
             model_file_saved=model_file_saved_i, model_file_saved_knet=model_file_saved_knet_i, test_data_file=test_data_file_i, test_logfile=test_logfile, evaluation_mode=evaluation_mode)
         
         # Store the NMSE values and std devs of the NMSE values
