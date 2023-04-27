@@ -17,7 +17,7 @@ from torch.utils.data import DataLoader, Dataset
 from utils.utils import load_saved_dataset, Series_Dataset, obtain_tr_val_test_idx, create_splits_file_name, \
     create_file_paths, check_if_dir_or_file_exists, load_splits_file, get_dataloaders, NDArrayEncoder
 # Import the parameters
-from parameters import get_parameters, J_test, delta_t_test, delta_t, J_gen, A_fn, h_fn
+from parameters_opt import get_parameters, J_test, delta_t_test, delta_t, J_gen, A_fn, h_fn, get_H_DANSE
 from ssm_models import *
 #from utils.plot_functions import plot_measurement_data, plot_measurement_data_axes, plot_state_trajectory, plot_state_trajectory_axes
 
@@ -83,6 +83,7 @@ def main():
 
     batch_size = est_parameters_dict[knet_model_type]["batch_size"] # Set the batch size
     estimator_options = est_parameters_dict[knet_model_type] # Get the options for the estimator
+    H_ = get_H_DANSE(type_=ssm_type, n_states=n_states, n_obs=n_obs)
     val_batch_size = estimator_options["N_CV"]
     te_batch_size = estimator_options["N_T"]
     
@@ -204,6 +205,26 @@ def main():
         
         def hn(x):
             return h_fn(x)
+    
+    elif ssm_type == "LorenzSSMn2" or "LorenzSSMn1":
+
+        ssm_model = LorenzSSM(n_states=n_states,
+                            n_obs=n_states,
+                            J=J_gen, 
+                            delta=delta_t,
+                            delta_d=delta_t,
+                            alpha=ssm_parameters_dict[ssm_type]["alpha"], 
+                            decimate=False,
+                            H=H_,
+                            mu_e=np.zeros((n_states,)),
+                            mu_w=np.zeros((n_obs,)),
+                            use_Taylor=ssm_parameters_dict[ssm_type]["use_Taylor"])
+
+        def fn(x):
+            return f_lorenz_danse(x, device=device)
+        
+        def hn(x):
+            return ssm_model.h_fn(x)
             
     if mode.lower() == "train": 
 
