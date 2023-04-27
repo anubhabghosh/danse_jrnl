@@ -224,7 +224,8 @@ def main():
             return f_lorenz_danse(x, device=device)
         
         def hn(x):
-            return ssm_model.h_fn(x)
+            return torch.from_numpy(H_).type(torch.FloatTensor).to(device) @ x
+            #return torch.from_numpy(ssm_model.h_fn(x.detach().cpu().numpy())).type(torch.FloatTensor).to(device)
             
     if mode.lower() == "train": 
 

@@ -194,7 +194,7 @@ def create_splits_file_name(dataset_filename, splits_filename):
     
     idx_dset_info = dataset_filename.rfind("m")
     idx_splitfilename = splits_filename.rfind(".pkl")
-    splits_filename_modified = splits_filename[:idx_splitfilename] + "_" + dataset_filename[idx_dset_info:] 
+    splits_filename_modified = splits_filename[:idx_splitfilename] + ".pkl" #+ "_" + dataset_filename[idx_dset_info:] 
     return splits_filename_modified
 
 def create_file_paths(params_combination_list, filepath, main_exp_name):
