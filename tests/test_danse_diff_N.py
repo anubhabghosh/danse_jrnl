@@ -90,7 +90,7 @@ def f_lorenz_danse_knet(x, device='cpu'):
 
 def test_lorenz(device='cpu', model_file_saved=None, model_file_saved_knet=None, test_data_file=None, test_logfile=None, evaluation_mode='Full', p=0.5, bias=30):
 
-    _, rnn_type, m, n, T, _, sigma_e2_dB, smnr_dB = parse("{}_danse_opt_{}_m_{:d}_n_{:d}_T_{:d}_N_{:d}_sigmae2_{:f}dB_SMNR_{:f}dB", model_file_saved.split('/')[-2])
+    _, rnn_type, m, n, T, N_training, sigma_e2_dB, smnr_dB = parse("{}_danse_opt_{}_m_{:d}_n_{:d}_T_{:d}_N_{:d}_sigmae2_{:f}dB_SMNR_{:f}dB", model_file_saved.split('/')[-2])
     delta = delta_t # If decimate is True, then set this delta to 1e-5 and run it for long time
     delta_d = 0.02
     J = 5
@@ -142,11 +142,11 @@ def test_lorenz(device='cpu', model_file_saved=None, model_file_saved_knet=None,
     print("*"*100)
     print("*"*100,file=orig_stdout)
     #i_test = np.random.choice(N_test)
-    print("sigma_e2: {}dB, smnr: {}dB".format(sigma_e2_dB_test, smnr_dB_test))
-    print("sigma_e2: {}dB, smnr: {}dB".format(sigma_e2_dB_test, smnr_dB_test), file=orig_stdout)
+    print("sigma_e2: {}dB, smnr: {}dB, N: {}".format(sigma_e2_dB_test, smnr_dB_test, N_training))
+    print("sigma_e2: {}dB, smnr: {}dB, N: {}".format(sigma_e2_dB_test, smnr_dB_test, N_training), file=orig_stdout)
 
-    Y = Y[:2]
-    X = X[:2]
+    #Y = Y[:2]
+    #X = X[:2]
 
     N_test, Ty, dy = Y.shape
     N_test, Tx, dx = X.shape
@@ -242,7 +242,7 @@ def test_lorenz(device='cpu', model_file_saved=None, model_file_saved_knet=None,
         mu_w=lorenz_model.mu_w,
         C_w=lorenz_model.Cw,
         batch_size=1,
-        H=lorenz_model.H,#jacobian(h_fn, torch.randn(lorenz_model.n_states,)).numpy(),
+        H=jacobian(h_fn, torch.randn(lorenz_model.n_states,)).numpy(),
         mu_x0=np.zeros((lorenz_model.n_states,)),
         C_x0=np.eye(lorenz_model.n_states),
         rnn_type=rnn_type,
@@ -262,7 +262,7 @@ def test_lorenz(device='cpu', model_file_saved=None, model_file_saved_knet=None,
                                                                                                 Y=Y,
                                                                                                 device=device)
     time_elapsed_danse = timer() - start_time_danse
-
+    
     print("Testing KalmanNet ...", file=orig_stdout)
     # Initialize the KalmanNet model in PyTorch
     knet_model = KalmanNetNN(
@@ -276,8 +276,7 @@ def test_lorenz(device='cpu', model_file_saved=None, model_file_saved_knet=None,
         return f_lorenz_danse_knet(x, device=device)
         
     def hn(x):
-        #return x
-        return lorenz_model.h_fn(x)
+        return x
     
     knet_model.Build(f=fn, h=hn)
     knet_model.ssModel = lorenz_model
@@ -290,7 +289,7 @@ def test_lorenz(device='cpu', model_file_saved=None, model_file_saved_knet=None,
                                                 device=device)
     
     time_elapsed_knet = timer() - start_time_knet
-
+    
     nmse_ls = nmse_loss(X[:,1:,:], X_LS[:,0:,:])
     nmse_ls_std = nmse_loss_std(X[:,1:,:], X_LS[:,0:,:])
     nmse_ekf = nmse_loss(X[:,1:,:], X_estimated_ekf[:,1:,:])
@@ -339,13 +338,16 @@ def test_lorenz(device='cpu', model_file_saved=None, model_file_saved_knet=None,
     print("knet (fil.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_knet, nmse_knet_std, mse_dB_knet, mse_dB_knet_std, time_elapsed_knet), file=orig_stdout)
 
     # Plot the result
+    nu_dB = 10*np.log10(np.trace(lorenz_model.Ce) / np.trace(lorenz_model.Cw))
+
+    print("nu_dB: {}".format(nu_dB), file=orig_stdout)
 
     plot_state_trajectory(X=torch.squeeze(X[0,1:,:],0).numpy(), 
                         X_est_EKF=torch.squeeze(X_estimated_ekf[0,1:,:],0).numpy(), 
                         X_est_UKF=torch.squeeze(X_estimated_ukf[0,1:,:],0).numpy(), 
                         X_est_DANSE=torch.squeeze(X_estimated_filtered[0],0).numpy(),
                         X_est_KNET=torch.squeeze(X_estimated_filtered_knet[0], 0).numpy(),
-                        savefig=False,
+                        savefig=True,
                         savefig_name="./figs/LorenzModel/{}/3dPlot_sigmae2_{}dB_smnr_{}dB_knet.pdf".format(evaluation_mode, sigma_e2_dB_test, smnr_dB_test))
     
     plot_state_trajectory_axes(X=torch.squeeze(X[0,1:,:],0).numpy(), 
@@ -353,7 +355,7 @@ def test_lorenz(device='cpu', model_file_saved=None, model_file_saved_knet=None,
                                 X_est_UKF=torch.squeeze(X_estimated_ukf[0,1:,:],0).numpy(), 
                                 X_est_DANSE=torch.squeeze(X_estimated_filtered[0],0).numpy(), 
                                 X_est_KNET=torch.squeeze(X_estimated_filtered_knet[0], 0).numpy(),
-                                savefig=False,
+                                savefig=True,
                                 savefig_name="./figs/LorenzModel/{}/AxesWisePlot_sigmae2_{}dB_smnr_{}dB_knet.pdf".format(evaluation_mode, sigma_e2_dB_test, smnr_dB_test))
     
     #plot_state_trajectory_axes(X=torch.squeeze(X,0), X_est_EKF=torch.squeeze(X_estimated_ekf,0), X_est_DANSE=torch.squeeze(X_estimated_filtered,0))
@@ -371,67 +373,67 @@ if __name__ == "__main__":
     T_test = 2000
     N_test = 100
     sigma_e2_dB_test = -10.0
+    smnr_dB_test = 10.0
     device = 'cpu'
     bias = None # By default should be positive, equal to 10.0
     p = None # Keep this fixed at zero for now, equal to 0.0
     mode = 'full'
     if mode == 'low' or mode == 'high':
-        evaluation_mode = 'partial_opt_{}_bias_{}_p_{}'.format(mode, bias, p)
+        evaluation_mode = 'partial_opt_{}_bias_{}_p_{}_SMNR_{}'.format(mode, bias, p, smnr_dB_test)
     else:
         bias = None
         p = None
-        evaluation_mode = 'full_opt_bias_{}_p_{}'.format(None, None)
+        evaluation_mode = 'full_opt_N_bias_{}_p_{}_SMNR_{}'.format(None, None, smnr_dB_test)
 
     os.makedirs('./figs/LorenzModel/{}'.format(evaluation_mode), exist_ok=True)
 
-    smnr_dB_arr = np.array([-10.0,0.0,10.0,20.0,30.0])
+    N_arr = np.array([10, 20, 40, 80, 125, 250, 500])
 
-    nmse_ls_arr = np.zeros((len(smnr_dB_arr,)))
-    nmse_ekf_arr = np.zeros((len(smnr_dB_arr,)))
-    nmse_ukf_arr = np.zeros((len(smnr_dB_arr,)))
-    nmse_danse_arr = np.zeros((len(smnr_dB_arr,)))
-    nmse_knet_arr = np.zeros((len(smnr_dB_arr,)))
-    nmse_ls_std_arr = np.zeros((len(smnr_dB_arr,)))
-    nmse_ekf_std_arr = np.zeros((len(smnr_dB_arr,)))
-    nmse_ukf_std_arr = np.zeros((len(smnr_dB_arr,)))
-    nmse_danse_std_arr = np.zeros((len(smnr_dB_arr,)))
-    nmse_knet_std_arr = np.zeros((len(smnr_dB_arr,)))
-    mse_ls_dB_arr = np.zeros((len(smnr_dB_arr,)))
-    mse_ekf_dB_arr = np.zeros((len(smnr_dB_arr,)))
-    mse_ukf_dB_arr = np.zeros((len(smnr_dB_arr,)))
-    mse_danse_dB_arr = np.zeros((len(smnr_dB_arr,)))
-    mse_knet_dB_arr = np.zeros((len(smnr_dB_arr,)))
-    mse_ls_dB_std_arr = np.zeros((len(smnr_dB_arr,)))
-    mse_ekf_dB_std_arr = np.zeros((len(smnr_dB_arr,)))
-    mse_ukf_dB_std_arr = np.zeros((len(smnr_dB_arr,)))
-    mse_danse_dB_std_arr = np.zeros((len(smnr_dB_arr,)))
-    mse_knet_dB_std_arr = np.zeros((len(smnr_dB_arr,)))
-    t_ekf_arr = np.zeros((len(smnr_dB_arr,)))
-    t_ukf_arr = np.zeros((len(smnr_dB_arr,)))
-    t_danse_arr = np.zeros((len(smnr_dB_arr,)))
-    t_knet_arr = np.zeros((len(smnr_dB_arr,)))
-    snr_arr = np.zeros((len(smnr_dB_arr,)))
+    nmse_ls_arr = np.zeros((len(N_arr,)))
+    nmse_ekf_arr = np.zeros((len(N_arr,)))
+    nmse_ukf_arr = np.zeros((len(N_arr,)))
+    nmse_danse_arr = np.zeros((len(N_arr,)))
+    nmse_knet_arr = np.zeros((len(N_arr,)))
+    nmse_ls_std_arr = np.zeros((len(N_arr,)))
+    nmse_ekf_std_arr = np.zeros((len(N_arr,)))
+    nmse_ukf_std_arr = np.zeros((len(N_arr,)))
+    nmse_danse_std_arr = np.zeros((len(N_arr,)))
+    nmse_knet_std_arr = np.zeros((len(N_arr,)))
+    mse_ls_dB_arr = np.zeros((len(N_arr,)))
+    mse_ekf_dB_arr = np.zeros((len(N_arr,)))
+    mse_ukf_dB_arr = np.zeros((len(N_arr,)))
+    mse_danse_dB_arr = np.zeros((len(N_arr,)))
+    mse_knet_dB_arr = np.zeros((len(N_arr,)))
+    mse_ls_dB_std_arr = np.zeros((len(N_arr,)))
+    mse_ekf_dB_std_arr = np.zeros((len(N_arr,)))
+    mse_ukf_dB_std_arr = np.zeros((len(N_arr,)))
+    mse_danse_dB_std_arr = np.zeros((len(N_arr,)))
+    mse_knet_dB_std_arr = np.zeros((len(N_arr,)))
+    t_ekf_arr = np.zeros((len(N_arr,)))
+    t_ukf_arr = np.zeros((len(N_arr,)))
+    t_danse_arr = np.zeros((len(N_arr,)))
+    t_knet_arr = np.zeros((len(N_arr,)))
 
     model_file_saved_dict = {}
     model_file_saved_dict_knet = {}
 
-    for smnr_dB in smnr_dB_arr:
-        model_file_saved_dict["{}dB".format(smnr_dB)] = glob.glob("./models/*Lorenz*danse_opt*sigmae2_{}dB_smnr_{}dB*/*best*".format(sigma_e2_dB_test, smnr_dB))[-1]
-        model_file_saved_dict_knet["{}dB".format(smnr_dB)] = glob.glob("./models/*Lorenz*KNetUoffline*sigmae2_{}dB_smnr_{}dB*/*best*".format(sigma_e2_dB_test, smnr_dB))[-1]
+    for N_training in N_arr:
+        model_file_saved_dict["{}".format(N_training)] = glob.glob("./models/*Lorenz*danse_opt*N_{}_sigmae2_{}dB_smnr_{}dB*/*best*".format(N_training, sigma_e2_dB_test, smnr_dB_test))[-1]
+        model_file_saved_dict_knet["{}".format(N_training)] = glob.glob("./models/*Lorenz*KNetUoffline*N_{}_sigmae2_{}dB_smnr_{}dB*/*best*".format(N_training, sigma_e2_dB_test, smnr_dB_test))[-1]
 
     test_data_file_dict = {}
 
-    for smnr_dB in smnr_dB_arr:
-        test_data_file_dict["{}dB".format(smnr_dB)] = "./data/synthetic_data/test_trajectories_m_3_n_3_LorenzSSM_data_T_{}_N_{}_sigmae2_{}dB_smnr_{}dB.pkl".format(T_test, N_test, sigma_e2_dB_test, smnr_dB)
+    for N_training in N_arr:
+        test_data_file_dict["{}".format(N_training)] = "./data/synthetic_data/test_trajectories_m_3_n_3_LorenzSSM_data_T_{}_N_{}_sigmae2_{}dB_smnr_{}dB.pkl".format(T_test, N_test, sigma_e2_dB_test, smnr_dB_test)
         
-    test_logfile = "./log/Lorenz_test_{}_T_{}_N_{}_w_knet.log".format(evaluation_mode, T_test, N_test)
-    test_jsonfile = "./log/Lorenz_test_{}_T_{}_N_{}_w_knet.json".format(evaluation_mode, T_test, N_test)
+    test_logfile = "./log/Lorenz_test_{}_T_{}_diff_N_w_knet.log".format(evaluation_mode, T_test)
+    test_jsonfile = "./log/Lorenz_test_{}_T_{}_diff_N_w_knet.json".format(evaluation_mode, T_test)
 
-    for i, smnr_dB in enumerate(smnr_dB_arr):
+    for i, N_training in enumerate(N_arr):
         
-        model_file_saved_i = model_file_saved_dict['{}dB'.format(smnr_dB)]
-        test_data_file_i = test_data_file_dict['{}dB'.format(smnr_dB)]
-        model_file_saved_knet_i = model_file_saved_dict_knet['{}dB'.format(smnr_dB)]
+        model_file_saved_i = model_file_saved_dict['{}'.format(N_training)]
+        test_data_file_i = test_data_file_dict['{}'.format(N_training)]
+        model_file_saved_knet_i = model_file_saved_dict_knet['{}'.format(N_training)]
 
         nmse_ekf_i, nmse_ekf_i_std, nmse_danse_i, nmse_danse_i_std, nmse_knet_i, nmse_knet_std_i, nmse_ukf_i, nmse_ukf_i_std, nmse_ls_i, nmse_ls_i_std, \
             mse_dB_ekf_i, mse_dB_ekf_std_i, mse_dB_danse_i, mse_dB_danse_std_i, mse_dB_knet_i, mse_dB_knet_std_i, mse_dB_ukf_i, mse_dB_ukf_std_i, mse_dB_ls_i, mse_dB_ls_std_i, \
@@ -497,58 +499,59 @@ if __name__ == "__main__":
     test_stats['EKF_time'] = t_ekf_arr
     test_stats['DANSE_time'] = t_danse_arr
     test_stats['KNET_time'] = t_knet_arr
-    test_stats['SMNR'] = smnr_dB_arr
+    test_stats['N_train'] = N_arr
     
     #with open(test_jsonfile, 'w') as f:
     #    f.write(json.dumps(test_stats, cls=NDArrayEncoder, indent=2))
 
     # Plotting the NMSE Curve
+
     plt.rcParams['font.family'] = 'serif'
     plt.figure()
-    plt.errorbar(smnr_dB_arr, nmse_ls_arr, fmt='gp-.', yerr=nmse_ls_std_arr,  linewidth=1.5, label="LS")
-    plt.errorbar(smnr_dB_arr, nmse_ekf_arr, fmt='rd--',  yerr=nmse_ekf_std_arr, linewidth=1.5, label="EKF")
-    plt.errorbar(smnr_dB_arr, nmse_ukf_arr, fmt='ko-',  yerr=nmse_ukf_std_arr, linewidth=1.5, label="UKF")
-    plt.errorbar(smnr_dB_arr, nmse_danse_arr, fmt='b*-', yerr=nmse_danse_std_arr, linewidth=2.0, label="DANSE")
-    plt.errorbar(smnr_dB_arr, nmse_knet_arr, fmt='ys-', yerr=nmse_knet_std_arr,  linewidth=1.0, label="KalmanNet")
-    plt.xlabel('SMNR (in dB)')
+    plt.errorbar(np.log10(N_arr), nmse_ls_arr, fmt='gp-.', yerr=nmse_ls_std_arr,  linewidth=1.5, label="LS")
+    plt.errorbar(np.log10(N_arr), nmse_ekf_arr, fmt='rd--',  yerr=nmse_ekf_std_arr, linewidth=1.5, label="EKF")
+    plt.errorbar(np.log10(N_arr), nmse_ukf_arr, fmt='ko-',  yerr=nmse_ukf_std_arr, linewidth=1.5, label="UKF")
+    plt.errorbar(np.log10(N_arr), nmse_danse_arr, fmt='b*-', yerr=nmse_danse_std_arr, linewidth=2.0, label="DANSE")
+    plt.errorbar(np.log10(N_arr), nmse_knet_arr, fmt='ys-', yerr=nmse_knet_std_arr,  linewidth=1.0, label="KalmanNet")
+    plt.xlabel('$\log_{10} N$')
     plt.ylabel('NMSE (in dB)')
     plt.grid(True)
     plt.legend()
     plt.tight_layout()
     #plt.subplot(212)
-    tikzplotlib.save('./figs/LorenzModel/{}/NMSE_vs_SMNR_Lorenz.tex'.format(evaluation_mode))
-    plt.savefig('./figs/LorenzModel/{}/NMSE_vs_SMNR_Lorenz.pdf'.format(evaluation_mode))
+    tikzplotlib.save('./figs/LorenzModel/{}/NMSE_vs_N_Lorenz.tex'.format(evaluation_mode))
+    plt.savefig('./figs/LorenzModel/{}/NMSE_vs_N_Lorenz.pdf'.format(evaluation_mode))
 
     # Plotting the Time-elapsed Curve
     plt.figure()
     #plt.subplot(211)
-    plt.plot(smnr_dB_arr, t_ekf_arr, 'rd--', linewidth=1.5, label="EKF")
-    plt.plot(smnr_dB_arr, t_ukf_arr, 'ks--', linewidth=1.5, label="UKF")
-    plt.plot(smnr_dB_arr, t_danse_arr, 'bo-', linewidth=2.0, label="DANSE")
-    plt.plot(smnr_dB_arr, t_knet_arr, 'ys-', linewidth=1.0, label="KalmanNet")
-    plt.xlabel('SMNR (in dB)')
+    plt.plot(np.log10(N_arr), t_ekf_arr, 'rd--', linewidth=1.5, label="EKF")
+    plt.plot(np.log10(N_arr), t_ukf_arr, 'ks--', linewidth=1.5, label="UKF")
+    plt.plot(np.log10(N_arr), t_danse_arr, 'bo-', linewidth=2.0, label="DANSE")
+    plt.plot(np.log10(N_arr), t_knet_arr, 'ys-', linewidth=1.0, label="KalmanNet")
+    plt.xlabel('$\log_{10} N$')
     plt.ylabel('Inference time (in s)')
     plt.grid(True)
     plt.legend()
     plt.tight_layout()
-    tikzplotlib.save('./figs/LorenzModel/{}/InferTime_vs_SMNR_Lorenz_w_knet.tex'.format(evaluation_mode))
-    plt.savefig('./figs/LorenzModel/{}/InferTime_vs_SMNR_Lorenz_w_knet.pdf'.format(evaluation_mode))
+    tikzplotlib.save('./figs/LorenzModel/{}/InferTime_vs_N_Lorenz_w_knet.tex'.format(evaluation_mode))
+    plt.savefig('./figs/LorenzModel/{}/InferTime_vs_N_Lorenz_w_knet.pdf'.format(evaluation_mode))
 
     # Plotting the MSE Curve
     plt.figure()
-    plt.errorbar(smnr_dB_arr, mse_ls_dB_arr, fmt='gp-.', yerr=mse_ls_dB_std_arr,  linewidth=1.5, label="LS")
-    plt.errorbar(smnr_dB_arr, mse_ekf_dB_arr, fmt='rd--',  yerr=mse_ekf_dB_std_arr, linewidth=1.5, label="EKF")
-    plt.errorbar(smnr_dB_arr, mse_ukf_dB_arr, fmt='ko-',  yerr=mse_ukf_dB_std_arr, linewidth=1.5, label="UKF")
-    plt.errorbar(smnr_dB_arr, mse_danse_dB_arr, fmt='b*-', yerr=mse_danse_dB_std_arr, linewidth=2.0, label="DANSE")
-    plt.errorbar(smnr_dB_arr, mse_knet_dB_arr, fmt='ys-', yerr=mse_knet_dB_std_arr,  linewidth=1.0, label="KalmanNet")
-    plt.xlabel('SMNR (in dB)')
+    plt.errorbar(np.log10(N_arr), mse_ls_dB_arr, fmt='gp-.', yerr=mse_ls_dB_std_arr,  linewidth=1.5, label="LS")
+    plt.errorbar(np.log10(N_arr), mse_ekf_dB_arr, fmt='rd--',  yerr=mse_ekf_dB_std_arr, linewidth=1.5, label="EKF")
+    plt.errorbar(np.log10(N_arr), mse_ukf_dB_arr, fmt='ko-',  yerr=mse_ukf_dB_std_arr, linewidth=1.5, label="UKF")
+    plt.errorbar(np.log10(N_arr), mse_danse_dB_arr, fmt='b*-', yerr=mse_danse_dB_std_arr, linewidth=2.0, label="DANSE")
+    plt.errorbar(np.log10(N_arr), mse_knet_dB_arr, fmt='ys-', yerr=mse_knet_dB_std_arr,  linewidth=1.0, label="KalmanNet")
+    plt.xlabel('$\log_{10} N$')
     plt.ylabel('MSE (in dB)')
     plt.grid(True)
     plt.legend()
     plt.tight_layout()
     #plt.subplot(212)
-    tikzplotlib.save('./figs/LorenzModel/{}/MSE_vs_SMNR_Lorenz_w_knet.tex'.format(evaluation_mode))
-    plt.savefig('./figs/LorenzModel/{}/MSE_vs_SMNR_Lorenz_w_knet.pdf'.format(evaluation_mode))
+    tikzplotlib.save('./figs/LorenzModel/{}/MSE_vs_N_Lorenz_w_knet.tex'.format(evaluation_mode))
+    plt.savefig('./figs/LorenzModel/{}/MSE_vs_N_Lorenz_w_knet.pdf'.format(evaluation_mode))
     
     #plt.show()
 

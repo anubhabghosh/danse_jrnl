@@ -50,12 +50,13 @@ def plot_state_trajectory(X, X_est_KF=None, X_est_EKF=None, X_est_UKF=None, X_es
         ax.set_xlabel('$X_1$')
         ax.set_ylabel('$X_2$')
         ax.set_zlabel('$X_3$')
-        handles, labels = ax.get_legend_handles_labels()
-        order=None
-        if order is None:
-            order=range(len(handles))
-        ax.legend([handles[idx] for idx in order], [labels[idx] for idx in order],ncol=5,fontsize=10)
+        #handles, labels = ax.get_legend_handles_labels()
+        #order=None
+        #if order is None:
+        #    order=range(len(handles))
+        #ax.legend([handles[idx] for idx in order], [labels[idx] for idx in order],ncol=5,fontsize=10)
         #ax.get_legend().set_bbox_to_anchor(bbox=(1,0))
+        plt.legend()
         plt.tight_layout()
 
     plt.tight_layout()
@@ -146,7 +147,7 @@ def plot_state_trajectory_axes(X, X_est_KF=None, X_est_EKF=None, X_est_UKF=None,
         lw=1.3
         plt.rcParams['font.size'] = 16
         #plt.rcParams['font.family']='serif'
-        fig, ax = plt.subplots(figsize=(9,5))
+        fig, ax = plt.subplots(figsize=(12,7))
         #plt.subplot(311)
         if not X_est_UKF is None:
             ax.plot(X_est_UKF[T_start:T_end,idim], 'x-',ms=5,color="orange",label='$\\hat{\mathbf{x}}_{UKF}$',lw=lw)
@@ -163,11 +164,12 @@ def plot_state_trajectory_axes(X, X_est_KF=None, X_est_EKF=None, X_est_UKF=None,
         ax.set_ylabel('$x_{}$'.format(idim+1))
         ax.set_xlabel('$t$')
         #plt.legend()
-        handles, labels = ax.get_legend_handles_labels()
-        order=None
-        if order is None:
-            order=range(len(handles))
-        ax.legend([handles[idx] for idx in order], [labels[idx] for idx in order],ncol=5,loc=(-0.02,1.01),fontsize=14)
+        #handles, labels = ax.get_legend_handles_labels()
+        #order=None
+        #if order is None:
+        #    order=range(len(handles))
+        #ax.legend([handles[idx] for idx in order], [labels[idx] for idx in order],ncol=5,loc=(-0.02,1.01),fontsize=14)
+        plt.legend()
         plt.tight_layout()
         
         '''
@@ -202,7 +204,7 @@ def plot_state_trajectory_axes(X, X_est_KF=None, X_est_EKF=None, X_est_UKF=None,
     plt.tight_layout()
     if savefig:
         fig.savefig(savefig_name,dpi=300,bbox_inches="tight")
-    #    tikzplotlib.save(os.path.splitext(savefig_name)[0] + ".tex")
+        tikzplotlib.save(os.path.splitext(savefig_name)[0] + ".tex")
     #plt.show()
     return None
 

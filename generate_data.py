@@ -5,12 +5,13 @@
 # Importing the necessary libraries
 import numpy as np
 import scipy
+from scipy.linalg import block_diag
 import torch
 from torch import distributions
 #import matplotlib.pyplot as plt
 from scipy.linalg import expm
 from utils.utils import save_dataset
-from parameters import get_parameters
+from parameters_opt import get_parameters
 from ssm_models import LinearSSM, LorenzSSM
 import argparse
 from parse import parse
@@ -37,6 +38,36 @@ def initialize_model(type_, parameters):
             delta=parameters["delta"],
             delta_d=parameters["delta_d"],
             alpha=parameters["alpha"],
+            decimate=parameters["decimate"],
+            mu_e=parameters["mu_e"],
+            mu_w=parameters["mu_w"]
+            )
+    
+    elif type_ == "LorenzSSMn2":
+
+        model = LorenzSSM(
+            n_states=parameters["n_states"],
+            n_obs=parameters["n_obs"],
+            J=parameters["J"],
+            delta=parameters["delta"],
+            delta_d=parameters["delta_d"],
+            alpha=parameters["alpha"],
+            H=block_diag(np.eye(2), np.zeros((1,1))),
+            decimate=parameters["decimate"],
+            mu_e=parameters["mu_e"],
+            mu_w=parameters["mu_w"]
+            )
+    
+    elif type_ == "LorenzSSMn1":
+
+        model = LorenzSSM(
+            n_states=parameters["n_states"],
+            n_obs=parameters["n_obs"],
+            J=parameters["J"],
+            delta=parameters["delta"],
+            delta_d=parameters["delta_d"],
+            alpha=parameters["alpha"],
+            H=block_diag(np.eye(1), np.zeros((2,2))),
             decimate=parameters["decimate"],
             mu_e=parameters["mu_e"],
             mu_w=parameters["mu_w"]

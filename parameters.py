@@ -7,6 +7,8 @@ import numpy as np
 import math
 import torch
 from utils.utils import dB_to_lin, partial_corrupt
+import scipy    
+from scipy.linalg import block_diag
 from ssm_models import LinearSSM
 import torch
 from torch.autograd.functional import jacobian
@@ -130,9 +132,10 @@ def get_H_DANSE(type_, n_states, n_obs):
         return LinearSSM(n_states=n_states, n_obs=n_obs).H
     elif type_ == "LorenzSSM":
         return np.eye(n_obs, n_states)
+    elif type_ == "LorenzSSMn{}".format(n_obs):
+        return block_diag(np.eye(n_obs), np.zeros((int(3-n_obs),int(3-n_obs))))
     elif type_ == "SinusoidalSSM":
         return jacobian(h_sinssm_fn, torch.randn(n_states,)).numpy()
-
 
 def get_parameters(n_states=5, n_obs=5, device='cpu'):
 
@@ -160,6 +163,19 @@ def get_parameters(n_states=5, n_obs=5, device='cpu'):
             "mu_w":np.zeros((n_obs,)),
             "use_Taylor":True
         },
+        "LorenzSSMn{}".format(n_obs):{
+            "n_states":n_states,
+            "n_obs":n_obs,
+            "J":J_gen,
+            "delta":delta_t,
+            "alpha":0.0, # alpha = 0.0, implies a Lorenz model
+            "H":block_diag(np.eye(n_obs), np.zeros((int(3-n_obs),int(3-n_obs)))), # By default, H is initialized to an identity matrix
+            "delta_d":0.002,
+            "decimate":False,
+            "mu_e":np.zeros((n_states,)),
+            "mu_w":np.zeros((n_obs,)),
+            "use_Taylor":True
+        }
     }
 
     estimators_dict={

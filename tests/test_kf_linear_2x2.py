@@ -8,6 +8,7 @@ import torch
 from torch.utils.data import DataLoader, Dataset
 from torch.autograd import Variable
 import sys
+import tikzplotlib
 import os
 import matplotlib.pyplot as plt
 
@@ -18,7 +19,8 @@ from utils.plot_functions import *
 from utils.utils import generate_normal, dB_to_lin, lin_to_dB, \
     mse_loss, nmse_loss, nmse_loss_std, mse_loss_dB, mse_loss_dB_std, \
         load_saved_dataset, save_dataset, NDArrayEncoder
-from parameters import get_parameters
+#from parameters import get_parameters
+from parameters_opt import get_parameters
 from generate_data import LinearSSM
 from src.kf import KF
 from src.danse import DANSE, push_model
@@ -82,7 +84,7 @@ def DataLoader(fileName):
 
 def test_linear(device='cpu', model_file_saved=None, model_file_saved_knet=None, test_data_file=None, test_logfile=None, evaluation_mode=None):
 
-    _, rnn_type, m, n, T, _, sigma_e2_dB, smnr_dB = parse("{}_danse_{}_m_{:d}_n_{:d}_T_{:d}_N_{:d}_sigmae2_{:f}dB_SMNR_{:f}dB", model_file_saved.split('/')[-2])
+    _, rnn_type, m, n, T, _, sigma_e2_dB, smnr_dB = parse("{}_danse_opt_{}_m_{:d}_n_{:d}_T_{:d}_N_{:d}_sigmae2_{:f}dB_SMNR_{:f}dB", model_file_saved.split('/')[-2])
     
     orig_stdout = sys.stdout
     f_tmp = open(test_logfile, 'a')
@@ -289,9 +291,11 @@ if __name__ == "__main__":
     N_test = 100
     sigma_e2_dB_test = -10.0
     device = 'cpu'
-    evaluation_mode = 'full'
+    evaluation_mode = 'full_opt'
     smnr_dB_arr = np.array([-10.0,0.0,10.0,20.0,30.0])
     
+    os.makedirs('./figs/LinearModel/{}'.format(evaluation_mode), exist_ok=True)
+
     # Creating arrays for storing the results for post-processing and analysis
     nmse_ls_arr = np.zeros((len(smnr_dB_arr,)))
     nmse_kf_arr = np.zeros((len(smnr_dB_arr,)))
@@ -313,11 +317,11 @@ if __name__ == "__main__":
     t_danse_arr = np.zeros((len(smnr_dB_arr,)))
     t_knet_arr = np.zeros((len(smnr_dB_arr,)))
 
-    model_file_saved_dict = {}
+    model_file_saved_dict_danse = {}
     model_file_saved_dict_knet = {}
 
     for smnr_dB in smnr_dB_arr:
-        model_file_saved_dict["{}dB".format(smnr_dB)] = glob.glob("./models/*Linear*danse*sigmae2_{}dB_smnr_{}dB*/*best*".format(sigma_e2_dB_test, smnr_dB))[-1]
+        model_file_saved_dict_danse["{}dB".format(smnr_dB)] = glob.glob("./models/*Linear*danse_opt*sigmae2_{}dB_smnr_{}dB*/*best*".format(sigma_e2_dB_test, smnr_dB))[-1]
         model_file_saved_dict_knet["{}dB".format(smnr_dB)] = glob.glob("./models/*Linear*KNetUoffline*sigmae2_{}dB_smnr_{}dB*/*best*".format(sigma_e2_dB_test, smnr_dB))[-1]
 
     test_data_file_dict = {}
@@ -330,14 +334,14 @@ if __name__ == "__main__":
 
     for i, smnr_dB in enumerate(smnr_dB_arr):
         
-        model_file_saved_i = model_file_saved_dict['{}dB'.format(smnr_dB)]
+        model_file_saved_danse_i = model_file_saved_dict_danse['{}dB'.format(smnr_dB)]
         test_data_file_i = test_data_file_dict['{}dB'.format(smnr_dB)]
         model_file_saved_knet_i = model_file_saved_dict_knet['{}dB'.format(smnr_dB)]
 
         nmse_kf_i, nmse_kf_std_i, nmse_danse_i, nmse_danse_std_i, nmse_knet_i, nmse_knet_std_i, nmse_ls_i, nmse_ls_std_i, \
             mse_dB_kf_i, mse_dB_kf_std_i, mse_dB_danse_i, mse_dB_danse_std_i, mse_dB_knet_i, mse_dB_knet_std_i, mse_dB_ls_i, mse_dB_ls_std_i, \
             time_elapsed_kf_i, time_elapsed_danse_i, time_elapsed_knet_i, smnr_i = test_linear(device=device, 
-            model_file_saved=model_file_saved_i, model_file_saved_knet=model_file_saved_knet_i, test_data_file=test_data_file_i, test_logfile=test_logfile, evaluation_mode=evaluation_mode)
+            model_file_saved=model_file_saved_danse_i, model_file_saved_knet=model_file_saved_knet_i, test_data_file=test_data_file_i, test_logfile=test_logfile, evaluation_mode=evaluation_mode)
         
         # Store the NMSE values and std devs of the NMSE values
         nmse_ls_arr[i] = nmse_ls_i.numpy().item()
@@ -387,42 +391,46 @@ if __name__ == "__main__":
     test_stats['KNET_time'] = t_knet_arr
     test_stats['SMNR'] = smnr_dB_arr
     
-    with open(test_jsonfile, 'w') as f:
-        f.write(json.dumps(test_stats, cls=NDArrayEncoder, indent=2))
+    #with open(test_jsonfile, 'w') as f:
+    #    f.write(json.dumps(test_stats, cls=NDArrayEncoder, indent=2))
 
     plt.rcParams['font.family'] = 'serif'
+    plt.rcParams['font.size'] = 14
     # Plotting figures for later use
     plt.figure()
-    plt.plot(smnr_dB_arr, nmse_ls_arr, 'gp--', linewidth=1.5, label="LS")
-    plt.plot(smnr_dB_arr, nmse_kf_arr, 'rd--', linewidth=1.5, label="KF")
-    plt.plot(smnr_dB_arr, nmse_danse_arr, 'bo-', linewidth=2.0, label="DANSE")
-    plt.plot(smnr_dB_arr, nmse_knet_arr, 'ys-', linewidth=1.0, label="KalmanNet")
+    plt.errorbar(smnr_dB_arr, nmse_ls_arr, fmt='gp-.', yerr=nmse_ls_std_arr,  linewidth=1.5, label="LS")
+    plt.errorbar(smnr_dB_arr, nmse_kf_arr, fmt='rd--',  yerr=nmse_kf_std_arr, linewidth=1.5, label="KF")
+    plt.errorbar(smnr_dB_arr, nmse_danse_arr, fmt='b*-', yerr=nmse_danse_std_arr, linewidth=2.0, label="DANSE")
+    plt.errorbar(smnr_dB_arr, nmse_knet_arr, fmt='ys-', yerr=nmse_knet_std_arr,  linewidth=1.0, label="KalmanNet")
     plt.xlabel('SMNR (in dB)')
     plt.ylabel('NMSE (in dB)')
     plt.grid(True)
     plt.legend()
     plt.savefig('./figs/LinearModel/{}/NMSE_vs_SMNR_Linear_2x2.pdf'.format(evaluation_mode))
+    tikzplotlib.save('./figs/LinearModel/{}/NMSE_vs_SMNR_Linear_2x2.tex'.format(evaluation_mode))
     
     plt.figure()
-    plt.plot(smnr_dB_arr, mse_ls_dB_arr, 'gp--', linewidth=1.5, label="LS")
-    plt.plot(smnr_dB_arr, mse_kf_dB_arr, 'rd--', linewidth=1.5, label="KF")
-    plt.plot(smnr_dB_arr, mse_danse_dB_arr, 'bo-', linewidth=2.0, label="DANSE")
-    plt.plot(smnr_dB_arr, mse_knet_dB_arr, 'ys-', linewidth=1.0, label="KalmanNet")
+    plt.errorbar(smnr_dB_arr, mse_ls_dB_arr, fmt='gp-.', yerr=mse_ls_dB_std_arr, linewidth=1.5, label="LS")
+    plt.errorbar(smnr_dB_arr, mse_kf_dB_arr, fmt='rd--',  yerr=mse_kf_dB_std_arr, linewidth=1.5, label="KF")
+    plt.errorbar(smnr_dB_arr, mse_danse_dB_arr, fmt='b*-', yerr=mse_danse_dB_std_arr, linewidth=2.0, label="DANSE")
+    plt.errorbar(smnr_dB_arr, mse_knet_dB_arr, fmt='ys-', yerr=mse_knet_dB_std_arr, linewidth=1.0, label="KalmanNet")
     plt.xlabel('SMNR (in dB)')
     plt.ylabel('MSE (in dB)')
     plt.grid(True)
     plt.legend()
     plt.savefig('./figs/LinearModel/{}/MSE_vs_SMNR_Linear_2x2.pdf'.format(evaluation_mode))
+    tikzplotlib.save('./figs/LinearModel/{}/MSE_vs_SMNR_Linear_2x2.tex'.format(evaluation_mode))
 
     #plt.subplot(212)
     plt.figure()
-    plt.plot(smnr_dB_arr, t_kf_arr, 'rd--', linewidth=1.5, label="KF")
-    plt.plot(smnr_dB_arr, t_danse_arr, 'bo-', linewidth=2.0, label="DANSE")
+    plt.plot(smnr_dB_arr, t_kf_arr, 'rd--',  linewidth=1.5, label="KF")
+    plt.plot(smnr_dB_arr, t_danse_arr, 'b*-', linewidth=2.0, label="DANSE")
     plt.plot(smnr_dB_arr, t_knet_arr, 'ys-', linewidth=1.0, label="KalmanNet")
     plt.xlabel('SMNR (in dB)')
     plt.ylabel('Inference time (in s)')
     plt.grid(True)
     plt.legend()
     plt.savefig('./figs/LinearModel/{}/InferTime_vs_SMNR_Linear_2x2.pdf'.format(evaluation_mode))
+    tikzplotlib.save('./figs/LinearModel/{}/InferTime_vs_SMNR_Linear_2x2.tex'.format(evaluation_mode))
     
     #plt.show()
