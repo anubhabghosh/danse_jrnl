@@ -133,7 +133,7 @@ def get_H_DANSE(type_, n_states, n_obs):
     elif type_ == "LorenzSSM":
         return np.eye(n_obs, n_states)
     elif type_ == "LorenzSSMn2":
-        return block_diag(np.zeros((1,1)), np.eye(2))
+        return block_diag(np.eye(2), np.zeros((1,1)))
     elif type_ == "LorenzSSMn1":
         return block_diag(np.zeros((2,2)), np.eye(1))
     elif type_ == "SinusoidalSSM":
@@ -171,7 +171,7 @@ def get_parameters(n_states=5, n_obs=5, device='cpu'):
             "J":J_gen,
             "delta":delta_t,
             "alpha":0.0, # alpha = 0.0, implies a Lorenz model
-            "H":block_diag(np.zeros((1,1)), np.eye(2)), # By default, H is initialized to an identity matrix
+            "H":block_diag(np.eye(2), np.zeros((1,1))), # By default, H is initialized to an identity matrix
             "delta_d":0.002,
             "decimate":False,
             "mu_e":np.zeros((n_states,)),
