@@ -113,8 +113,11 @@ class KalmanNetNN(nn.Module):
         #self.state_process_prior_0 = self.f_k(self.state_process_posterior_0) # torch.matmul(self.F,self.state_process_posterior_0)
 
         # Compute the 1-st moment of y based on model knowledge and without noise
-        self.obs_process_0 = torch.zeros_like(self.state_process_prior_0).type(torch.FloatTensor).to(self.device)
+        #print(self.state_process_prior_0.shape, self.obs_process_0.shape)
+        self.obs_process_0 = torch.zeros(self.n_obs, self.state_process_prior_0.shape[1]).type(torch.FloatTensor).to(self.device)
+        #print(self.state_process_prior_0.shape, self.obs_process_0.shape)
         for i in range(self.state_process_posterior_0.shape[1]):
+            #print(self.h_k(self.state_process_prior_0[:,i].reshape((-1,1))).view(-1,).shape)
             self.obs_process_0[:, i] = self.h_k(self.state_process_prior_0[:,i].reshape((-1,1))).view(-1,)
         #self.obs_process_0 = self.h_k(self.state_process_posterior_0) # torch.matmul(self.H, self.state_process_prior_0)
 
@@ -125,7 +128,7 @@ class KalmanNetNN(nn.Module):
             self.m1x_prior[:,i] = self.f_k(self.m1x_posterior[:,i].reshape((-1,1))).view(-1,) # torch.matmul(self.F, self.m1x_posterior)
 
         # Predict the 1-st moment of y
-        self.m1y = torch.zeros_like(self.m1x_prior).type(torch.FloatTensor).to(self.device)
+        self.m1y = torch.zeros(self.n_obs, self.m1x_prior.shape[1]).type(torch.FloatTensor).to(self.device)
         for i in range(self.m1y.shape[1]):
             self.m1y[:,i] = self.h_k(self.m1x_prior[:,i].reshape((-1,1))).view(-1,) # torch.matmul(self.H, self.m1x_prior)
 

@@ -52,7 +52,7 @@ def initialize_model(type_, parameters):
             delta=parameters["delta"],
             delta_d=parameters["delta_d"],
             alpha=parameters["alpha"],
-            H=block_diag(np.eye(2), np.zeros((1,1))),
+            H=parameters["H"],
             decimate=parameters["decimate"],
             mu_e=parameters["mu_e"],
             mu_w=parameters["mu_w"]
@@ -67,7 +67,7 @@ def initialize_model(type_, parameters):
             delta=parameters["delta"],
             delta_d=parameters["delta_d"],
             alpha=parameters["alpha"],
-            H=block_diag(np.eye(1), np.zeros((2,2))),
+            H=parameters["H"],
             decimate=parameters["decimate"],
             mu_e=parameters["mu_e"],
             mu_w=parameters["mu_w"]

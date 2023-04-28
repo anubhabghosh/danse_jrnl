@@ -209,7 +209,7 @@ def main():
     elif ssm_type == "LorenzSSMn2" or "LorenzSSMn1":
 
         ssm_model = LorenzSSM(n_states=n_states,
-                            n_obs=n_states,
+                            n_obs=n_obs,
                             J=J_gen, 
                             delta=delta_t,
                             delta_d=delta_t,

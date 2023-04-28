@@ -82,7 +82,8 @@ def main():
     ssm_model = Z_XY["ssm_model"]
     estimator_options['C_w'] = ssm_model.Cw # Get the covariance matrix of the measurement noise from the model information
     estimator_options['H'] = get_H_DANSE(type_=dataset_type, n_states=n_states, n_obs=n_obs) # Get the sensing matrix from the model info
-
+    
+    print(estimator_options['H'])
     if not os.path.isfile(splits_file):
         tr_indices, val_indices, test_indices = obtain_tr_val_test_idx(dataset=Z_XY_dataset,
                                                                     tr_to_test_split=0.9,

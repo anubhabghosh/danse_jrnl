@@ -99,7 +99,7 @@ class LinearSSM(object):
         #print("sigma_w2: {}".format(self.sigma_w2))
         w_k_arr = np.random.multivariate_normal(self.mu_w, self.Cw, size=(T,))
 
-        
+        #print(self.H.shape, x_arr.shape, y_arr.shape)        
         # Generate the sequence iteratively
         for k in range(T):
             # For each instant k, sample e_k, w_k
@@ -211,6 +211,7 @@ class LorenzSSM(object):
         
         #print("smnr: {}, signal power: {}, sigma_w: {}".format(smnr_dB, signal_p, self.sigma_w2))
         
+        #print(self.H.shape, x_lorenz.shape, y_lorenz.shape)
         for t in range(0,T):
             y_lorenz[t] = self.h_fn(x_lorenz[t]) + w_k_arr[t]
         
