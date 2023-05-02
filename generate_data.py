@@ -43,7 +43,7 @@ def initialize_model(type_, parameters):
             mu_w=parameters["mu_w"]
             )
     
-    elif type_ == "LorenzSSMn2" or "LorenzSSMn1" or "LorenzSSMrn2":
+    elif type_ == "LorenzSSMn2" or "LorenzSSMn1" or "LorenzSSMrn2" or "LorenzSSMrn3":
 
         model = LorenzSSM(
             n_states=parameters["n_states"],
