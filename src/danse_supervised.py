@@ -90,11 +90,16 @@ class DANSE_Supervised(nn.Module):
         self.K_t = (self.L_xt_yt_prev @ (self.H.T @ Re_t_inv))
         self.mu_xt_yt_current = self.mu_xt_yt_prev + torch.einsum('ntij,ntj->nti',self.K_t,(Yi_batch - torch.einsum('ij,ntj->nti',self.H,self.mu_xt_yt_prev)))
         #self.L_xt_yt_current = self.L_xt_yt_prev - self.K_t @ (self.H @ self.L_xt_yt_prev @ torch.transpose(self.H, 0, 1) + self.C_w) @ self.K_t.T
-        self.L_xt_yt_current = self.L_xt_yt_prev - torch.einsum('ntij,ntkl->ntik',
-        torch.einsum('ntij,ntjk->ntik',
-        self.K_t, self.H @ self.L_xt_yt_prev @ torch.transpose(self.H, 0, 1) + self.C_w), 
-        self.K_t)
-
+        self.L_xt_yt_current = self.L_xt_yt_prev - (torch.einsum('ntij,ntjk->ntik',
+                            self.K_t, self.H @ self.L_xt_yt_prev @ torch.transpose(self.H, 0, 1) + self.C_w) @ torch.transpose(self.K_t, 2, 3))
+        #print('Likelihood cov:', (self.H @ self.L_xt_yt_prev @ torch.transpose(self.H, 0, 1) + self.C_w).mean((0,1)))
+        #print(torch.einsum('ntij,ntjk->ntik',
+        #                self.K_t, self.H @ self.L_xt_yt_prev @ torch.transpose(self.H, 0, 1) + self.C_w).shape)
+        #print(self.K_t.shape)
+        #print('Correction cov:',
+        #    (torch.einsum('ntij,ntjk->ntik',
+        #    self.K_t, self.H @ self.L_xt_yt_prev @ torch.transpose(self.H, 0, 1) + self.C_w) @ torch.transpose(self.K_t, 2, 3)).mean((0,1)))
+                                        
         return self.mu_xt_yt_current, self.L_xt_yt_current
     '''
     def compute_logprob_batch(self, Yi_batch):
@@ -144,6 +149,10 @@ class DANSE_Supervised(nn.Module):
         mu_batch, vars_batch = self.rnn.forward(x=Yi_batch)
         mu_xt_yt_prev, L_xt_yt_prev = self.compute_prior_mean_vars(mu_xt_yt_prev=mu_batch, L_xt_yt_prev=vars_batch)
         mu_xt_yt_current_test, L_xt_yt_current_test = self.compute_posterior_mean_vars(Yi_batch=Yi_batch)
+        print("Prior", self.L_xt_yt_prev.mean((0,1)))
+        
+        print("Posterior", self.L_xt_yt_current.mean((0,1)))
+        #print(torch.det(self.L_xt_yt_current).sum(1))
         logprob_batch = self.compute_logpdf_Gaussian(X=Xi_batch)
         log_pXT_YT_batch_avg = logprob_batch.mean(0)
 
@@ -231,7 +240,7 @@ def train_danse_supervised(model, options, train_loader, val_loader, nepochs, lo
                 tr_Y_batch, tr_X_batch = data
                 optimizer.zero_grad()
                 Y_train_batch = Variable(tr_Y_batch, requires_grad=False).type(torch.FloatTensor).to(device)
-                X_train_batch = Variable(tr_X_batch, requires_grad=False).type(torch.FloatTensor).to(device)
+                X_train_batch = Variable(tr_X_batch[:, 1:, :], requires_grad=False).type(torch.FloatTensor).to(device)
                 log_pXY_train_batch = -model.forward(Y_train_batch, X_train_batch)
                 log_pXY_train_batch.backward()
                 optimizer.step()
@@ -257,7 +266,7 @@ def train_danse_supervised(model, options, train_loader, val_loader, nepochs, lo
                     
                     val_Y_batch, val_X_batch = data
                     Y_val_batch = Variable(val_Y_batch, requires_grad=False).type(torch.FloatTensor).to(device)
-                    X_val_batch = Variable(val_X_batch, requires_grad=False).type(torch.FloatTensor).to(device)
+                    X_val_batch = Variable(val_X_batch[:, 1:, :], requires_grad=False).type(torch.FloatTensor).to(device)
                     val_mu_X_predictions_batch, val_var_X_predictions_batch, val_mu_X_filtered_batch, val_var_X_filtered_batch = model.compute_predictions(Y_val_batch)
                     log_pY_val_batch = -model.forward(Y_val_batch, X_val_batch)
                     val_loss_epoch_sum += log_pY_val_batch.item()
