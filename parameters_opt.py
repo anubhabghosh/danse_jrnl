@@ -283,6 +283,56 @@ def get_parameters(n_states=5, n_obs=5, device='cpu'):
                 }
             }
         },
+        "danse_supervised":{
+            "n_states":n_states,
+            "n_obs":n_obs,
+            "mu_w":np.zeros((n_obs,)),
+            "C_w":None,
+            "H":None,
+            "mu_x0":np.zeros((n_states,)),
+            "C_x0":np.eye(n_states,n_states),
+            "batch_size":64,
+            "rnn_type":"gru",
+            "device":device,
+            "rnn_params_dict":{
+                "gru":{
+                    "model_type":"gru",
+                    "input_size":n_obs,
+                    "output_size":n_states,
+                    "n_hidden":30,
+                    "n_layers":1,
+                    "lr":5e-3,
+                    "num_epochs":2000,
+                    "min_delta":5e-2,
+                    "n_hidden_dense":32,
+                    "device":device
+                },
+                "rnn":{
+                    "model_type":"gru",
+                    "input_size":n_obs,
+                    "output_size":n_states,
+                    "n_hidden":40,
+                    "n_layers":2,
+                    "lr":1e-3,
+                    "num_epochs":300,
+                    "min_delta":1e-3,
+                    "n_hidden_dense":32,
+                    "device":device
+                },
+                "lstm":{
+                    "model_type":"lstm",
+                    "input_size":n_obs,
+                    "output_size":n_states,
+                    "n_hidden":40,
+                    "n_layers":2,
+                    "lr":1e-3,
+                    "num_epochs":300,
+                    "min_delta":1e-3,
+                    "n_hidden_dense":32,
+                    "device":device
+                }
+            }
+        },
         # Parameters of the Model-based filters - KF, EKF, UKF
         "KF":{
             "n_states":n_states,

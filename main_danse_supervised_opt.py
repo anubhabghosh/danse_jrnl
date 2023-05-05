@@ -66,8 +66,8 @@ def main():
                                             device=device
                                         )
 
-    batch_size = est_parameters_dict["danse"]["batch_size"] # Set the batch size
-    estimator_options = est_parameters_dict["danse"] # Get the options for the estimator
+    batch_size = est_parameters_dict["danse_supervised"]["batch_size"] # Set the batch size
+    estimator_options = est_parameters_dict["danse_supervised"] # Get the options for the estimator
 
     if not os.path.isfile(datafile):
         
