@@ -383,7 +383,7 @@ if __name__ == "__main__":
     else:
         bias = None
         p = None
-        evaluation_mode = 'full_opt_N_bias_{}_p_{}_SMNR_{}'.format(None, None, smnr_dB_test)
+        evaluation_mode = 'full_opt_N_bias_{}_p_{}_SMNR_{}_MC2'.format(None, None, smnr_dB_test)
 
     os.makedirs('./figs/LorenzModel/{}'.format(evaluation_mode), exist_ok=True)
 
@@ -418,14 +418,16 @@ if __name__ == "__main__":
     model_file_saved_dict_knet = {}
 
     for N_training in N_arr:
-        model_file_saved_dict["{}".format(N_training)] = glob.glob("./models/*Lorenz*danse_opt*N_{}_sigmae2_{}dB_smnr_{}dB*/*best*".format(N_training, sigma_e2_dB_test, smnr_dB_test))[-1]
-        model_file_saved_dict_knet["{}".format(N_training)] = glob.glob("./models/*Lorenz*KNetUoffline*N_{}_sigmae2_{}dB_smnr_{}dB*/*best*".format(N_training, sigma_e2_dB_test, smnr_dB_test))[-1]
+        model_file_saved_dict["{}".format(N_training)] = glob.glob("./models/*Lorenz*danse_opt_*_n_3_T_1000_N_{}_sigmae2_{}dB_smnr_{}dB*/*best*".format(N_training, sigma_e2_dB_test, smnr_dB_test))[-1]
+        model_file_saved_dict_knet["{}".format(N_training)] = glob.glob("./models/*Lorenz*KNetUoffline_*_n_3_T_100_N_{}_sigmae2_{}dB_smnr_{}dB*/*best*".format(N_training, sigma_e2_dB_test, smnr_dB_test))[-1]
 
     test_data_file_dict = {}
 
     for N_training in N_arr:
         test_data_file_dict["{}".format(N_training)] = "./data/synthetic_data/test_trajectories_m_3_n_3_LorenzSSM_data_T_{}_N_{}_sigmae2_{}dB_smnr_{}dB.pkl".format(T_test, N_test, sigma_e2_dB_test, smnr_dB_test)
-        
+    
+    print(model_file_saved_dict, model_file_saved_dict_knet, test_data_file_dict)
+
     test_logfile = "./log/Lorenz_test_{}_T_{}_diff_N_w_knet.log".format(evaluation_mode, T_test)
     test_jsonfile = "./log/Lorenz_test_{}_T_{}_diff_N_w_knet.json".format(evaluation_mode, T_test)
 
@@ -501,8 +503,8 @@ if __name__ == "__main__":
     test_stats['KNET_time'] = t_knet_arr
     test_stats['N_train'] = N_arr
     
-    #with open(test_jsonfile, 'w') as f:
-    #    f.write(json.dumps(test_stats, cls=NDArrayEncoder, indent=2))
+    with open(test_jsonfile, 'w') as f:
+        f.write(json.dumps(test_stats, cls=NDArrayEncoder, indent=2))
 
     # Plotting the NMSE Curve
 

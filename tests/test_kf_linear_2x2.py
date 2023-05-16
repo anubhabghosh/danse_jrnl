@@ -194,7 +194,7 @@ def test_linear(device='cpu', model_file_saved=None, model_file_saved_knet=None,
                                                                                                         device=device)
     
     time_elapsed_danse = timer() - start_time_danse
-    
+    '''
     # Initialize the KalmanNet model in PyTorch
     knet_model = KalmanNetNN(
         n_states=linear_ssm.n_states,
@@ -219,8 +219,9 @@ def test_linear(device='cpu', model_file_saved=None, model_file_saved_knet=None,
                                                 Y=Y,
                                                 device=device)
     
-    time_elapsed_knet = timer() - start_time_knet
-
+    
+    '''
+    time_elapsed_knet = None #timer() - start_time_knet
     nmse_ls = nmse_loss(X[:,1:,:], X_LS[:,0:,:])
     nmse_ls_std = nmse_loss_std(X[:,1:,:], X_LS[:,0:,:])
     nmse_kf = nmse_loss(X[:,1:,:], X_estimated_kf[:,1:,:])
@@ -229,8 +230,8 @@ def test_linear(device='cpu', model_file_saved=None, model_file_saved_knet=None,
     nmse_danse_std = nmse_loss_std(X[:,1:,:], X_estimated_filtered[:,0:,:])
     nmse_danse_pred = nmse_loss(X[:,1:,:], X_estimated_pred[:,0:,:])
     nmse_danse_pred_std = nmse_loss_std(X[:,1:,:], X_estimated_pred[:,0:,:])
-    nmse_knet = nmse_loss(X[:,1:,:], X_estimated_filtered_knet[:,0:,:])
-    nmse_knet_std = nmse_loss_std(X[:,1:,:], X_estimated_filtered_knet[:,0:,:])
+    nmse_knet = None  #nmse_loss(X[:,1:,:], X_estimated_filtered_knet[:,0:,:])
+    nmse_knet_std = None #nmse_loss_std(X[:,1:,:], X_estimated_filtered_knet[:,0:,:])
 
     mse_dB_ls = mse_loss_dB(X[:,1:,:], X_LS[:,0:,:])
     mse_dB_ls_std = mse_loss_dB_std(X[:,1:,:], X_LS[:,0:,:])
@@ -240,41 +241,41 @@ def test_linear(device='cpu', model_file_saved=None, model_file_saved_knet=None,
     mse_dB_danse_std = mse_loss_dB_std(X[:,1:,:], X_estimated_filtered[:,0:,:])
     mse_dB_danse_pred = mse_loss_dB(X[:,1:,:], X_estimated_pred[:,0:,:])
     mse_dB_danse_pred_std = mse_loss_dB_std(X[:,1:,:], X_estimated_pred[:,0:,:])
-    mse_dB_knet = mse_loss_dB(X[:,1:,:], X_estimated_filtered_knet[:,0:,:])
-    mse_dB_knet_std = mse_loss_dB_std(X[:,1:,:], X_estimated_filtered_knet[:,0:,:])
+    mse_dB_knet = None #mse_loss_dB(X[:,1:,:], X_estimated_filtered_knet[:,0:,:])
+    mse_dB_knet_std = None #mse_loss_dB_std(X[:,1:,:], X_estimated_filtered_knet[:,0:,:])
     
     print("DANSE - MSE LOSS:",mse_dB_danse, "[dB]")
     print("DANSE - MSE STD:", mse_dB_danse_std, "[dB]")
 
-    print("KNET - MSE LOSS:", mse_dB_knet, "[dB]")
-    print("KNET - MSE STD:", mse_dB_knet_std, "[dB]")
+    #print("KNET - MSE LOSS:", mse_dB_knet, "[dB]")
+    #print("KNET - MSE STD:", mse_dB_knet_std, "[dB]")
 
     print("LS, batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB]".format(N_test, nmse_ls, nmse_ls_std, mse_dB_ls, mse_dB_ls_std))
     print("kf, batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_kf, nmse_kf_std, mse_dB_kf, mse_dB_kf_std, time_elapsed_kf))
     #print("danse, batch size: {}, nmse: {} ± {}[dB], mse: {} ± {}[dB], time: {} secs".format(N_test, nmse_danse, nmse_danse_std, mse_dB_danse, mse_dB_danse_std, time_elapsed_danse))
     print("danse (pred.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_danse_pred, nmse_danse_pred_std, mse_dB_danse_pred, mse_dB_danse_pred_std, time_elapsed_danse))
     print("danse (fil.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_danse, nmse_danse_std, mse_dB_danse, mse_dB_danse_std, time_elapsed_danse))
-    print("knet (fil.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_knet, nmse_knet_std, mse_dB_knet, mse_dB_knet_std, time_elapsed_knet))
+    #print("knet (fil.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_knet, nmse_knet_std, mse_dB_knet, mse_dB_knet_std, time_elapsed_knet))
 
     print("LS, batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB]".format(N_test, nmse_ls, nmse_ls_std, mse_dB_ls, mse_dB_ls_std), file=orig_stdout)
     print("kf, batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_kf, nmse_kf_std, mse_dB_kf, mse_dB_kf_std, time_elapsed_kf), file=orig_stdout)
     #print("danse, batch size: {}, nmse: {} ± {}[dB], mse: {} ± {}[dB], time: {} secs".format(N_test, nmse_danse, nmse_danse_std, mse_dB_danse, mse_dB_danse_std, time_elapsed_danse))
     print("danse (pred.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_danse_pred, nmse_danse_pred_std, mse_dB_danse_pred, mse_dB_danse_pred_std, time_elapsed_danse), file=orig_stdout)
     print("danse (fil.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_danse, nmse_danse_std, mse_dB_danse, mse_dB_danse_std, time_elapsed_danse), file=orig_stdout)
-    print("knet (fil.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_knet, nmse_knet_std, mse_dB_knet, mse_dB_knet_std, time_elapsed_knet), file=orig_stdout)
+    #print("knet (fil.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_knet, nmse_knet_std, mse_dB_knet, mse_dB_knet_std, time_elapsed_knet), file=orig_stdout)
     
     # Plot the result
     plot_state_trajectory_axes(X=torch.squeeze(X[0,1:,:],0), 
                         X_est_KF=torch.squeeze(X_estimated_kf[0,1:,:], 0), 
                         X_est_DANSE=torch.squeeze(X_estimated_filtered[0], 0),
-                        X_est_KNET=torch.squeeze(X_estimated_filtered_knet[0], 0),
+                        #X_est_KNET=torch.squeeze(X_estimated_filtered_knet[0], 0),
                         savefig=True,
                         savefig_name="./figs/LinearModel/{}/AxesWisePlot_sigma_e2_{}dB_smnr_{}dB.pdf".format(evaluation_mode, sigma_e2_dB_test, smnr_dB_test))
     
     plot_state_trajectory(X=torch.squeeze(X[0,1:,:],0), 
                         X_est_KF=torch.squeeze(X_estimated_kf[0,1:,:], 0), 
                         X_est_DANSE=torch.squeeze(X_estimated_filtered[0], 0),
-                        X_est_KNET=torch.squeeze(X_estimated_filtered_knet[0], 0),
+                        #X_est_KNET=torch.squeeze(X_estimated_filtered_knet[0], 0),
                         savefig=True,
                         savefig_name="./figs/LinearModel/{}/3dPlot_sigma_e2_{}dB_smnr_{}dB.pdf".format(evaluation_mode, sigma_e2_dB_test, smnr_dB_test))
     
@@ -289,9 +290,9 @@ if __name__ == "__main__":
     # Testing parameters 
     T_test = 1000
     N_test = 100
-    sigma_e2_dB_test = -10.0
+    sigma_e2_dB_test = -20.0
     device = 'cpu'
-    evaluation_mode = 'full_opt'
+    evaluation_mode = 'full_opt_sigmae2_{}'.format(sigma_e2_dB_test)
     smnr_dB_arr = np.array([-10.0,0.0,10.0,20.0,30.0])
     
     os.makedirs('./figs/LinearModel/{}'.format(evaluation_mode), exist_ok=True)
@@ -322,21 +323,21 @@ if __name__ == "__main__":
 
     for smnr_dB in smnr_dB_arr:
         model_file_saved_dict_danse["{}dB".format(smnr_dB)] = glob.glob("./models/*Linear*danse_opt*sigmae2_{}dB_smnr_{}dB*/*best*".format(sigma_e2_dB_test, smnr_dB))[-1]
-        model_file_saved_dict_knet["{}dB".format(smnr_dB)] = glob.glob("./models/*Linear*KNetUoffline*sigmae2_{}dB_smnr_{}dB*/*best*".format(sigma_e2_dB_test, smnr_dB))[-1]
+        #model_file_saved_dict_knet["{}dB".format(smnr_dB)] = glob.glob("./models/*Linear*KNetUoffline*sigmae2_{}dB_smnr_{}dB*/*best*".format(sigma_e2_dB_test, smnr_dB))[-1]
 
     test_data_file_dict = {}
 
     for smnr_dB in smnr_dB_arr:
         test_data_file_dict["{}dB".format(smnr_dB)] = "./data/synthetic_data/test_trajectories_m_2_n_2_LinearSSM_data_T_{}_N_{}_sigmae2_{}dB_smnr_{}dB.pkl".format(T_test, N_test, sigma_e2_dB_test, smnr_dB)
     
-    test_logfile = "./log/Linear_2x2_test_{}_T_{}_N_{}.log".format(evaluation_mode, T_test, N_test)
-    test_jsonfile = "./log/Linear_2x2_test_{}_T_{}_N_{}.json".format(evaluation_mode, T_test, N_test)
+    test_logfile = "./log/Linear_2x2_test_{}_T_{}_N_{}_sigmae2_{}.log".format(evaluation_mode, T_test, N_test, sigma_e2_dB_test)
+    test_jsonfile = "./log/Linear_2x2_test_{}_T_{}_N_{}_sigmae2_{}.json".format(evaluation_mode, T_test, N_test, sigma_e2_dB_test)
 
     for i, smnr_dB in enumerate(smnr_dB_arr):
         
         model_file_saved_danse_i = model_file_saved_dict_danse['{}dB'.format(smnr_dB)]
         test_data_file_i = test_data_file_dict['{}dB'.format(smnr_dB)]
-        model_file_saved_knet_i = model_file_saved_dict_knet['{}dB'.format(smnr_dB)]
+        model_file_saved_knet_i = None# model_file_saved_dict_knet['{}dB'.format(smnr_dB)]
 
         nmse_kf_i, nmse_kf_std_i, nmse_danse_i, nmse_danse_std_i, nmse_knet_i, nmse_knet_std_i, nmse_ls_i, nmse_ls_std_i, \
             mse_dB_kf_i, mse_dB_kf_std_i, mse_dB_danse_i, mse_dB_danse_std_i, mse_dB_knet_i, mse_dB_knet_std_i, mse_dB_ls_i, mse_dB_ls_std_i, \
@@ -347,48 +348,48 @@ if __name__ == "__main__":
         nmse_ls_arr[i] = nmse_ls_i.numpy().item()
         nmse_kf_arr[i] = nmse_kf_i.numpy().item()
         nmse_danse_arr[i] = nmse_danse_i.numpy().item()
-        nmse_knet_arr[i] = nmse_knet_i.numpy().item()
+        #nmse_knet_arr[i] = nmse_knet_i.numpy().item()
         nmse_ls_std_arr[i] = nmse_ls_std_i.numpy().item()
         nmse_kf_std_arr[i] = nmse_kf_std_i.numpy().item()
         nmse_danse_std_arr[i] = nmse_danse_std_i.numpy().item()
-        nmse_knet_std_arr[i] = nmse_knet_std_i.numpy().item()
+        #nmse_knet_std_arr[i] = nmse_knet_std_i.numpy().item()
 
         # Store the MSE values and std devs of the MSE values (in dB)
         mse_ls_dB_arr[i] = mse_dB_ls_i.numpy().item()
         mse_kf_dB_arr[i] = mse_dB_kf_i.numpy().item()
         mse_danse_dB_arr[i] = mse_dB_danse_i.numpy().item()
-        mse_knet_dB_arr[i] = mse_dB_knet_i.numpy().item()
+        #mse_knet_dB_arr[i] = mse_dB_knet_i.numpy().item()
         mse_ls_dB_std_arr[i] = mse_dB_ls_std_i.numpy().item()
         mse_kf_dB_std_arr[i] = mse_dB_kf_std_i.numpy().item()
         mse_danse_dB_std_arr[i] = mse_dB_danse_std_i.numpy().item()
-        mse_knet_dB_std_arr[i] = mse_dB_knet_std_i.numpy().item()
+        #mse_knet_dB_std_arr[i] = mse_dB_knet_std_i.numpy().item()
 
         # Store the inference times 
         t_kf_arr[i] = time_elapsed_kf_i
         t_danse_arr[i] = time_elapsed_danse_i
-        t_knet_arr[i] = time_elapsed_knet_i
+        #t_knet_arr[i] = time_elapsed_knet_i
 
     # Collect stats in a large json file
     test_stats = {}
     test_stats['KF_mean_nmse'] = nmse_kf_arr
     test_stats['DANSE_mean_nmse'] = nmse_danse_arr
-    test_stats['KNET_mean_nmse'] = nmse_knet_arr
+    #test_stats['KNET_mean_nmse'] = nmse_knet_arr
     test_stats['KF_std_nmse'] = nmse_kf_std_arr
     test_stats['DANSE_std_nmse'] = nmse_danse_std_arr
-    test_stats['KNET_std_nmse'] = nmse_knet_std_arr
+    #test_stats['KNET_std_nmse'] = nmse_knet_std_arr
     test_stats['KF_mean_mse'] = mse_kf_dB_arr
     test_stats['DANSE_mean_mse'] = mse_danse_dB_arr
-    test_stats['KNET_mean_mse'] = mse_knet_dB_arr
+    #test_stats['KNET_mean_mse'] = mse_knet_dB_arr
     test_stats['KF_std_mse'] = mse_kf_dB_std_arr
     test_stats['DANSE_std_mse'] = mse_danse_dB_std_arr
-    test_stats['KNET_std_mse'] = mse_knet_dB_std_arr
+    #test_stats['KNET_std_mse'] = mse_knet_dB_std_arr
     test_stats['LS_mean_mse'] = mse_ls_dB_arr
     test_stats['LS_std_mse'] = mse_ls_dB_std_arr
     test_stats['LS_mean_nmse'] = nmse_ls_arr
     test_stats['LS_std_nmse'] = nmse_ls_std_arr
     test_stats['KF_time'] = t_kf_arr
     test_stats['DANSE_time'] = t_danse_arr
-    test_stats['KNET_time'] = t_knet_arr
+    #test_stats['KNET_time'] = t_knet_arr
     test_stats['SMNR'] = smnr_dB_arr
     
     #with open(test_jsonfile, 'w') as f:
@@ -401,7 +402,7 @@ if __name__ == "__main__":
     plt.errorbar(smnr_dB_arr, nmse_ls_arr, fmt='gp-.', yerr=nmse_ls_std_arr,  linewidth=1.5, label="LS")
     plt.errorbar(smnr_dB_arr, nmse_kf_arr, fmt='rd--',  yerr=nmse_kf_std_arr, linewidth=1.5, label="KF")
     plt.errorbar(smnr_dB_arr, nmse_danse_arr, fmt='b*-', yerr=nmse_danse_std_arr, linewidth=2.0, label="DANSE")
-    plt.errorbar(smnr_dB_arr, nmse_knet_arr, fmt='ys-', yerr=nmse_knet_std_arr,  linewidth=1.0, label="KalmanNet")
+    #plt.errorbar(smnr_dB_arr, nmse_knet_arr, fmt='ys-', yerr=nmse_knet_std_arr,  linewidth=1.0, label="KalmanNet")
     plt.xlabel('SMNR (in dB)')
     plt.ylabel('NMSE (in dB)')
     plt.grid(True)
@@ -413,7 +414,7 @@ if __name__ == "__main__":
     plt.errorbar(smnr_dB_arr, mse_ls_dB_arr, fmt='gp-.', yerr=mse_ls_dB_std_arr, linewidth=1.5, label="LS")
     plt.errorbar(smnr_dB_arr, mse_kf_dB_arr, fmt='rd--',  yerr=mse_kf_dB_std_arr, linewidth=1.5, label="KF")
     plt.errorbar(smnr_dB_arr, mse_danse_dB_arr, fmt='b*-', yerr=mse_danse_dB_std_arr, linewidth=2.0, label="DANSE")
-    plt.errorbar(smnr_dB_arr, mse_knet_dB_arr, fmt='ys-', yerr=mse_knet_dB_std_arr, linewidth=1.0, label="KalmanNet")
+    #plt.errorbar(smnr_dB_arr, mse_knet_dB_arr, fmt='ys-', yerr=mse_knet_dB_std_arr, linewidth=1.0, label="KalmanNet")
     plt.xlabel('SMNR (in dB)')
     plt.ylabel('MSE (in dB)')
     plt.grid(True)
@@ -425,7 +426,7 @@ if __name__ == "__main__":
     plt.figure()
     plt.plot(smnr_dB_arr, t_kf_arr, 'rd--',  linewidth=1.5, label="KF")
     plt.plot(smnr_dB_arr, t_danse_arr, 'b*-', linewidth=2.0, label="DANSE")
-    plt.plot(smnr_dB_arr, t_knet_arr, 'ys-', linewidth=1.0, label="KalmanNet")
+    #plt.plot(smnr_dB_arr, t_knet_arr, 'ys-', linewidth=1.0, label="KalmanNet")
     plt.xlabel('SMNR (in dB)')
     plt.ylabel('Inference time (in s)')
     plt.grid(True)

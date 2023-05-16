@@ -16,6 +16,7 @@ from torch.autograd.functional import jacobian
 torch.manual_seed(10)
 delta_t = 0.02 # Hardcoded for now
 delta_t_test = 0.04 # Hardcoded for now
+delta_t_chen = 0.002
 J_gen = 5 
 J_test = 5 # hardcoded for now
 
@@ -169,6 +170,19 @@ def get_parameters(n_states=5, n_obs=5, device='cpu'):
             "alpha":0.0, # alpha = 0.0, implies a Lorenz model
             "H":None, # By default, H is initialized to an identity matrix
             "delta_d":0.002,
+            "decimate":False,
+            "mu_e":np.zeros((n_states,)),
+            "mu_w":np.zeros((n_obs,)),
+            "use_Taylor":True
+        },
+        "ChenSSM":{
+            "n_states":n_states,
+            "n_obs":n_obs,
+            "J":J_gen,
+            "delta":delta_t_chen,
+            "alpha":1.0, # alpha = 0.0, implies a Lorenz model
+            "H":None, # By default, H is initialized to an identity matrix
+            "delta_d":delta_t_chen / 5,
             "decimate":False,
             "mu_e":np.zeros((n_states,)),
             "mu_w":np.zeros((n_obs,)),

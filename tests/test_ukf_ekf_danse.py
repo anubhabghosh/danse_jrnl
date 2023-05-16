@@ -348,12 +348,29 @@ def test_lorenz(device='cpu', model_file_saved=None, model_file_saved_knet=None,
                         savefig=False,
                         savefig_name="./figs/LorenzModel/{}/3dPlot_sigmae2_{}dB_smnr_{}dB_knet.pdf".format(evaluation_mode, sigma_e2_dB_test, smnr_dB_test))
     
+    plot_3d_state_trajectory(X=torch.squeeze(X[0, 1:, :], 0).numpy(), legend='$\\mathbf{x}^{true}$', m='b-', savefig_name="./figs/LorenzModel/{}/lorenz_x_true_sigmae2_{}dB_smnr_{}dB.pdf".format(evaluation_mode, sigma_e2_dB_test, smnr_dB_test), savefig=True)
+    plot_3d_state_trajectory(X=torch.squeeze(X_estimated_filtered[0], 0).numpy(), legend='$\\hat{\mathbf{x}}_{DANSE}$', m='k-', savefig_name="./figs/LorenzModel/{}/lorenz_x_danse_sigmae2_{}dB_smnr_{}dB.pdf".format(evaluation_mode, sigma_e2_dB_test, smnr_dB_test), savefig=True)
+    plot_3d_measurment_trajectory(Y=torch.squeeze(Y[0, :, :], 0).numpy(), legend='$\\mathbf{y}^{true}$', m='r-', savefig_name="./figs/LorenzModel/{}/lorenz_y_true_sigmae2_{}dB_smnr_{}dB.pdf".format(evaluation_mode, sigma_e2_dB_test, smnr_dB_test), savefig=True)
+    
+    plot_state_trajectory_w_lims(X=torch.squeeze(X[0,1:,:],0).numpy(), 
+                        #X_est_KF=torch.squeeze(X_estimated_kf[0,1:,:], 0).numpy(), 
+                        #X_est_KF_std=np.sqrt(torch.diagonal(torch.squeeze(Pk_estimated_kf[0,1:,:,:], 0), offset=0, dim1=1,dim2=2).numpy()), 
+                        X_est_UKF=torch.squeeze(X_estimated_ukf[0,1:,:], 0).numpy(), 
+                        X_est_UKF_std=np.sqrt(torch.diagonal(torch.squeeze(Pk_estimated_ukf[0,1:,:,:], 0), offset=0, dim1=1,dim2=2).numpy()), 
+                        X_est_DANSE=torch.squeeze(X_estimated_filtered[0], 0).numpy(), 
+                        X_est_DANSE_std=np.sqrt(torch.diagonal(torch.squeeze(Pk_estimated_filtered[0], 0), offset=0, dim1=1,dim2=2).numpy()), 
+                        #X_est_DANSE_sup=torch.squeeze(X_estimated_filtered_sup[0], 0).numpy(), 
+                        #X_est_DANSE_sup_std=np.diag(torch.squeeze(Pk_estimated_filtered_sup[0,1:,:], 0).numpy()).sqrt(), 
+                        #X_est_KNET=torch.squeeze(X_estimated_filtered_knet[0], 0).numpy(), 
+                        savefig=True,
+                        savefig_name="./figs/LorenzModel/{}/Trajectories_sigma_e2_{}dB_smnr_{}dB.pdf".format(evaluation_mode, sigma_e2_dB_test, smnr_dB_test))
+    
     plot_state_trajectory_axes(X=torch.squeeze(X[0,1:,:],0).numpy(), 
                                 X_est_EKF=torch.squeeze(X_estimated_ekf[0,1:,:],0).numpy(), 
                                 X_est_UKF=torch.squeeze(X_estimated_ukf[0,1:,:],0).numpy(), 
                                 X_est_DANSE=torch.squeeze(X_estimated_filtered[0],0).numpy(), 
                                 X_est_KNET=torch.squeeze(X_estimated_filtered_knet[0], 0).numpy(),
-                                savefig=False,
+                                savefig=True,
                                 savefig_name="./figs/LorenzModel/{}/AxesWisePlot_sigmae2_{}dB_smnr_{}dB_knet.pdf".format(evaluation_mode, sigma_e2_dB_test, smnr_dB_test))
     
     #plot_state_trajectory_axes(X=torch.squeeze(X,0), X_est_EKF=torch.squeeze(X_estimated_ekf,0), X_est_DANSE=torch.squeeze(X_estimated_filtered,0))
@@ -416,14 +433,16 @@ if __name__ == "__main__":
     model_file_saved_dict_knet = {}
 
     for smnr_dB in smnr_dB_arr:
-        model_file_saved_dict["{}dB".format(smnr_dB)] = glob.glob("./models/*Lorenz*danse_opt*sigmae2_{}dB_smnr_{}dB*/*best*".format(sigma_e2_dB_test, smnr_dB))[-1]
-        model_file_saved_dict_knet["{}dB".format(smnr_dB)] = glob.glob("./models/*Lorenz*KNetUoffline*sigmae2_{}dB_smnr_{}dB*/*best*".format(sigma_e2_dB_test, smnr_dB))[-1]
+        model_file_saved_dict["{}dB".format(smnr_dB)] = glob.glob("./models/*LorenzSSM_danse_opt_*n_3*sigmae2_{}dB_smnr_{}dB*/*best*".format(sigma_e2_dB_test, smnr_dB))[-1]
+        model_file_saved_dict_knet["{}dB".format(smnr_dB)] = glob.glob("./models/*Lorenz*KNetUoffline_*n_3*sigmae2_{}dB_smnr_{}dB*/*best*".format(sigma_e2_dB_test, smnr_dB))[-1]
 
     test_data_file_dict = {}
 
     for smnr_dB in smnr_dB_arr:
         test_data_file_dict["{}dB".format(smnr_dB)] = "./data/synthetic_data/test_trajectories_m_3_n_3_LorenzSSM_data_T_{}_N_{}_sigmae2_{}dB_smnr_{}dB.pkl".format(T_test, N_test, sigma_e2_dB_test, smnr_dB)
-        
+    
+    print(model_file_saved_dict)
+
     test_logfile = "./log/Lorenz_test_{}_T_{}_N_{}_w_knet.log".format(evaluation_mode, T_test, N_test)
     test_jsonfile = "./log/Lorenz_test_{}_T_{}_N_{}_w_knet.json".format(evaluation_mode, T_test, N_test)
 
@@ -498,9 +517,9 @@ if __name__ == "__main__":
     test_stats['DANSE_time'] = t_danse_arr
     test_stats['KNET_time'] = t_knet_arr
     test_stats['SMNR'] = smnr_dB_arr
-    
-    #with open(test_jsonfile, 'w') as f:
-    #    f.write(json.dumps(test_stats, cls=NDArrayEncoder, indent=2))
+    '''
+    with open(test_jsonfile, 'w') as f:
+        f.write(json.dumps(test_stats, cls=NDArrayEncoder, indent=2))
 
     # Plotting the NMSE Curve
     plt.rcParams['font.family'] = 'serif'
@@ -549,6 +568,5 @@ if __name__ == "__main__":
     #plt.subplot(212)
     tikzplotlib.save('./figs/LorenzModel/{}/MSE_vs_SMNR_Lorenz_w_knet.tex'.format(evaluation_mode))
     plt.savefig('./figs/LorenzModel/{}/MSE_vs_SMNR_Lorenz_w_knet.pdf'.format(evaluation_mode))
-    
+    '''
     #plt.show()
-
