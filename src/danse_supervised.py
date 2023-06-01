@@ -149,9 +149,9 @@ class DANSE_Supervised(nn.Module):
         mu_batch, vars_batch = self.rnn.forward(x=Yi_batch)
         mu_xt_yt_prev, L_xt_yt_prev = self.compute_prior_mean_vars(mu_xt_yt_prev=mu_batch, L_xt_yt_prev=vars_batch)
         mu_xt_yt_current_test, L_xt_yt_current_test = self.compute_posterior_mean_vars(Yi_batch=Yi_batch)
-        print("Prior", self.L_xt_yt_prev.mean((0,1)))
+        #print("Prior", self.L_xt_yt_prev.mean((0,1)))
         
-        print("Posterior", self.L_xt_yt_current.mean((0,1)))
+        #print("Posterior", self.L_xt_yt_current.mean((0,1)))
         #print(torch.det(self.L_xt_yt_current).sum(1))
         logprob_batch = self.compute_logpdf_Gaussian(X=Xi_batch)
         log_pXT_YT_batch_avg = logprob_batch.mean(0)

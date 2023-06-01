@@ -131,7 +131,7 @@ def h_sinssm_fn(z, a=1, b=1, c=0):
 def get_H_DANSE(type_, n_states, n_obs):
     if type_ == "LinearSSM":
         return LinearSSM(n_states=n_states, n_obs=n_obs).H
-    elif type_ == "LorenzSSM":
+    elif type_ == "LorenzSSM" or type_ == "ChenSSM":
         return np.eye(n_obs, n_states)
     #elif type_ == "LorenzSSMn2":
     #    return np.concatenate((np.eye(2), np.zeros((2,1))), axis=1)
