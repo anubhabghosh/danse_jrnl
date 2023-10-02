@@ -257,7 +257,7 @@ def get_parameters(n_states=5, n_obs=5, device='cpu'):
             "data_file_specification":'Ratio_{}---R_{}---T_{}',
             "model_file_specification":'Ratio_{}---R_{}---T_{}---unsupervised_{}',
             "nu_dB":0.0,
-            "lr":1e-3,
+            "lr":5e-4,
             "weight_decay":1e-6,
             "num_epochs":100,
             "batch_size":100,

@@ -6,6 +6,7 @@ import torch.nn.functional as func
 import gc
 import sys
 from utils.utils import count_params
+from timeit import default_timer as timer
 
 class KalmanNetNN(nn.Module):
 
@@ -315,7 +316,8 @@ def train_KalmanNetNN(model, options, train_loader, val_loader, nepochs,
     total_num_params, total_num_trainable_params = count_params(model)
     print("No. of trainable parameters: {}\n".format(total_num_trainable_params), file=orig_stdout)
     print("No. of trainable parameters: {}\n".format(total_num_trainable_params))
-
+    
+    start_time = timer()
     for ti in range(0, nepochs):
 
         #################################
@@ -419,6 +421,9 @@ def train_KalmanNetNN(model, options, train_loader, val_loader, nepochs,
         # parameters
         # Batch_Optimizing_LOSS_mean = Batch_Optimizing_LOSS_sum / self.N_B
         LOSS.backward()
+        
+        #NOTE; Try to use gradient clipping with l2-norm of 1.0 (arbitrary choice) to deal with longer trajectories
+        #nn.utils.clip_grad_norm_(model.parameters(), 1.0)
 
         # Calling the step function on an Optimizer makes an update to its
         # parameters
@@ -427,10 +432,11 @@ def train_KalmanNetNN(model, options, train_loader, val_loader, nepochs,
         ########################
         ### Training Summary ###
         ########################
+        time_elapsed = timer() - start_time
         train_print = MSE_train_dB_epoch_obs[ti] if unsupervised else MSE_train_dB_epoch[ti]
         cv_print = MSE_cv_dB_epoch_obs[ti] if unsupervised else MSE_cv_dB_epoch[ti]
-        print(ti, "MSE Training :", train_print, "[dB]", "MSE Validation :", cv_print,"[dB]")
-        print(ti, "MSE Training :", train_print, "[dB]", "MSE Validation :", cv_print,"[dB]", file=orig_stdout)
+        print(ti, "MSE Training :", train_print, "[dB]", "MSE Validation :", cv_print,"[dB]", "Time elapsed :", time_elapsed)
+        print(ti, "MSE Training :", train_print, "[dB]", "MSE Validation :", cv_print,"[dB]", "Time elapsed :", time_elapsed, file=orig_stdout)
 
         if (ti > 1):
             d_train = MSE_train_dB_epoch_obs[ti] - MSE_train_dB_epoch_obs[ti - 1] if unsupervised \
