@@ -290,7 +290,7 @@ class Lorenz96SSM(object):
                         t_eval=np.arange(0.0, T_time, self.delta), 
                         max_step=self.delta)
     
-        x_lorenz = sol.y.T 
+        x_lorenz = np.concatenate((sol.y.T, x0.reshape((1, -1))), axis=0)
         assert x_lorenz.shape[-1] == self.n_states, "Shape mismatch for generated state trajectory"
         
         T = x_lorenz.shape[0]
@@ -303,10 +303,9 @@ class Lorenz96SSM(object):
 
         return x_lorenz_d
     
-    def generate_measurement_sequence(self, x_lorenz, smnr_dB=10.0):
+    def generate_measurement_sequence(self, T, x_lorenz, smnr_dB=10.0):
         
         #signal_p = ((self.h_fn(x_lorenz) - np.zeros_like(x_lorenz))**2).mean()
-        T = x_lorenz.shape[0]
         signal_p = np.var(self.h_fn(x_lorenz))
         #print("Signal power: {:.3f}".format(signal_p))
         self.sigma_w2 = signal_p / dB_to_lin(smnr_dB)
@@ -332,6 +331,6 @@ class Lorenz96SSM(object):
         
         T_time = T * self.delta
         x_lorenz = self.generate_state_sequence(T_time=T_time, sigma_e2_dB=sigma_e2_dB)
-        y_lorenz = self.generate_measurement_sequence(x_lorenz=x_lorenz, smnr_dB=smnr_dB)
+        y_lorenz = self.generate_measurement_sequence(T=T, x_lorenz=x_lorenz, smnr_dB=smnr_dB)
 
         return x_lorenz, y_lorenz
