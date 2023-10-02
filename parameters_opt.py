@@ -17,6 +17,7 @@ torch.manual_seed(10)
 delta_t = 0.02 # Hardcoded for now
 delta_t_test = 0.04 # Hardcoded for now
 delta_t_chen = 0.002
+delta_t_L96 = 0.01
 J_gen = 5 
 J_test = 5 # hardcoded for now
 
@@ -131,7 +132,7 @@ def h_sinssm_fn(z, a=1, b=1, c=0):
 def get_H_DANSE(type_, n_states, n_obs):
     if type_ == "LinearSSM":
         return LinearSSM(n_states=n_states, n_obs=n_obs).H
-    elif type_ == "LorenzSSM" or type_ == "ChenSSM":
+    elif type_ == "LorenzSSM" or type_ == "ChenSSM" or type_ == "Lorenz96SSM":
         return np.eye(n_obs, n_states)
     #elif type_ == "LorenzSSMn2":
     #    return np.concatenate((np.eye(2), np.zeros((2,1))), axis=1)
@@ -187,6 +188,17 @@ def get_parameters(n_states=5, n_obs=5, device='cpu'):
             "mu_e":np.zeros((n_states,)),
             "mu_w":np.zeros((n_obs,)),
             "use_Taylor":True
+        },
+        "Lorenz96SSM":{
+            "n_states":n_states,
+            "n_obs":n_obs,
+            "delta":delta_t_L96,
+            "H":None, # By default, H is initialized to an identity matrix
+            "delta_d":delta_t_L96 / 2,
+            "decimate":False,
+            "mu_w":np.zeros((n_obs,)),
+            "method":'RK45',
+            "F_mu":8.0
         },
         "LorenzSSMn2":{
             "n_states":n_states,

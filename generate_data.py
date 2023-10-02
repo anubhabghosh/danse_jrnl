@@ -12,7 +12,7 @@ from torch import distributions
 from scipy.linalg import expm
 from utils.utils import save_dataset
 from parameters_opt import get_parameters
-from ssm_models import LinearSSM, LorenzSSM
+from ssm_models import LinearSSM, LorenzSSM, Lorenz96SSM
 import argparse
 from parse import parse
 import os
@@ -56,6 +56,20 @@ def initialize_model(type_, parameters):
             mu_e=parameters["mu_e"],
             mu_w=parameters["mu_w"]
             )
+    
+    elif type_ == "Lorenz96SSM":
+
+        model = Lorenz96SSM(
+            n_states=parameters["n_states"],
+            n_obs=parameters["n_obs"],
+            delta=parameters["delta"],
+            delta_d=parameters["delta_d"],
+            F_mu=parameters["F_mu"],
+            method=parameters["method"],
+            H=parameters["H"],
+            decimate=parameters["decimate"],
+            mu_w=parameters["mu_w"]
+        )
         
     elif type_ == "LorenzSSMn2" or "LorenzSSMn1" or "LorenzSSMrn2" or "LorenzSSMrn3":
 
@@ -144,7 +158,7 @@ if __name__ == "__main__":
     parser.add_argument("--sequence_length", help="denotes the length of each trajectory", type=int, default=200)
     parser.add_argument("--sigma_e2_dB", help="denotes the process noise variance in dB", type=float, default=-10.0)
     parser.add_argument("--smnr_dB", help="denotes the signal-to-measurement noise in dB", type=float, default=20.0)
-    parser.add_argument("--dataset_type", help="specify type of the SSM (LinearSSM / LorenzSSM)", type=str, default=None)
+    parser.add_argument("--dataset_type", help="specify type of the SSM (LinearSSM / LorenzSSM / ChenSSM / Lorenz96SSM)", type=str, default=None)
     parser.add_argument("--output_path", help="Enter full path to store the data file", type=str, default=None)
     
     args = parser.parse_args() 
