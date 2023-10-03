@@ -128,7 +128,7 @@ def plot_state_trajectory_w_lims(X, X_est_KF=None, X_est_KF_std=None,
                                 X_est_DANSE=None, X_est_DANSE_std=None,
                                 X_est_DANSE_sup=None, X_est_DANSE_sup_std=None,
                                 X_est_KNET=None, X_est_KNET_std=None,
-                                savefig=False, savefig_name=None):
+                                savefig=False, savefig_name=None, sigma=1.0):
     
     # Creating 3d plot of the data
     #print(X.shape)
@@ -145,38 +145,38 @@ def plot_state_trajectory_w_lims(X, X_est_KF=None, X_est_KF_std=None,
         if not X_est_UKF is None:
             ax.plot(X_est_UKF[T_start:T_end,idim], 'x-',ms=5,color="orange",label='$\\hat{\mathbf{x}}_{UKF}$',lw=lw)
             ax.fill_between(np.arange(X_est_UKF[T_start:T_end,idim].shape[0]), 
-                            X_est_UKF[T_start:T_end,idim] - X_est_UKF_std[T_start:T_end,idim], 
-                            X_est_UKF[T_start:T_end,idim] + X_est_UKF_std[T_start:T_end,idim],
+                            X_est_UKF[T_start:T_end,idim] - sigma*X_est_UKF_std[T_start:T_end,idim], 
+                            X_est_UKF[T_start:T_end,idim] + sigma*X_est_UKF_std[T_start:T_end,idim],
                             facecolor='orange', alpha=0.4)
         if not X_est_DANSE is None:
             ax.plot(X_est_DANSE[T_start:T_end,idim], 'rs-',label='$\\hat{\mathbf{x}}_{DANSE}$',lw=lw, ms=2)
             ax.fill_between(np.arange(X_est_DANSE[T_start:T_end,idim].shape[0]), 
-                            X_est_DANSE[T_start:T_end,idim] - X_est_DANSE_std[T_start:T_end,idim], 
-                            X_est_DANSE[T_start:T_end,idim] + X_est_DANSE_std[T_start:T_end,idim],
+                            X_est_DANSE[T_start:T_end,idim] - sigma*X_est_DANSE_std[T_start:T_end,idim], 
+                            X_est_DANSE[T_start:T_end,idim] + sigma*X_est_DANSE_std[T_start:T_end,idim],
                             facecolor='red', alpha=0.4)
         if not X_est_DANSE_sup is None:
             ax.plot(X_est_DANSE_sup[T_start:T_end,idim], 'm^-',label='$\\hat{\mathbf{x}}_{DANSE-Supervised}$',lw=lw, ms=3)
             ax.fill_between(np.arange(X_est_DANSE_sup[T_start:T_end,idim].shape[0]), 
-                            X_est_DANSE_sup[T_start:T_end,idim] - X_est_DANSE_sup_std[T_start:T_end,idim], 
-                            X_est_DANSE_sup[T_start:T_end,idim] + X_est_DANSE_sup_std[T_start:T_end,idim],
+                            X_est_DANSE_sup[T_start:T_end,idim] - sigma*X_est_DANSE_sup_std[T_start:T_end,idim], 
+                            X_est_DANSE_sup[T_start:T_end,idim] + sigma*X_est_DANSE_sup_std[T_start:T_end,idim],
                             facecolor='magenta', alpha=0.4)
         if not X_est_KNET is None:
             plt.plot(X_est_KNET[T_start:T_end,idim], 'c--.',label='$\\hat{\mathbf{x}}_{KalmanNet} $', lw=lw)
             ax.fill_between(np.arange(X_est_KNET[T_start:T_end,idim].shape[0]), 
-                            X_est_KNET[T_start:T_end,idim] - X_est_KNET_std[T_start:T_end,idim], 
-                            X_est_KNET[T_start:T_end,idim] + X_est_KNET_std[T_start:T_end,idim],
+                            X_est_KNET[T_start:T_end,idim] - sigma*X_est_KNET_std[T_start:T_end,idim], 
+                            X_est_KNET[T_start:T_end,idim] + sigma*X_est_KNET_std[T_start:T_end,idim],
                             facecolor='cyan', alpha=0.4)
         if not X_est_KF is None:
             ax.plot(X_est_KF[T_start:T_end,idim], 'gv-',label='$\\hat{\mathbf{x}}_{KF}$',lw=lw, ms=1)
             ax.fill_between(np.arange(X_est_KF[T_start:T_end,idim].shape[0]), 
-                            X_est_KF[T_start:T_end,idim] - X_est_KF_std[T_start:T_end,idim], 
-                            X_est_KF[T_start:T_end,idim] + X_est_KF_std[T_start:T_end,idim],
+                            X_est_KF[T_start:T_end,idim] - sigma*X_est_KF_std[T_start:T_end,idim], 
+                            X_est_KF[T_start:T_end,idim] + sigma*X_est_KF_std[T_start:T_end,idim],
                             facecolor='green', alpha=0.4)
         if not X_est_EKF is None:
             ax.plot(X_est_EKF[T_start:T_end,idim], 'b.-',label='$\\hat{\mathbf{x}}_{EKF}$',lw=lw)
             ax.fill_between(np.arange(X_est_EKF[T_start:T_end,idim].shape[0]), 
-                            X_est_EKF[T_start:T_end,idim] - X_est_EKF_std[T_start:T_end,idim], 
-                            X_est_EKF[T_start:T_end,idim] + X_est_EKF_std[T_start:T_end,idim],
+                            X_est_EKF[T_start:T_end,idim] - sigma*X_est_EKF_std[T_start:T_end,idim], 
+                            X_est_EKF[T_start:T_end,idim] + sigma*X_est_EKF_std[T_start:T_end,idim],
                             facecolor='orange', alpha=0.4)
         
         ax.plot(X[T_start:T_end,idim],'k-',label='$\\mathbf{x}^{true}$',lw=lw)
@@ -205,38 +205,38 @@ def plot_state_trajectory_w_lims(X, X_est_KF=None, X_est_KF_std=None,
         if not X_est_UKF is None:
             ax.plot(X_est_UKF[T_start:T_end,idim], 'x-',ms=5,color="orange",label='$\\hat{\mathbf{x}}_{UKF}$',lw=lw)
             ax.fill_between(np.arange(X_est_UKF[T_start:T_end,idim].shape[0]), 
-                            X_est_UKF[T_start:T_end,idim] - 3*X_est_UKF_std[T_start:T_end,idim], 
-                            X_est_UKF[T_start:T_end,idim] + 3*X_est_UKF_std[T_start:T_end,idim],
+                            X_est_UKF[T_start:T_end,idim] - sigma*X_est_UKF_std[T_start:T_end,idim], 
+                            X_est_UKF[T_start:T_end,idim] + sigma*X_est_UKF_std[T_start:T_end,idim],
                             facecolor='orange', alpha=0.4)
         if not X_est_DANSE is None:
             ax.plot(X_est_DANSE[T_start:T_end,idim], 'rs-',label='$\\hat{\mathbf{x}}_{DANSE}$',lw=lw, ms=2)
             ax.fill_between(np.arange(X_est_DANSE[T_start:T_end,idim].shape[0]), 
-                            X_est_DANSE[T_start:T_end,idim] - 3*X_est_DANSE_std[T_start:T_end,idim], 
-                            X_est_DANSE[T_start:T_end,idim] + 3*X_est_DANSE_std[T_start:T_end,idim],
+                            X_est_DANSE[T_start:T_end,idim] - sigma*X_est_DANSE_std[T_start:T_end,idim], 
+                            X_est_DANSE[T_start:T_end,idim] + sigma*X_est_DANSE_std[T_start:T_end,idim],
                             facecolor='red', alpha=0.4)
         if not X_est_DANSE_sup is None:
             ax.plot(X_est_DANSE_sup[T_start:T_end,idim], 'm^-',label='$\\hat{\mathbf{x}}_{DANSE-Supervised}$',lw=lw, ms=3)
             ax.fill_between(np.arange(X_est_DANSE_sup[T_start:T_end,idim].shape[0]), 
-                            X_est_DANSE_sup[T_start:T_end,idim] - 3*X_est_DANSE_sup_std[T_start:T_end,idim], 
-                            X_est_DANSE_sup[T_start:T_end,idim] + 3*X_est_DANSE_sup_std[T_start:T_end,idim],
+                            X_est_DANSE_sup[T_start:T_end,idim] - sigma*X_est_DANSE_sup_std[T_start:T_end,idim], 
+                            X_est_DANSE_sup[T_start:T_end,idim] + sigma*X_est_DANSE_sup_std[T_start:T_end,idim],
                             facecolor='magenta', alpha=0.4)
         if not X_est_KNET is None:
             plt.plot(X_est_KNET[T_start:T_end,idim], 'c--.',label='$\\hat{\mathbf{x}}_{KalmanNet} $', lw=lw)
             ax.fill_between(np.arange(X_est_KNET[T_start:T_end,idim].shape[0]), 
-                            X_est_KNET[T_start:T_end,idim] - 3*X_est_KNET_std[T_start:T_end,idim], 
-                            X_est_KNET[T_start:T_end,idim] + 3*X_est_KNET_std[T_start:T_end,idim],
+                            X_est_KNET[T_start:T_end,idim] - sigma*X_est_KNET_std[T_start:T_end,idim], 
+                            X_est_KNET[T_start:T_end,idim] + sigma*X_est_KNET_std[T_start:T_end,idim],
                             facecolor='cyan', alpha=0.4)
         if not X_est_KF is None:
             ax.plot(X_est_KF[T_start:T_end,idim], 'gv-',label='$\\hat{\mathbf{x}}_{KF}$',lw=lw, ms=1)
             ax.fill_between(np.arange(X_est_KF[T_start:T_end,idim].shape[0]), 
-                            X_est_KF[T_start:T_end,idim] - 3*X_est_KF_std[T_start:T_end,idim], 
-                            X_est_KF[T_start:T_end,idim] + 3*X_est_KF_std[T_start:T_end,idim],
+                            X_est_KF[T_start:T_end,idim] - sigma*X_est_KF_std[T_start:T_end,idim], 
+                            X_est_KF[T_start:T_end,idim] + sigma*X_est_KF_std[T_start:T_end,idim],
                             facecolor='green', alpha=0.4)
         if not X_est_EKF is None:
             ax.plot(X_est_EKF[T_start:T_end,idim], 'b.-',label='$\\hat{\mathbf{x}}_{EKF}$',lw=lw)
             ax.fill_between(np.arange(X_est_EKF[T_start:T_end,idim].shape[0]), 
-                            X_est_EKF[T_start:T_end,idim] - 3*X_est_EKF_std[T_start:T_end,idim], 
-                            X_est_EKF[T_start:T_end,idim] + 3*X_est_EKF_std[T_start:T_end,idim],
+                            X_est_EKF[T_start:T_end,idim] - sigma*X_est_EKF_std[T_start:T_end,idim], 
+                            X_est_EKF[T_start:T_end,idim] + sigma*X_est_EKF_std[T_start:T_end,idim],
                             facecolor='orange', alpha=0.4)
         
         ax.plot(X[T_start:T_end,idim],'k-',label='$\\mathbf{x}^{true}$',lw=lw)
@@ -259,11 +259,148 @@ def plot_state_trajectory_w_lims(X, X_est_KF=None, X_est_KF_std=None,
     #plt.show()
     return None
 
-def plot_3d_state_trajectory(X, legend='$\\mathbf{x}^{true}$', m='k-', savefig=False, savefig_name=None):
+def plot_meas_trajectory_w_lims(Y, Y_pred_KF=None, Y_pred_KF_std=None, 
+                                Y_pred_EKF=None, Y_pred_EKF_std=None, 
+                                Y_pred_UKF=None, Y_pred_UKF_std=None, 
+                                Y_pred_DANSE=None, Y_pred_DANSE_std=None,
+                                Y_pred_DANSE_sup=None, Y_pred_DANSE_sup_std=None,
+                                Y_pred_KNET=None, Y_pred_KNET_std=None,
+                                savefig=False, savefig_name=None, sigma=1.0):
     
     # Creating 3d plot of the data
     #print(X.shape)
     
+    if Y.shape[-1] == 2:
+        T_start=33
+        T_end=165#X.shape[0]
+        idim=1
+        lw=1.3
+        #plt.rcParams['font.size'] = 16
+        plt.rcParams['font.family']='serif'
+        fig, ax = plt.subplots()
+        #plt.subplot(311)
+        if not Y_pred_UKF is None:
+            ax.plot(Y_pred_UKF[T_start:T_end,idim], 'x-',ms=5,color="orange",label='$\\hat{\mathbf{y}}_{UKF}$',lw=lw)
+            ax.fill_between(np.arange(Y_pred_UKF[T_start:T_end,idim].shape[0]), 
+                            Y_pred_UKF[T_start:T_end,idim] - sigma*Y_pred_UKF_std[T_start:T_end,idim], 
+                            Y_pred_UKF[T_start:T_end,idim] + sigma*Y_pred_UKF_std[T_start:T_end,idim],
+                            facecolor='orange', alpha=0.4)
+        if not Y_pred_DANSE is None:
+            ax.plot(Y_pred_DANSE[T_start:T_end,idim], 'rs-',label='$\\hat{\mathbf{y}}_{DANSE}$',lw=lw, ms=2)
+            ax.fill_between(np.arange(Y_pred_DANSE[T_start:T_end,idim].shape[0]), 
+                            Y_pred_DANSE[T_start:T_end,idim] - sigma*Y_pred_DANSE_std[T_start:T_end,idim], 
+                            Y_pred_DANSE[T_start:T_end,idim] + sigma*Y_pred_DANSE_std[T_start:T_end,idim],
+                            facecolor='red', alpha=0.4)
+        if not Y_pred_DANSE_sup is None:
+            ax.plot(Y_pred_DANSE_sup[T_start:T_end,idim], 'm^-',label='$\\hat{\mathbf{y}}_{DANSE-Supervised}$',lw=lw, ms=3)
+            ax.fill_between(np.arange(Y_pred_DANSE_sup[T_start:T_end,idim].shape[0]), 
+                            Y_pred_DANSE_sup[T_start:T_end,idim] - sigma*Y_pred_DANSE_sup_std[T_start:T_end,idim], 
+                            Y_pred_DANSE_sup[T_start:T_end,idim] + sigma*Y_pred_DANSE_sup_std[T_start:T_end,idim],
+                            facecolor='magenta', alpha=0.4)
+        if not Y_pred_KNET is None:
+            plt.plot(Y_pred_KNET[T_start:T_end,idim], 'c--.',label='$\\hat{\mathbf{y}}_{KalmanNet} $', lw=lw)
+            ax.fill_between(np.arange(Y_pred_KNET[T_start:T_end,idim].shape[0]), 
+                            Y_pred_KNET[T_start:T_end,idim] - sigma*Y_pred_KNET_std[T_start:T_end,idim], 
+                            Y_pred_KNET[T_start:T_end,idim] + sigma*Y_pred_KNET_std[T_start:T_end,idim],
+                            facecolor='cyan', alpha=0.4)
+        if not Y_pred_KF is None:
+            ax.plot(Y_pred_KF[T_start:T_end,idim], 'gv-',label='$\\hat{\mathbf{y}}_{KF}$',lw=lw, ms=1)
+            ax.fill_between(np.arange(Y_pred_KF[T_start:T_end,idim].shape[0]), 
+                            Y_pred_KF[T_start:T_end,idim] - sigma*Y_pred_KF_std[T_start:T_end,idim], 
+                            Y_pred_KF[T_start:T_end,idim] + sigma*Y_pred_KF_std[T_start:T_end,idim],
+                            facecolor='green', alpha=0.4)
+        if not Y_pred_EKF is None:
+            ax.plot(Y_pred_EKF[T_start:T_end,idim], 'b.-',label='$\\hat{\mathbf{y}}_{EKF}$',lw=lw)
+            ax.fill_between(np.arange(Y_pred_EKF[T_start:T_end,idim].shape[0]), 
+                            Y_pred_EKF[T_start:T_end,idim] - sigma*Y_pred_EKF_std[T_start:T_end,idim], 
+                            Y_pred_EKF[T_start:T_end,idim] + sigma*Y_pred_EKF_std[T_start:T_end,idim],
+                            facecolor='orange', alpha=0.4)
+        
+        ax.plot(Y[T_start:T_end,idim],'k-',label='$\\mathbf{x}^{true}$',lw=lw)
+
+        ax.set_ylabel('$y_{}$'.format(idim+1))
+        ax.set_xlabel('$t$')
+        #plt.legend()
+        #handles, labels = ax.get_legend_handles_labels()
+        #order=None
+        #if order is None:
+        #    order=range(len(handles))
+        #ax.legend([handles[idx] for idx in order], [labels[idx] for idx in order],ncol=5,loc=(-0.02,1.01),fontsize=14)
+        plt.legend()
+        plt.tight_layout()
+        
+    elif Y.shape[-1] > 2:
+        T_start= 650 #33
+        T_end= 1000 #165
+        idim=1
+        lw=1.3
+        #plt.rcParams['font.size'] = 16
+        plt.rcParams['font.family']='serif'
+        #fig, ax = plt.subplots(figsize=(12,7))
+        fig, ax = plt.subplots(figsize=(20,7))
+        #plt.subplot(311)
+        if not Y_pred_UKF is None:
+            ax.plot(Y_pred_UKF[T_start:T_end,idim], 'x-',ms=5,color="orange",label='$\\hat{\mathbf{y}}_{UKF}$',lw=lw)
+            ax.fill_between(np.arange(Y_pred_UKF[T_start:T_end,idim].shape[0]), 
+                            Y_pred_UKF[T_start:T_end,idim] - sigma*Y_pred_UKF_std[T_start:T_end,idim], 
+                            Y_pred_UKF[T_start:T_end,idim] + sigma*Y_pred_UKF_std[T_start:T_end,idim],
+                            facecolor='orange', alpha=0.4)
+        if not Y_pred_DANSE is None:
+            ax.plot(Y_pred_DANSE[T_start:T_end,idim], 'rs-',label='$\\hat{\mathbf{y}}_{DANSE}$',lw=lw, ms=2)
+            ax.fill_between(np.arange(Y_pred_DANSE[T_start:T_end,idim].shape[0]), 
+                            Y_pred_DANSE[T_start:T_end,idim] - sigma*Y_pred_DANSE_std[T_start:T_end,idim], 
+                            Y_pred_DANSE[T_start:T_end,idim] + sigma*Y_pred_DANSE_std[T_start:T_end,idim],
+                            facecolor='red', alpha=0.4)
+        if not Y_pred_DANSE_sup is None:
+            ax.plot(Y_pred_DANSE_sup[T_start:T_end,idim], 'm^-',label='$\\hat{\mathbf{y}}_{DANSE-Supervised}$',lw=lw, ms=3)
+            ax.fill_between(np.arange(Y_pred_DANSE_sup[T_start:T_end,idim].shape[0]), 
+                            Y_pred_DANSE_sup[T_start:T_end,idim] - sigma*Y_pred_DANSE_sup_std[T_start:T_end,idim], 
+                            Y_pred_DANSE_sup[T_start:T_end,idim] + sigma*Y_pred_DANSE_sup_std[T_start:T_end,idim],
+                            facecolor='magenta', alpha=0.4)
+        if not Y_pred_KNET is None:
+            plt.plot(Y_pred_KNET[T_start:T_end,idim], 'c--.',label='$\\hat{\mathbf{y}}_{KalmanNet} $', lw=lw)
+            ax.fill_between(np.arange(Y_pred_KNET[T_start:T_end,idim].shape[0]), 
+                            Y_pred_KNET[T_start:T_end,idim] - sigma*Y_pred_KNET_std[T_start:T_end,idim], 
+                            Y_pred_KNET[T_start:T_end,idim] + sigma*Y_pred_KNET_std[T_start:T_end,idim],
+                            facecolor='cyan', alpha=0.4)
+        if not Y_pred_KF is None:
+            ax.plot(Y_pred_KF[T_start:T_end,idim], 'gv-',label='$\\hat{\mathbf{y}}_{KF}$',lw=lw, ms=1)
+            ax.fill_between(np.arange(Y_pred_KF[T_start:T_end,idim].shape[0]), 
+                            Y_pred_KF[T_start:T_end,idim] - sigma*Y_pred_KF_std[T_start:T_end,idim], 
+                            Y_pred_KF[T_start:T_end,idim] + sigma*Y_pred_KF_std[T_start:T_end,idim],
+                            facecolor='green', alpha=0.4)
+        if not Y_pred_EKF is None:
+            ax.plot(Y_pred_EKF[T_start:T_end,idim], 'b.-',label='$\\hat{\mathbf{y}}_{EKF}$',lw=lw)
+            ax.fill_between(np.arange(Y_pred_EKF[T_start:T_end,idim].shape[0]), 
+                            Y_pred_EKF[T_start:T_end,idim] - sigma*Y_pred_EKF_std[T_start:T_end,idim], 
+                            Y_pred_EKF[T_start:T_end,idim] + sigma*Y_pred_EKF_std[T_start:T_end,idim],
+                            facecolor='orange', alpha=0.4)
+        
+        ax.plot(Y[T_start:T_end,idim],'k-',label='$\\mathbf{x}^{true}$',lw=lw)
+
+        ax.set_ylabel('$y_{}$'.format(idim+1))
+        ax.set_xlabel('$t$')
+        #plt.legend()
+        #handles, labels = ax.get_legend_handles_labels()
+        #order=None
+        #if order is None:
+        #    order=range(len(handles))
+        #ax.legend([handles[idx] for idx in order], [labels[idx] for idx in order],ncol=5,loc=(-0.02,1.01),fontsize=14)
+        plt.legend()
+        plt.tight_layout()
+
+    plt.tight_layout()
+    if savefig:
+        plt.savefig(savefig_name)
+        tikzplotlib.save(os.path.splitext(savefig_name)[0] + ".tex")
+    #plt.show()
+    return None
+
+def plot_3d_state_trajectory(X, legend='$\\mathbf{x}^{true}$', m='k-', savefig=False, savefig_name=None):
+    
+    # Creating 3d plot of the data
+    #print(X.shape)
+    plt.rcParams['font.size'] = 16
     if X.shape[-1] == 2:
         fig = plt.figure()
         ax = fig.add_subplot(111)
@@ -293,7 +430,7 @@ def plot_3d_measurment_trajectory(Y, legend='$\\mathbf{y}$', m='k-', savefig=Fal
     
     # Creating 3d plot of the data
     #print(X.shape)
-    
+    plt.rcParams['font.size'] = 16
     if Y.shape[-1] == 2:
         fig = plt.figure()
         ax = fig.add_subplot(111)
@@ -305,10 +442,16 @@ def plot_3d_measurment_trajectory(Y, legend='$\\mathbf{y}$', m='k-', savefig=Fal
     elif Y.shape[-1] > 2:
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
+        #ax.set_box_aspect((np.ptp(Y[:,0]), np.ptp(Y[:,1]), np.ptp(Y[:,2])))
+        #ax.set_box_aspect((1, 1, 1))
         ax.plot(Y[:,0], Y[:,1], Y[:,2], m)#, label=legend)
         ax.set_xlabel('$Y_1$')
         ax.set_ylabel('$Y_2$')
         ax.set_zlabel('$Y_3$')
+        #ax.axes.set_zlim3d([0, 60])
+        #ax.set_ylim3d([-25, 50])
+        #ax.axes.set_zlim3d([0, 50])
+        #ax.set_ylim([ymin, ymax])
         #plt.legend()
         plt.tight_layout()
 
@@ -472,7 +615,7 @@ def plot_state_trajectory_axes_all(X, X_est_KF=None, X_est_EKF=None, X_est_UKF=N
     # Creating 3d plot of the data
     #print(X.shape)
     Tx, _ = X.shape
-    T_end = 200
+    T_end = Tx
 
     if X.shape[-1] == 2:
         fig = plt.figure(figsize=(20,10))
@@ -508,7 +651,7 @@ def plot_state_trajectory_axes_all(X, X_est_KF=None, X_est_EKF=None, X_est_UKF=N
         plt.xlabel('$t$')
         plt.legend()
         
-    elif X.shape[-1] > 2:
+    elif X.shape[-1] > 2 and X.shape[-1] <= 3:
         
         fig = plt.figure(figsize=(20,10))
         plt.subplot(311)
@@ -551,6 +694,23 @@ def plot_state_trajectory_axes_all(X, X_est_KF=None, X_est_EKF=None, X_est_UKF=N
             plt.plot(X_est_UKF[:T_end,2], ':',label='$\\hat{\mathbf{x}}_{UKF} (z-component) $')
         plt.ylabel('$X_3$')
         plt.xlabel('$t$')
+        plt.legend()
+    
+    elif X.shape[-1] > 3:
+
+        nrows = int(np.round(X.shape[-1] / 5))
+        ncols = 5
+        plt.figure(figsize=(30,20))
+
+        for i in range(X.shape[-1]):
+            plt.subplot(nrows,ncols,i+1)
+            plt.plot(X[:T_end,i],'--',label='$\\mathbf{x}^{true}$')
+            if not X_est_DANSE is None:
+                plt.plot(X_est_DANSE[:T_end,i], '--',label='$\\hat{\mathbf{x}}_{DANSE}$')
+            #plt.title('State : {}'.format(i+1))
+            plt.xlabel('$t$')
+            plt.ylabel('$x_{}(t)$'.format(i+1))
+        
         plt.legend()
         
     plt.tight_layout()
