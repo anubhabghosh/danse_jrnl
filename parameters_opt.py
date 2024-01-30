@@ -360,7 +360,7 @@ def get_parameters(n_states=5, n_obs=5, device='cpu'):
             "n_states":n_states,
             "n_obs":n_obs,
             "delta":delta_t_L96,
-            "H":get_H_DANSE(type_="Lorenz96SSMrn{}".format(n_obs), n_states=n_states, n_obs=n_obs), # By default, H is initialized to an identity matrix
+            "H":get_H_DANSE(type_="Lorenz96SSMrwn{}".format(n_obs), n_states=n_states, n_obs=n_obs), # By default, H is initialized to an identity matrix
             "delta_d":delta_t_L96 / 2,
             "decimate":False,
             "mu_w":np.zeros((n_obs,)),
@@ -558,6 +558,51 @@ def get_parameters(n_states=5, n_obs=5, device='cpu'):
             "num_epochs":100,
             "batch_size":100,
             "device":device
+        },
+        "dmm":{
+            "obs_dim":n_obs,  # Dimension of the observation / input to RNN
+            "latent_dim":n_states, # Dimension of the latent state / output of RNN in case of state estimation
+            "use_mean_field_q":False, # Flag to indicate the use of mean-field q(x_{1:T} \vert y_{1:T})
+            "batch_size":64, # Batch size for training
+            "rnn_model_type":'gru', # Sets the type of RNN
+            "inference_mode":'st-l', # String to indicate the type of DMM inference mode (typically, we will use ST-L or MF-L)
+            "combiner_dim":40, # Dimension of hidden layer of combiner network
+            "train_emission":False, # Flag to indicate if emission network needs to be learned (True) or not (False)
+            "H":None, # Measurement matrix, in case of nontrainable emission network with linear measurement
+            "C_w":None, # Measurmenet noise cov. matrix, in case of nontrainable emission network with linear measurements
+            "emission_dim":40, # Dimension of hidden layer for emission network
+            "emission_num_layers":1, # No. of hidden layers for emission network
+            "emission_use_binary_obs":False, # Flag to indicate the modeling of binary observations or not
+            "train_transition":True, # Flag to indicate if transition network needs to be learned (True) or not (False)
+            "transition_dim":40, # Dimension of hidden layer for transition network
+            "transition_num_layers":2, # No. of hidden layers for transition network
+            "train_initials":False, # Set if the initial states also are learned uring the optimization 
+            "device":device,
+            "rnn_params_dict":{
+                "gru":{
+                    "model_type":"gru", # Type of RNN used (GRU / LSTM / RNN)
+                    "input_size":n_obs, # Input size of the RNN
+                    "output_size":n_states, # Output size of the RNN
+                    "batch_first":True, # Flag to indicate the input tensor is of the form (batch_size x seq_length x input_dim)
+                    "bias":True, # Use bias in RNNs
+                    "n_hidden":40, # Dimension of the RNN latent space
+                    "n_layers":1, # No. of RNN layers
+                    "bidirectional":False, # In case of using DKS say then set this to True
+                    "dropout":0.0, # In case of using RNN dropout
+                    "device":device # Device to set the RNN
+                },
+            },
+            "optimizer_params": {
+                "type": "Adam",
+                "args":{
+                    "lr": 5e-3, # Learning rate 
+                    "weight_decay": 0.0, # Weight decay 
+                    "amsgrad": True, # AMS Grad mode to be used for RNN
+                    "betas": [0.9, 0.999] # Betas for Adam
+                },
+                "num_epochs":5000, # Number of epochs
+                "min_delta":1e-3, # Sets the delta to control the early stopping
+            },
         }
     }
 

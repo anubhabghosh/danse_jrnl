@@ -290,9 +290,9 @@ if __name__ == "__main__":
     # Testing parameters 
     T_test = 1000
     N_test = 100
-    sigma_e2_dB_test = -20.0
+    sigma_e2_dB_test = -10.0
     device = 'cpu'
-    evaluation_mode = 'full_opt_sigmae2_{}'.format(sigma_e2_dB_test)
+    evaluation_mode = 'full_opt_sigmae2_{}_N_5000'.format(sigma_e2_dB_test)
     smnr_dB_arr = np.array([-10.0,0.0,10.0,20.0,30.0])
     
     os.makedirs('./figs/LinearModel/{}'.format(evaluation_mode), exist_ok=True)
@@ -322,8 +322,10 @@ if __name__ == "__main__":
     model_file_saved_dict_knet = {}
 
     for smnr_dB in smnr_dB_arr:
-        model_file_saved_dict_danse["{}dB".format(smnr_dB)] = glob.glob("./models/*Linear*danse_opt*sigmae2_{}dB_smnr_{}dB*/*best*".format(sigma_e2_dB_test, smnr_dB))[-1]
+        model_file_saved_dict_danse["{}dB".format(smnr_dB)] = glob.glob("./models/*Linear*danse_opt*N_5000_sigmae2_{}dB_smnr_{}dB*/*best*".format(sigma_e2_dB_test, smnr_dB))[-1]
         #model_file_saved_dict_knet["{}dB".format(smnr_dB)] = glob.glob("./models/*Linear*KNetUoffline*sigmae2_{}dB_smnr_{}dB*/*best*".format(sigma_e2_dB_test, smnr_dB))[-1]
+
+    print(model_file_saved_dict_danse)
 
     test_data_file_dict = {}
 
