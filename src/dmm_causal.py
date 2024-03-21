@@ -533,12 +533,12 @@ def train_dmm(model, options, optimizer_params, train_loader, val_loader, logfil
             # Displaying loss at an interval of 200 epochs
             if tr_verbose == True and (((epoch + 1) % 50) == 0 or epoch == 0):
                 
-                print("Epoch: {}/{}, Training: NLL:{:.4f}, KL :{:.4f}, NVLB:{:.4f}, Val: NLL:{:.4f}, KL :{:.4f}, NVLB:{:.4f}, MSE:{:.6f}".format(epoch+1, 
-                nepochs, tr_nll_loss, tr_kl_loss, tr_nvlb_loss, val_nll_loss, val_kl_loss, val_nvlb_loss, val_mse_loss), file=orig_stdout)
+                print("Epoch: {}/{}, Training: NLL:{:.4f}, KL :{:.4f}, NVLB:{:.4f}, Val: NLL:{:.4f}, KL :{:.4f}, NVLB:{:.4f}, MSE:{:.6f}, Time elapsed: {} s".format(epoch+1, 
+                nepochs, tr_nll_loss, tr_kl_loss, tr_nvlb_loss, val_nll_loss, val_kl_loss, val_nvlb_loss, val_mse_loss, time_elapsed), file=orig_stdout)
                 #save_model(model, model_filepath + "/" + "{}_ckpt_epoch_{}.pt".format(model.model_type, epoch+1))
-
-                print("Epoch: {}/{}, Training: NLL:{:.4f}, KL :{:.4f}, NVLB:{:.4f}, Val: NLL:{:.4f}, KL :{:.4f}, NVLB:{:.4f}, MSE:{:.6f}".format(epoch+1, 
-                nepochs, tr_nll_loss, tr_kl_loss, tr_nvlb_loss, val_nll_loss, val_kl_loss, val_nvlb_loss, val_mse_loss))
+                
+                print("Epoch: {}/{}, Training: NLL:{:.4f}, KL :{:.4f}, NVLB:{:.4f}, Val: NLL:{:.4f}, KL :{:.4f}, NVLB:{:.4f}, MSE:{:.6f}, Time elapsed: {} s".format(epoch+1, 
+                nepochs, tr_nll_loss, tr_kl_loss, tr_nvlb_loss, val_nll_loss, val_kl_loss, val_nvlb_loss, val_mse_loss, time_elapsed))
             
             # Checkpointing the model every few  epochs
             #if (((epoch + 1) % 500) == 0 or epoch == 0) and save_chkpoints == True:     

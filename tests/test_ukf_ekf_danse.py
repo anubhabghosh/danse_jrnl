@@ -494,7 +494,6 @@ if __name__ == "__main__":
         t_danse_arr[i] = time_elapsed_danse_i
         t_knet_arr[i] = time_elapsed_knet_i
     
-    '''
     test_stats = {}
     test_stats['UKF_mean_nmse'] = nmse_ukf_arr
     test_stats['EKF_mean_nmse'] = nmse_ekf_arr
@@ -574,5 +573,4 @@ if __name__ == "__main__":
     #plt.subplot(212)
     tikzplotlib.save('./figs/LorenzModel/{}/MSE_vs_SMNR_Lorenz_w_knet.tex'.format(evaluation_mode))
     plt.savefig('./figs/LorenzModel/{}/MSE_vs_SMNR_Lorenz_w_knet.pdf'.format(evaluation_mode))
-    '''
     #plt.show()

@@ -1,6 +1,10 @@
-# DANSE: Data-driven Non-linear State Estimation of Model-free Process Using Unsupervised Learning
+# DANSE: Data-driven Non-linear State Estimation of Model-free Process in Unsupervised Learning Setup
 
-### Under review in IEEE-TSP (June 2023)
+This is the repository for implementing a nonlinear state estimation of a model-free process with Linear measurements 
+
+Pre-print: [https://arxiv.org/abs/2306.03897](https://arxiv.org/abs/2306.03897)
+
+**Accepted in IEEE Transactions on Signal Processing (IEEE-TSP) (March 2024)**
 
 ## Authors
 Anubhab Ghosh (anubhabg@kth.se), Antoine Honoré (honore@kth.se), Saikat Chatterjee (sach@kth.se)
@@ -10,6 +14,7 @@ Anubhab Ghosh (anubhabg@kth.se), Antoine Honoré (honore@kth.se), Saikat Chatter
 - Python (>= 3.7.0) with standard packages as part of an Anaconda installation such as Numpy, Scipy, Matplotlib etc.
 - Filterpy (1.4.5) (for implementation of Unscented Kalman Filter (UKF)): [https://filterpy.readthedocs.io/en/latest/](https://filterpy.readthedocs.io/en/latest/)
 - Jupyter notebook (>= 6.4.6) (for result analysis)
+- Tikzplotlib (for figures) [https://github.com/nschloe/tikzplotlib](https://github.com/nschloe/tikzplotlib)
 
 ## Reference models (implemented in PyTorch)
 
@@ -27,17 +32,17 @@ This would be required organization of files and folders for reproducing results
 ````
 - data/ (contains stored datasets in .pkl files)
 - src/ (contains model related files)
-| - danse.py 
+| - danse.py (for training the unsupervised version of DANSE)
+| - danse_supervised.py (for training the supervised version of DANSE, refer to section 2.E of the paper)
 | - ekf.py
 |···
 - log/ (contains training and evaluation logs, losses in `.json`, `.log` files)
 - models/ (contains saved model checkpoints saved as `.pt` files)
 - figs/ (contains resulting model figures)
 - utils/ (contains helping functions for \src\, etc.)
-- figs/ (contains result figures)
 - tests/ (contains files and functions for evaluation at test time)
-- parameters.py (Pythnon file containing relevant parameters for different architectures)
-- main_danse.py (main function for calling training 'DANSE' model)
+- parameters_opt.py (Pythnon file containing relevant parameters for different architectures)
+- main_danse_opt.py (main function for calling training 'DANSE' model)
 - main_kalmannet.py (main function for calling reference training 'KalmanNet' model)
 - ssm_models.py (contains code for implementing state space models)
 - generate_data.py (contains code for generating training datasets)
@@ -45,23 +50,26 @@ This would be required organization of files and folders for reproducing results
 
 ## Brief outline of DANSE training
 
-1. Generate data by calling `generate_data.py`. This can be done in a simple manner by editing and calling the shell script `run_generate_data.sh`. Data gets stored at `data/synthetic_data/`. For e.g. to generate trajectory data with 500 samples with each trajetcoyr of length 1000, from a Lorenz Attractor model (m=3, n=3), with $\frac{1}{r^2}= 20$ dB, and $\nu=$-20 dB, the syntax should be 
+1. Generate data by calling `generate_data.py`. This can be done in a simple manner by editing and calling the shell script `run_generate_data.sh`. Data gets stored at `data/synthetic_data/`. For e.g. to generate trajectory data with 500 samples with each trajetcoyr of length 1000, from a Lorenz Attractor model (m=3, n=3), with $\sigma_{e}^{2}= -20$ dB, and $\text{SMNR}$ = $0$ dB, the syntax should be 
 ````
-[python interpreter e.g. python3.8] generate_data.py --n_states 3 --n_obs 3 --num_samples 500 --sequence_length 1000 --inverse_r2_dB 20 --nu_dB -20 --dataset_type LorenzSSM --output_path [dataset location e.g. ./data/synthetic_data/] \
+[python interpreter e.g. python3.8] generate_data.py --n_states 3 --n_obs 3 --num_samples 500 --sequence_length 1000 --sigma_e2_dB -20 --smnr -20 --dataset_type LorenzSSM --output_path [dataset location e.g. ./data/synthetic_data/] \
 ````
 
-2. Edit the parameters as per user choice to set architecture for DANSE in `parameters.py`.
+The state space models are coded in `ssm_moddels.py`, and mainly for nonlinear SSMs, the LorenzSSM class is required. The parameter `alpha` decides whether to simulate a Lorenz attractor (`alpha=0`) or a Chen attractor (`alpha=1`)
+
+2. Edit the parameters as per user choice to set architecture for DANSE in `parameters_opt.py`.
 
 3. Run the training for DANSE by calling `main_danse.py`. This can be done in a simple manner by editing and calling the shell script 
 `run_main_danse.sh`. Ensure that directories `/log/` and `/models/` have been created. E.g. to run a DANSE model employing a GRU architecture as the RNN, using the Lorenz attractor dataset as described above, the syntax should be 
 ```
-python3.8 main_danse.py \
+[python interpreter e.g. python3.8] main_danse.py \
 --mode train \
 --rnn_model_type gru \
 --dataset_type LorenzSSM \
---datafile [full path to dataset, e.g. ./data/synthetic_data/trajectories_m_3_n_3_LorenzSSM_data_T_1000_N_500_r2_40.0dB_nu_-20dB.pkl] \
---splits ./data/synthetic_data/splits.pkl
+--datafile [full path to dataset, e.g. ./data/synthetic_data/trajectories_m_3_n_3_LorenzSSM_data_N_500_T_1000_sigmae2_-20.0dB_smnr_10.0dB.pkl] \
+--splits ./data/synthetic_data/splits_m_3_n_3_LorenzSSM_data_N_500_T_1000_sigmae2_-20.0dB_smnr_10.0dB.pkl
 ```
+`N` denotes the number of sample trajectories, `T` denotes the length of each sample trajectory. In the `.sh` file, you may find also the variable `n_obs` that denotes the dimension of the observation vector (denoted by $n$ in the paper). The number of states (`n_states`) for the `LorenzSSM` models should be always kept at 3. Assume also, for most cases `n_obs = 3`.
 
 4. Run the training for the unsupervised KalmanNet by calling `main_kalmannet.py`. Also posible in similar manner as `run_main_knet_gpu1.sh`. Parameters have to be edited in `parameters.py`.
 
@@ -73,6 +81,10 @@ Can be run by calling the script `main_danse_gs.py` with grid-search parameters 
 
 Once files are created, the evaluation can be done by calling scripts in `/tests/`. Paths to model files and log files should be edited in the script directly. 
 
+````
+[python interpreter e.g. python3.8] tests/test_ukf_ekf_danse.py
+````
+
 1. Linear model ($2 \times 2$ model) comparison: `/tests/test_kf_linear_2x2.py`
 2. Lorenz model comparsion: `/tests/test_ukf_ekf_danse.py`.
-
+3. Chen model comparison: `/tests/test_ukf_ekf_danse_Chen.py`

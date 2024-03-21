@@ -600,8 +600,8 @@ def get_parameters(n_states=5, n_obs=5, device='cpu'):
                     "amsgrad": True, # AMS Grad mode to be used for RNN
                     "betas": [0.9, 0.999] # Betas for Adam
                 },
-                "num_epochs":5000, # Number of epochs
-                "min_delta":1e-3, # Sets the delta to control the early stopping
+                "num_epochs":2000, # Number of epochs
+                "min_delta":5e-2, # Sets the delta to control the early stopping
             },
         }
     }

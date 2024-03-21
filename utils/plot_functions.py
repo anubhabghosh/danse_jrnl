@@ -10,7 +10,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import tikzplotlib
 import os
 
-def plot_state_trajectory(X, X_est_KF=None, X_est_EKF=None, X_est_UKF=None, X_est_DANSE=None, X_est_DMM=None, X_est_KNET=None, savefig=False, savefig_name=None):
+def plot_state_trajectory(X, X_est_KF=None, X_est_EKF=None, X_est_UKF=None, X_est_DANSE=None,  X_est_DANSE_sup=None,  X_est_DMM=None, X_est_KNET=None, savefig=False, savefig_name=None):
     
     # Creating 3d plot of the data
     #print(X.shape)
@@ -49,6 +49,8 @@ def plot_state_trajectory(X, X_est_KF=None, X_est_EKF=None, X_est_UKF=None, X_es
             ax.plot(X_est_KNET[:,0], X_est_KNET[:,1], X_est_KNET[:,2], 'c--.',label='$\\hat{\mathbf{x}}_{KalmanNet}$', lw=1.3)
         if not X_est_DANSE is None:
             ax.plot(X_est_DANSE[:,0], X_est_DANSE[:,1], X_est_DANSE[:,2], 'r--',label='$\\hat{\mathbf{x}}_{DANSE}$', lw=1.3)
+        if not X_est_DANSE_sup is None:
+            ax.plot(X_est_DANSE_sup[:,0], X_est_DANSE_sup[:,1], X_est_DANSE_sup[:,2], 'm--',label='$\\hat{\mathbf{x}}_{DANSE-Sup.}$', lw=1.3)
         if not X_est_DMM is None:
             ax.plot(X_est_DMM[:,0], X_est_DMM[:,1], X_est_DMM[:,2], 'y--',label='$\\hat{\mathbf{x}}_{DMM}$', lw=1.3)
         ax.set_xlabel('$X_1$')
@@ -532,21 +534,21 @@ def plot_state_trajectory_axes(
     if X.shape[-1] == 1:
         fig = plt.figure(figsize=(20,10))
         plt.subplot(111)
-        plt.plot(X[:T_end,0],'--',label='$\\mathbf{x}^{true} (x-component) $')
+        plt.plot(X[:T_end,0],'--',label='$\\mathbf{x}^{true} $')
         if not X_est_KF is None:
-            plt.plot(X_est_KF[:T_end,0], 'g:',label='$\\hat{\mathbf{x}}_{KF} (x-component) $')
+            plt.plot(X_est_KF[:T_end,0], 'g:',label='$\\hat{\mathbf{x}}_{KF} $')
         if not X_est_DANSE is None:
-            plt.plot(X_est_DANSE[:T_end,0], 'r--',label='$\\hat{\mathbf{x}}_{DANSE} (x-component) $')
+            plt.plot(X_est_DANSE[:T_end,0], 'r--',label='$\\hat{\mathbf{x}}_{DANSE} $')
         if not X_est_DANSE_sup is None:
-            plt.plot(X_est_DANSE_sup[:T_end,0], 'm--',label='$\\hat{\mathbf{x}}_{DANSE-Supervised} (x-component) $')
+            plt.plot(X_est_DANSE_sup[:T_end,0], 'm--',label='$\\hat{\mathbf{x}}_{DANSE-Supervised}  $')
         if not X_est_DMM is None:
-            plt.plot(X_est_DMM[:T_end,0], 'y.-',label='$\\hat{\mathbf{x}}_{DMM} (x-component) $')
+            plt.plot(X_est_DMM[:T_end,0], 'y.-',label='$\\hat{\mathbf{x}}_{DMM}  $')
         if not X_est_KNET is None:
-            plt.plot(X_est_KNET[:T_end,0], 'c--.',label='$\\hat{\mathbf{x}}_{KalmanNet} (x-component) $')
+            plt.plot(X_est_KNET[:T_end,0], 'c--.',label='$\\hat{\mathbf{x}}_{KalmanNet}$')
         if not X_est_EKF is None:
-            plt.plot(X_est_EKF[:T_end,0], 'b.-',label='$\\hat{\mathbf{x}}_{EKF} (x-component) $')
+            plt.plot(X_est_EKF[:T_end,0], 'b.-',label='$\\hat{\mathbf{x}}_{EKF}  $')
         if not X_est_UKF is None:
-            plt.plot(X_est_UKF[:T_end,0], '-x',ms=4,color="orange",label='$\\hat{\mathbf{x}}_{UKF} (x-component) $')
+            plt.plot(X_est_UKF[:T_end,0], '-x',ms=4,color="orange",label='$\\hat{\mathbf{x}}_{UKF}  $')
         plt.ylabel('$X_1$')
         plt.xlabel('$t$')
         plt.legend()
@@ -554,41 +556,41 @@ def plot_state_trajectory_axes(
     if X.shape[-1] == 2:
         fig = plt.figure(figsize=(20,10))
         plt.subplot(311)
-        plt.plot(X[:T_end,0],'--',label='$\\mathbf{x}^{true} (x-component) $')
+        plt.plot(X[:T_end,0],'--',label='$\\mathbf{x}^{true}  $')
         if not X_est_KF is None:
-            plt.plot(X_est_KF[:T_end,0], 'g:',label='$\\hat{\mathbf{x}}_{KF} (x-component) $')
+            plt.plot(X_est_KF[:T_end,0], 'g:',label='$\\hat{\mathbf{x}}_{KF}$')
         if not X_est_DANSE is None:
-            plt.plot(X_est_DANSE[:T_end,0], 'r--',label='$\\hat{\mathbf{x}}_{DANSE} (x-component) $')
+            plt.plot(X_est_DANSE[:T_end,0], 'r--',label='$\\hat{\mathbf{x}}_{DANSE} $')
         if not X_est_DMM is None:
-            plt.plot(X_est_DMM[:T_end,0], 'y.-',label='$\\hat{\mathbf{x}}_{DMM} (x-component) $')
+            plt.plot(X_est_DMM[:T_end,0], 'y.-',label='$\\hat{\mathbf{x}}_{DMM} $')
         if not X_est_DANSE_sup is None:
-            plt.plot(X_est_DANSE_sup[:T_end,0], 'm--',label='$\\hat{\mathbf{x}}_{DANSE-Supervised} (x-component) $')
+            plt.plot(X_est_DANSE_sup[:T_end,0], 'm--',label='$\\hat{\mathbf{x}}_{DANSE-Supervised} $')
         if not X_est_KNET is None:
-            plt.plot(X_est_KNET[:T_end,0], 'c--.',label='$\\hat{\mathbf{x}}_{KalmanNet} (x-component) $')
+            plt.plot(X_est_KNET[:T_end,0], 'c--.',label='$\\hat{\mathbf{x}}_{KalmanNet}$')
         if not X_est_EKF is None:
-            plt.plot(X_est_EKF[:T_end,0], 'b.-',label='$\\hat{\mathbf{x}}_{EKF} (x-component) $')
+            plt.plot(X_est_EKF[:T_end,0], 'b.-',label='$\\hat{\mathbf{x}}_{EKF} $')
         if not X_est_UKF is None:
-            plt.plot(X_est_UKF[:T_end,0], '-x',ms=4,color="orange",label='$\\hat{\mathbf{x}}_{UKF} (x-component) $')
+            plt.plot(X_est_UKF[:T_end,0], '-x',ms=4,color="orange",label='$\\hat{\mathbf{x}}_{UKF} $')
         plt.ylabel('$X_1$')
         plt.xlabel('$t$')
         plt.legend()
 
         plt.subplot(312)
-        plt.plot(X[:T_end,1], '--',label='$\\mathbf{x}^{true} (y-component)$')
+        plt.plot(X[:T_end,1], '--',label='$\\mathbf{x}^{true} $')
         if not X_est_DANSE is None:
-            plt.plot(X_est_DANSE[:T_end,1], 'r--',label='$\\hat{\mathbf{x}}_{DANSE} (y-component) $')
+            plt.plot(X_est_DANSE[:T_end,1], 'r--',label='$\\hat{\mathbf{x}}_{DANSE} ')
         if not X_est_DMM is None:
-            plt.plot(X_est_DMM[:T_end,1], 'y.-',label='$\\hat{\mathbf{x}}_{DMM} (y-component) $')
+            plt.plot(X_est_DMM[:T_end,1], 'y.-',label='$\\hat{\mathbf{x}}_{DMM}  $')
         if not X_est_DANSE_sup is None:
-            plt.plot(X_est_DANSE_sup[:T_end,1], 'm--',label='$\\hat{\mathbf{x}}_{DANSE-Supervised} (y-component) $')
+            plt.plot(X_est_DANSE_sup[:T_end,1], 'm--',label='$\\hat{\mathbf{x}}_{DANSE-Supervised}  $')
         if not X_est_KNET is None:
-            plt.plot(X_est_KNET[:T_end,1], 'c--.',label='$\\hat{\mathbf{x}}_{KalmanNet} (y-component) $')
+            plt.plot(X_est_KNET[:T_end,1], 'c--.',label='$\\hat{\mathbf{x}}_{KalmanNet}  $')
         if not X_est_KF is None:
-            plt.plot(X_est_KF[:T_end,1], 'g:',label='$\\hat{\mathbf{x}}_{KF} (y-component) $')
+            plt.plot(X_est_KF[:T_end,1], 'g:',label='$\\hat{\mathbf{x}}_{KF}  $')
         if not X_est_EKF is None:
-            plt.plot(X_est_EKF[:T_end,1], 'b.-',label='$\\hat{\mathbf{x}}_{EKF} (y-component) $')
+            plt.plot(X_est_EKF[:T_end,1], 'b.-',label='$\\hat{\mathbf{x}}_{EKF} $')
         if not X_est_UKF is None:
-            plt.plot(X_est_UKF[:T_end,1], 'x-',ms=4,color="orange",label='$\\hat{\mathbf{x}}_{UKF} (y-component) $')
+            plt.plot(X_est_UKF[:T_end,1], 'x-',ms=4,color="orange",label='$\\hat{\mathbf{x}}_{UKF}$')
         plt.ylabel('$X_2$')
         plt.xlabel('$t$')
         plt.legend()
@@ -631,29 +633,29 @@ def plot_state_trajectory_axes(
         
         '''
         plt.subplot(312)
-        plt.plot(X[:T_end,1], '--',label='$\\mathbf{x}^{true} (y-component)$')
+        plt.plot(X[:T_end,1], '--',label='$\\mathbf{x}^{true} $')
         if not X_est_DANSE is None:
-            plt.plot(X_est_DANSE[:T_end,1], '--',label='$\\hat{\mathbf{x}}_{DANSE} (y-component) $')
+            plt.plot(X_est_DANSE[:T_end,1], '--',label='$\\hat{\mathbf{x}}_{DANSE}  $')
         if not X_est_KF is None:
-            plt.plot(X_est_KF[:T_end,1], ':',label='$\\hat{\mathbf{x}}_{KF} (y-component) $')
+            plt.plot(X_est_KF[:T_end,1], ':',label='$\\hat{\mathbf{x}}_{KF}  $')
         if not X_est_EKF is None:
-            plt.plot(X_est_EKF[:T_end,1], ':',label='$\\hat{\mathbf{x}}_{EKF} (y-component) $')
+            plt.plot(X_est_EKF[:T_end,1], ':',label='$\\hat{\mathbf{x}}_{EKF}  $')
         if not X_est_UKF is None:
-            plt.plot(X_est_UKF[:T_end,1], ':',label='$\\hat{\mathbf{x}}_{UKF} (y-component) $')
+            plt.plot(X_est_UKF[:T_end,1], ':',label='$\\hat{\mathbf{x}}_{UKF}  $')
         plt.ylabel('$X_2$')
         plt.xlabel('$t$')
         plt.legend()
     
         plt.subplot(313)
-        plt.plot(X[:T_end,2],'--',label='$\\mathbf{x}^{true} (z-component)$')
+        plt.plot(X[:T_end,2],'--',label='$\\mathbf{x}^{true} $')
         if not X_est_DANSE is None:
-            plt.plot(X_est_DANSE[:T_end,2], '--',label='$\\hat{\mathbf{x}}_{DANSE} (z-component) $')
+            plt.plot(X_est_DANSE[:T_end,2], '--',label='$\\hat{\mathbf{x}}_{DANSE}  $')
         if not X_est_KF is None:
-            plt.plot(X_est_KF[:T_end,2], ':',label='$\\hat{\mathbf{x}}_{KF} (z-component) $')
+            plt.plot(X_est_KF[:T_end,2], ':',label='$\\hat{\mathbf{x}}_{KF}  $')
         if not X_est_EKF is None:
-            plt.plot(X_est_EKF[:T_end,2], ':',label='$\\hat{\mathbf{x}}_{EKF} (z-component) $')
+            plt.plot(X_est_EKF[:T_end,2], ':',label='$\\hat{\mathbf{x}}_{EKF}  $')
         if not X_est_UKF is None:
-            plt.plot(X_est_UKF[:T_end,2], ':',label='$\\hat{\mathbf{x}}_{UKF} (z-component) $')
+            plt.plot(X_est_UKF[:T_end,2], ':',label='$\\hat{\mathbf{x}}_{UKF}  $')
         plt.ylabel('$X_3$')
         plt.xlabel('$t$')
         plt.legend()
@@ -665,7 +667,7 @@ def plot_state_trajectory_axes(
     #plt.show()
     return None
 
-def plot_state_trajectory_axes_all(X, X_est_KF=None, X_est_EKF=None, X_est_UKF=None, X_est_KNET=None, X_est_DMM=None, X_est_DANSE=None, savefig=False, savefig_name=None):
+def plot_state_trajectory_axes_all(X, X_est_KF=None, X_est_EKF=None, X_est_UKF=None, X_est_KNET=None, X_est_DMM=None, X_est_DANSE=None, X_est_DANSE_sup=None, savefig=False, savefig_name=None):
     
     # Creating 3d plot of the data
     #print(X.shape)
@@ -675,19 +677,19 @@ def plot_state_trajectory_axes_all(X, X_est_KF=None, X_est_EKF=None, X_est_UKF=N
     if X.shape[-1] == 1:
         fig = plt.figure(figsize=(20,10))
         plt.subplot(111)
-        plt.plot(X[:T_end,0],'--',label='$\\mathbf{x}^{true} (x-component) $')
+        plt.plot(X[:T_end,0],'--',label='$\\mathbf{x}^{true}  $')
         if not X_est_KF is None:
-            plt.plot(X_est_KF[:T_end,0], 'g:',label='$\\hat{\mathbf{x}}_{KF} (x-component) $')
+            plt.plot(X_est_KF[:T_end,0], 'g:',label='$\\hat{\mathbf{x}}_{KF} $')
         if not X_est_DANSE is None:
-            plt.plot(X_est_DANSE[:T_end,0], 'r--',label='$\\hat{\mathbf{x}}_{DANSE} (x-component) $')
+            plt.plot(X_est_DANSE[:T_end,0], 'r--',label='$\\hat{\mathbf{x}}_{DANSE} $')
         if not X_est_DMM is None:
-            plt.plot(X_est_DMM[:T_end,0], 'y.-',label='$\\hat{\mathbf{x}}_{DMM} (x-component) $')
+            plt.plot(X_est_DMM[:T_end,0], 'y.-',label='$\\hat{\mathbf{x}}_{DMM}$')
         if not X_est_KNET is None:
-            plt.plot(X_est_KNET[:T_end,0], 'c--.',label='$\\hat{\mathbf{x}}_{KalmanNet} (x-component) $')
+            plt.plot(X_est_KNET[:T_end,0], 'c--.',label='$\\hat{\mathbf{x}}_{KalmanNet}  $')
         if not X_est_EKF is None:
-            plt.plot(X_est_EKF[:T_end,0], 'b.-',label='$\\hat{\mathbf{x}}_{EKF} (x-component) $')
+            plt.plot(X_est_EKF[:T_end,0], 'b.-',label='$\\hat{\mathbf{x}}_{EKF}  $')
         if not X_est_UKF is None:
-            plt.plot(X_est_UKF[:T_end,0], '-x',ms=4,color="orange",label='$\\hat{\mathbf{x}}_{UKF} (x-component) $')
+            plt.plot(X_est_UKF[:T_end,0], '-x',ms=4,color="orange",label='$\\hat{\mathbf{x}}_{UKF}  $')
         plt.ylabel('$X_1$')
         plt.xlabel('$t$')
         plt.legend()
@@ -695,37 +697,37 @@ def plot_state_trajectory_axes_all(X, X_est_KF=None, X_est_EKF=None, X_est_UKF=N
     if X.shape[-1] == 2:
         fig = plt.figure(figsize=(20,10))
         plt.subplot(311)
-        plt.plot(X[:T_end,0],'--',label='$\\mathbf{x}^{true} (x-component) $')
+        plt.plot(X[:T_end,0],'--',label='$\\mathbf{x}^{true}  $')
         if not X_est_KF is None:
-            plt.plot(X_est_KF[:T_end,0], 'g:',label='$\\hat{\mathbf{x}}_{KF} (x-component) $')
+            plt.plot(X_est_KF[:T_end,0], 'g:',label='$\\hat{\mathbf{x}}_{KF}  $')
         if not X_est_DANSE is None:
-            plt.plot(X_est_DANSE[:T_end,0], 'r--',label='$\\hat{\mathbf{x}}_{DANSE} (x-component) $')
+            plt.plot(X_est_DANSE[:T_end,0], 'r--',label='$\\hat{\mathbf{x}}_{DANSE}  $')
         if not X_est_DMM is None:
-            plt.plot(X_est_DMM[:T_end,0], 'y.-',label='$\\hat{\mathbf{x}}_{DMM} (x-component) $')
+            plt.plot(X_est_DMM[:T_end,0], 'y.-',label='$\\hat{\mathbf{x}}_{DMM}  $')
         if not X_est_KNET is None:
-            plt.plot(X_est_KNET[:T_end,0], 'c--.',label='$\\hat{\mathbf{x}}_{KalmanNet} (x-component) $')
+            plt.plot(X_est_KNET[:T_end,0], 'c--.',label='$\\hat{\mathbf{x}}_{KalmanNet}  $')
         if not X_est_EKF is None:
-            plt.plot(X_est_EKF[:T_end,0], 'b.-',label='$\\hat{\mathbf{x}}_{EKF} (x-component) $')
+            plt.plot(X_est_EKF[:T_end,0], 'b.-',label='$\\hat{\mathbf{x}}_{EKF}  $')
         if not X_est_UKF is None:
-            plt.plot(X_est_UKF[:T_end,0], '-x',ms=4,color="orange",label='$\\hat{\mathbf{x}}_{UKF} (x-component) $')
+            plt.plot(X_est_UKF[:T_end,0], '-x',ms=4,color="orange",label='$\\hat{\mathbf{x}}_{UKF}  $')
         plt.ylabel('$X_1$')
         plt.xlabel('$t$')
         plt.legend()
 
         plt.subplot(312)
-        plt.plot(X[:T_end,1], '--',label='$\\mathbf{x}^{true} (y-component)$')
+        plt.plot(X[:T_end,1], '--',label='$\\mathbf{x}^{true} $')
         if not X_est_DANSE is None:
-            plt.plot(X_est_DANSE[:T_end,1], 'r--',label='$\\hat{\mathbf{x}}_{DANSE} (y-component) $')
+            plt.plot(X_est_DANSE[:T_end,1], 'r--',label='$\\hat{\mathbf{x}}_{DANSE}  $')
         if not X_est_DMM is None:
-            plt.plot(X_est_DMM[:T_end,1], 'y.-',label='$\\hat{\mathbf{x}}_{DMM} (y-component) $')
+            plt.plot(X_est_DMM[:T_end,1], 'y.-',label='$\\hat{\mathbf{x}}_{DMM}  $')
         if not X_est_KNET is None:
-            plt.plot(X_est_KNET[:T_end,1], 'c--.',label='$\\hat{\mathbf{x}}_{KalmanNet} (y-component) $')
+            plt.plot(X_est_KNET[:T_end,1], 'c--.',label='$\\hat{\mathbf{x}}_{KalmanNet}  $')
         if not X_est_KF is None:
-            plt.plot(X_est_KF[:T_end,1], 'g:',label='$\\hat{\mathbf{x}}_{KF} (y-component) $')
+            plt.plot(X_est_KF[:T_end,1], 'g:',label='$\\hat{\mathbf{x}}_{KF}  $')
         if not X_est_EKF is None:
-            plt.plot(X_est_EKF[:T_end,1], 'b.-',label='$\\hat{\mathbf{x}}_{EKF} (y-component) $')
+            plt.plot(X_est_EKF[:T_end,1], 'b.-',label='$\\hat{\mathbf{x}}_{EKF}  $')
         if not X_est_UKF is None:
-            plt.plot(X_est_UKF[:T_end,1], 'x-',ms=4,color="orange",label='$\\hat{\mathbf{x}}_{UKF} (y-component) $')
+            plt.plot(X_est_UKF[:T_end,1], 'x-',ms=4,color="orange",label='$\\hat{\mathbf{x}}_{UKF}  $')
         plt.ylabel('$X_2$')
         plt.xlabel('$t$')
         plt.legend()
@@ -734,49 +736,55 @@ def plot_state_trajectory_axes_all(X, X_est_KF=None, X_est_EKF=None, X_est_UKF=N
         
         fig = plt.figure(figsize=(20,10))
         plt.subplot(311)
-        plt.plot(X[:T_end,0], '--',label='$\\mathbf{x}^{true} (x-component)$')
+        plt.plot(X[:T_end,0], '--',label='$\\mathbf{x}^{true} $')
         if not X_est_DANSE is None:
-            plt.plot(X_est_DANSE[:T_end,0], '--',label='$\\hat{\mathbf{x}}_{DANSE} (x-component) $')
+            plt.plot(X_est_DANSE[:T_end,0], '--',label='$\\hat{\mathbf{x}}_{DANSE}  $')
+        if not X_est_DANSE_sup is None:
+            plt.plot(X_est_DANSE_sup[:T_end,0], 'c--',label='$\\hat{\mathbf{x}}_{DANSE-Supervised}  $')
         if not X_est_DMM is None:
-            plt.plot(X_est_DMM[:T_end,0], 'y.-',label='$\\hat{\mathbf{x}}_{DMM} (x-component) $')
+            plt.plot(X_est_DMM[:T_end,0], 'y.-',label='$\\hat{\mathbf{x}}_{DMM}  $')
         if not X_est_KF is None:
-            plt.plot(X_est_KF[:T_end,0], ':',label='$\\hat{\mathbf{x}}_{KF} (x-component) $')
+            plt.plot(X_est_KF[:T_end,0], ':',label='$\\hat{\mathbf{x}}_{KF}  $')
         if not X_est_EKF is None:
-            plt.plot(X_est_EKF[:T_end,0], ':',label='$\\hat{\mathbf{x}}_{EKF} (x-component) $')
+            plt.plot(X_est_EKF[:T_end,0], ':',label='$\\hat{\mathbf{x}}_{EKF}  $')
         if not X_est_UKF is None:
-            plt.plot(X_est_UKF[:T_end,0], ':',label='$\\hat{\mathbf{x}}_{UKF} (x-component) $')
+            plt.plot(X_est_UKF[:T_end,0], ':',label='$\\hat{\mathbf{x}}_{UKF}  $')
         plt.ylabel('$X_1$')
         plt.xlabel('$t$')
         plt.legend()
 
         plt.subplot(312)
-        plt.plot(X[:T_end,1], '--',label='$\\mathbf{x}^{true} (y-component)$')
+        plt.plot(X[:T_end,1], '--',label='$\\mathbf{x}^{true} $')
         if not X_est_DANSE is None:
-            plt.plot(X_est_DANSE[:T_end,1], '--',label='$\\hat{\mathbf{x}}_{DANSE} (y-component) $')
+            plt.plot(X_est_DANSE[:T_end,1], '--',label='$\\hat{\mathbf{x}}_{DANSE}  $')
+        if not X_est_DANSE_sup is None:
+            plt.plot(X_est_DANSE_sup[:T_end,1], 'c--',label='$\\hat{\mathbf{x}}_{DANSE-Supervised}  $')
         if not X_est_DMM is None:
-            plt.plot(X_est_DMM[:T_end,1], 'y.-',label='$\\hat{\mathbf{x}}_{DMM} (y-component) $')
+            plt.plot(X_est_DMM[:T_end,1], 'y.-',label='$\\hat{\mathbf{x}}_{DMM}  $')
         if not X_est_KF is None:
-            plt.plot(X_est_KF[:T_end,1], ':',label='$\\hat{\mathbf{x}}_{KF} (y-component) $')
+            plt.plot(X_est_KF[:T_end,1], ':',label='$\\hat{\mathbf{x}}_{KF}  $')
         if not X_est_EKF is None:
-            plt.plot(X_est_EKF[:T_end,1], ':',label='$\\hat{\mathbf{x}}_{EKF} (y-component) $')
+            plt.plot(X_est_EKF[:T_end,1], ':',label='$\\hat{\mathbf{x}}_{EKF}  $')
         if not X_est_UKF is None:
-            plt.plot(X_est_UKF[:T_end,1], ':',label='$\\hat{\mathbf{x}}_{UKF} (y-component) $')
+            plt.plot(X_est_UKF[:T_end,1], ':',label='$\\hat{\mathbf{x}}_{UKF}  $')
         plt.ylabel('$X_2$')
         plt.xlabel('$t$')
         plt.legend()
     
         plt.subplot(313)
-        plt.plot(X[:T_end,2],'--',label='$\\mathbf{x}^{true} (z-component)$')
+        plt.plot(X[:T_end,2],'--',label='$\\mathbf{x}^{true} $')
         if not X_est_DANSE is None:
-            plt.plot(X_est_DANSE[:T_end,2], '--',label='$\\hat{\mathbf{x}}_{DANSE} (z-component) $')
+            plt.plot(X_est_DANSE[:T_end,2], '--',label='$\\hat{\mathbf{x}}_{DANSE}  $')
+        if not X_est_DANSE_sup is None:
+            plt.plot(X_est_DANSE_sup[:T_end,2], 'c--',label='$\\hat{\mathbf{x}}_{DANSE-Supervised}  $')
         if not X_est_DMM is None:
-            plt.plot(X_est_DMM[:T_end,2], 'y.-',label='$\\hat{\mathbf{x}}_{DMM} (z-component) $')
+            plt.plot(X_est_DMM[:T_end,2], 'y.-',label='$\\hat{\mathbf{x}}_{DMM}  $')
         if not X_est_KF is None:
-            plt.plot(X_est_KF[:T_end,2], ':',label='$\\hat{\mathbf{x}}_{KF} (z-component) $')
+            plt.plot(X_est_KF[:T_end,2], ':',label='$\\hat{\mathbf{x}}_{KF}  $')
         if not X_est_EKF is None:
-            plt.plot(X_est_EKF[:T_end,2], ':',label='$\\hat{\mathbf{x}}_{EKF} (z-component) $')
+            plt.plot(X_est_EKF[:T_end,2], ':',label='$\\hat{\mathbf{x}}_{EKF}  $')
         if not X_est_UKF is None:
-            plt.plot(X_est_UKF[:T_end,2], ':',label='$\\hat{\mathbf{x}}_{UKF} (z-component) $')
+            plt.plot(X_est_UKF[:T_end,2], ':',label='$\\hat{\mathbf{x}}_{UKF}  $')
         plt.ylabel('$X_3$')
         plt.xlabel('$t$')
         plt.legend()
@@ -915,42 +923,42 @@ def plot_measurement_data_axes(Y, Y_est=None, savefig=False, savefig_name=None):
 
     if Y.shape[-1] == 2:
         plt.subplot(311)
-        plt.plot(Y[:,0],'--',label='$\\mathbf{Y}^{true} (x-component) $')
+        plt.plot(Y[:,0],'--',label='$\\mathbf{Y}^{true}  $')
         if not Y_est is None:
-            plt.plot(Y_est[:,0], '--',label='$\\hat{\mathbf{Y}} (x-component) $')
+            plt.plot(Y_est[:,0], '--',label='$\\hat{\mathbf{Y}}  $')
         plt.ylabel('$Y_1$')
         plt.xlabel('$t$')
         plt.legend()
         
         plt.subplot(312)
-        plt.plot(Y[:,1], '--',label='$\\mathbf{Y}^{true} (y-component)$')
+        plt.plot(Y[:,1], '--',label='$\\mathbf{Y}^{true} $')
         if not Y_est is None:
-            plt.plot(Y_est[:,1], '--',label='$\\hat{\mathbf{Y}} (y-component)$')
+            plt.plot(Y_est[:,1], '--',label='$\\hat{\mathbf{Y}} $')
         plt.ylabel('$Y_2$')
         plt.xlabel('$t$')
         plt.legend()
 
     elif Y.shape[-1] > 2:
         plt.subplot(311)
-        plt.plot(Y[:,0],'--',label='$\\mathbf{Y}^{true} (x-component) $')
+        plt.plot(Y[:,0],'--',label='$\\mathbf{Y}^{true}  $')
         if not Y_est is None:
-            plt.plot(Y_est[:,0], '--',label='$\\hat{\mathbf{Y}} (x-component) $')
+            plt.plot(Y_est[:,0], '--',label='$\\hat{\mathbf{Y}}  $')
         plt.ylabel('$Y_1$')
         plt.xlabel('$t$')
         plt.legend()
         
         plt.subplot(312)
-        plt.plot(Y[:,1], '--',label='$\\mathbf{Y}^{true} (y-component)$')
+        plt.plot(Y[:,1], '--',label='$\\mathbf{Y}^{true} $')
         if not Y_est is None:
-            plt.plot(Y_est[:,1], '--',label='$\\hat{\mathbf{Y}} (y-component)$')
+            plt.plot(Y_est[:,1], '--',label='$\\hat{\mathbf{Y}} $')
         plt.ylabel('$Y_2$')
         plt.xlabel('$t$')
         plt.legend()
 
         plt.subplot(313)
-        plt.plot(Y[:,2],'--',label='$\\mathbf{Y}^{true} (z-component)$')
+        plt.plot(Y[:,2],'--',label='$\\mathbf{Y}^{true} $')
         if not Y_est is None:
-            plt.plot(Y_est[:,2],'--',label='$\\hat{\mathbf{Y}} (z-component)$')
+            plt.plot(Y_est[:,2],'--',label='$\\hat{\mathbf{Y}} $')
         plt.ylabel('$Y_3$')
         plt.xlabel('$t$')
         plt.legend()
@@ -960,4 +968,25 @@ def plot_measurement_data_axes(Y, Y_est=None, savefig=False, savefig_name=None):
         plt.savefig(savefig_name)
         tikzplotlib.save(os.path.splitext(savefig_name)[0] + ".tex")
     #plt.show()
+    return None
+
+def plot_losses(tr_kl_loss_arr, tr_nll_loss_arr, tr_nvlb_loss_arr, val_kl_loss_arr, val_nll_loss_arr, val_nvlb_loss_arr, savefig=True, savefig_name=None):
+
+    plt.figure()
+    plt.plot(np.arange(tr_kl_loss_arr.shape[0]), tr_kl_loss_arr, 'ro--', label='KL-divergence loss (training)', markevery=50, fillstyle='full')
+    plt.plot(np.arange(tr_nll_loss_arr.shape[0]), -tr_nll_loss_arr, 'bv--', label='Log-likelihood loss (training)', markevery=50, fillstyle='full')
+    plt.plot(np.arange(tr_nvlb_loss_arr.shape[0]), -tr_nvlb_loss_arr, 'gp--', label='VLB (training)', markevery=50, fillstyle='full')
+    
+    plt.plot(np.arange(val_kl_loss_arr.shape[0]), val_kl_loss_arr, 'rs:', label='KL-divergence loss (validation)', lw=1.0, markevery=50, fillstyle=None)
+    plt.plot(np.arange(val_nll_loss_arr.shape[0]), -val_nll_loss_arr, 'bv:', label='Log-likelihood loss (validation)', lw=1.0, markevery=50, fillstyle=None)
+    plt.plot(np.arange(val_nvlb_loss_arr.shape[0]), -val_nvlb_loss_arr, 'gp:', label='VLB (validation)', lw=1.0, markevery=50, fillstyle=None)
+    
+    plt.xlabel('Iterations')
+    plt.ylabel('Loss')
+    plt.legend()
+
+    if savefig:
+        plt.savefig(savefig_name)
+        tikzplotlib.save(os.path.splitext(savefig_name)[0] + ".tex")
+
     return None

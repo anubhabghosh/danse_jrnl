@@ -6,18 +6,18 @@
 PYTHON="python3.8"
 
 # The number of i.i.d. trajectories each of length T that constitute the training data
-N=100
+N=500
 
 # Length of each such training data trajectory, default it is set to T=1000
-T=25
+T=100
 
 # Number of hidden states in a dynamical system, usually for Lorenz (a.k.a. Lorenz-63), Chen and Rossler
 # attractors, the number of hidden states is equal to 3, while for Lorenz-96, this value must be changed to
 # n_states= 20 (currently hardcoded in this manner) but can be in general n_states >= 4
-n_states=3
+n_states=2
 
 # Number of observations in a dynamical system
-n_obs=3
+n_obs=2
 
 # dataset_type defines the type of dynamical system, the general terminology, e.g. for the Lorenz 63 system, 
 # the type is LorenzSSM, similarly for Chen and Rossler attractor we have ChenSSM and RosslerSSM respectively.
@@ -26,10 +26,10 @@ n_obs=3
 # RosslerSSMrn${n_obs}, Lorenz96SSMrn${n_obs} with deterministic measurements: LorenzSSMn${n_obs}, ChenSSMn${n_obs}, 
 # RosslerSSMn${n_obs}, Lorenz96SSMn${n_obs}.
 # For the linear system, we have LinearSSM (can handle both full-rank, deterministic downsmapled case).
-dataset_type="LorenzSSM"
+dataset_type="LinearSSM"
 
 # The name of the script for generating data with full path name
-script_name="./bin/generate_data.py"
+script_name="generate_data.py"
 
 # Output path to store the data
 output_path="./data/synthetic_data/"
