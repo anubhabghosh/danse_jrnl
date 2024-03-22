@@ -18,7 +18,32 @@ from parse import parse
 import os
 
 def initialize_model(type_, parameters):
+    """ This function initializes a SSM model object with parameter values from the 
+    dictionary `parameters`. 
+    
+    Naming conventions:
 
+    - <model_name>SSM: Represents a SSM model with equal dimension of the state and the observation vector,
+    <model_name> being either 'Linear' (Linear SSM), 'Lorenz' (Lorenz-63 / Lorenz attractor), 'Chen' (Chen attractor), 
+    'Lorenz96' (high-dimensional Lorenz-96 attractor). The measurement matrix is usually an identity matrix. 
+
+    - <model_name>SSMrn<x>: Represents a SSM model with unequal (generally smaller dim. of observation than state) 
+    of the state and the observation vector, <model_name> being either 'Lorenz' (Lorenz-63 / Lorenz attractor), 
+    'Chen' (Chen attractor), 'Lorenz96' (high-dimensional Lorenz-96 attractor). The measurement matrix is usually a
+    full matrix with i.i.d. Gaussian entries, with smaller no. of rows than cols. 
+
+    - <model_name>SSMn<x>: Represents a SSM model with unequal (generally smaller dim. of observation than state) 
+    of the state and the observation vector, <model_name> being either 'Lorenz' (Lorenz-63 / Lorenz attractor), 
+    'Chen' (Chen attractor), 'Lorenz96' (high-dimensional Lorenz-96 attractor). The measurement matrix is usually a
+    block matrix with a low-rank identity matrix and a null-matrix/vector. 
+
+    Args:
+        type_ (str): The name of the model
+        parameters (_type_): parameter dictionary 
+
+    Returns:
+        model: Object of model-class that is returned 
+    """
     if type_ == "LinearSSM":
 
         model = LinearSSM(n_states=parameters["n_states"],
@@ -89,9 +114,22 @@ def initialize_model(type_, parameters):
     return model
 
 def generate_SSM_data(model, T, sigma_e2_dB, smnr_dB):
+    """ This function generates a single pair 
+    (state trajectory, measurement trajectory) for the given ssm_model
+    where the state trajectory has been generated using process noise corresponding to 
+    `sigma_e2_dB` and the measurement trajectory has been generated using measurement noise 
+    corresponding to `smnr_dB`. 
 
-    X_arr = np.zeros((T, model.n_states))
-    Y_arr = np.zeros((T, model.n_obs))
+    Args:
+        model (object): ssm model object
+        T (int): length of measurement trajectory, state trajectory is of length T+1 as it has an initial state of the ssm model
+        sigma_e2_dB (float): process noise in dB scale
+        smnr_dB (float): measurement noise in dB scale
+
+    Returns:
+        X_arr: numpy array of size (T+1, model.n_states)
+        Y_arr: numpy array of size (T, model.n_obs)
+    """
 
     X_arr, Y_arr = model.generate_single_sequence(
                 T=T,
@@ -101,8 +139,20 @@ def generate_SSM_data(model, T, sigma_e2_dB, smnr_dB):
         
     return X_arr, Y_arr
 
-def generate_state_observation_pairs(type_, parameters, T=200, N_samples=1000, sigma_e2_dB=0.1, smnr_dB=10):
+def generate_state_observation_pairs(type_, parameters, T=100, N_samples=1000, sigma_e2_dB=-10.0, smnr_dB=10.0):
+    """ This function generate several state trajectory and measurement trajectory pairs 
 
+    Args:
+        type_ (str): string to indicate the type of SSM model
+        parameters (dict): dictionary containing parameters for various SSM models
+        T (int, optional): Sequence length of trajectories, currently all trajectories are of the same length. Defaults to 100.
+        N_samples (int, optional): Number of sample trajectories. Defaults to 1000.
+        sigma_e2_dB (float, optional): Process noise in dB scale. Defaults to -10.0.
+        smnr_dB (float, optional): Measurement noise in dB scale. Defaults to 10.0.
+
+    Returns:
+        Z_XY: dictionary containing the ssm model object used for generating data, the generated data, lengths of trajectories, etc.
+    """
     Z_XY = {}
     Z_XY["num_samples"] = N_samples
     Z_XY_data_lengths = [] 
@@ -124,34 +174,57 @@ def generate_state_observation_pairs(type_, parameters, T=200, N_samples=1000, s
 
     return Z_XY
 
-def create_filename(T=100, N_samples=200, m=5, n=5, dataset_basepath="./data/", type_="LinearSSM", sigma_e2_dB=-10, smnr_dB=10):
-    # Create the dataset based on the dataset parameters
+def create_filename(T=100, N_samples=1000, m=3, n=3, dataset_basepath="./data/", type_="LorenzSSM", sigma_e2_dB=-10, smnr_dB=10):
+    """ Create the dataset based on the dataset parameters, currently this name is partially hard-coded and should be the same in the
+    correspodning parsing function for the `main`.py files. 
+
+    Args:
+        T (int, optional): Sequence length of trajectories. Defaults to 100.
+        N_samples (int, optional): Number of sample trajectories. Defaults to 1000.
+        m (int, optional): Dimension of the state vector. Defaults to 3.
+        n (int, optional): Dimension of the meas. vector. Defaults to 3.
+        dataset_basepath (str, optional): Location to save the data. Defaults to "./data/".
+        type_ (str, optional): Type of SSM model. Defaults to "LorenzSSM".
+        sigma_e2_dB (float, optional): Process noise in dB. Defaults to -10.
+        smnr_dB (float, optional): Meas. noise in dB. Defaults to 10.
+
+    Returns:
+        dataset_fullpath: string describing output filename with full / absolute path. 
+    """
     
     datafile = "trajectories_m_{}_n_{}_{}_data_T_{}_N_{}_sigmae2_{}dB_smnr_{}dB.pkl".format(m, n, type_, int(T), int(N_samples), sigma_e2_dB, smnr_dB)
     dataset_fullpath = os.path.join(dataset_basepath, datafile)
     return dataset_fullpath
 
 def create_and_save_dataset(T, N_samples, filename, parameters, type_="LinearSSM", sigma_e2_dB=0.1, smnr_dB=10):
+    """ Calls most the functions above to generate data and saves it at the desired location given by `filename`.
 
-    #NOTE: Generates for pfixed theta estimation experiment
-    # Currently this uses the 'modified' function
-    #Z_pM = generate_trajectory_modified_param_pairs(N=N, 
-    #                                                M=num_trajs, 
-    #                                                P=num_realizations, 
-    #                                                usenorm_flag=usenorm_flag)
-    #np.random.seed(10) # This can be kept at a fixed step for being consistent
+    Args:
+        T (int, optional): Sequence length of trajectories. Defaults to 100.
+        N_samples (int, optional): Number of sample trajectories. Defaults to 1000.
+        filename (str): string describing output filename with full / absolute path. 
+        parameters (dict): dictionary containing parameters for various SSM models
+        m (int, optional): Dimension of the state vector. Defaults to 3.
+        n (int, optional): Dimension of the meas. vector. Defaults to 3.
+        dataset_basepath (str, optional): Location to save the data. Defaults to "./data/".
+        type_ (str, optional): Type of SSM model. Defaults to "LorenzSSM".
+        sigma_e2_dB (float, optional): Process noise in dB. Defaults to -10.
+        smnr_dB (float, optional): Meas. noise in dB. Defaults to 10.
+    """
     Z_XY = generate_state_observation_pairs(type_=type_, parameters=parameters, T=T, N_samples=N_samples, sigma_e2_dB=sigma_e2_dB, smnr_dB=smnr_dB)
     save_dataset(Z_XY, filename=filename)
 
 if __name__ == "__main__":
     
     usage = "Create datasets by simulating state space models \n"\
-            "python generate_data.py --sequence_length T --num_samples N --dataset_type [LinearSSM/LorenzSSM] --output_path [output path name]\n"\
+            "Example usage (square brackets indicate meaningful values): \
+            python generate_data.py --n_states [3] --n_obs [3] --num_samples [1000] --sequence_length [100] \
+            --sigma_e2_dB [-10.0] --smnr_dB 10.0 --dataset_type [LinearSSM/LorenzSSM/Lorenz96SSM] \
+            --output_path [./data/synthetic_data/stored_data]\n"\
             "Creates the dataset at the location output_path"\
         
-    parser = argparse.ArgumentParser(description="Input arguments related to creating a dataset for training RNNs")
+    parser = argparse.ArgumentParser(description="Input arguments related to creating a dataset for training learning-based methods like DANSE")
     
-
     parser.add_argument("--n_states", help="denotes the number of states in the latent model", type=int, default=5)
     parser.add_argument("--n_obs", help="denotes the number of observations", type=int, default=5)
     parser.add_argument("--num_samples", help="denotes the number of trajectories to be simulated for each realization", type=int, default=500)
