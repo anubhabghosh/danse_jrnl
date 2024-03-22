@@ -10,13 +10,20 @@ Pre-print: [https://arxiv.org/abs/2306.03897](https://arxiv.org/abs/2306.03897)
 Anubhab Ghosh (anubhabg@kth.se), Antoine Honoré (honore@kth.se), Saikat Chatterjee (sach@kth.se)
 
 ## Dependencies
+
+It is recommended to build an environment either in [`pip`](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/) or [`conda`](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/) and install the following packages (I used `conda` as personal preference):
 - PyTorch (1.6.0)
-- Python (>= 3.7.0) with standard packages as part of an Anaconda installation such as Numpy, Scipy, Matplotlib etc.
+- Python (>= 3.7.0) with standard packages as part of an Anaconda installation such as Numpy, Scipy, Matplotlib etc. The settings for the code were:
+    - Numpy (1.20.3)
+    - Matplotlib (3.4.3)
+    - Scipy (1.7.3)
+    - Scikit-learn (1.0.1)
+
 - Filterpy (1.4.5) (for implementation of Unscented Kalman Filter (UKF)): [https://filterpy.readthedocs.io/en/latest/](https://filterpy.readthedocs.io/en/latest/)
 - Jupyter notebook (>= 6.4.6) (for result analysis)
 - Tikzplotlib (for figures) [https://github.com/nschloe/tikzplotlib](https://github.com/nschloe/tikzplotlib)
 
-## Reference models (implemented in PyTorch)
+## Reference models (implemented in PyTorch + Numpy)
 
 - Kalman filter (KF)
 - Extended Kalman filter (EKF)
@@ -24,7 +31,9 @@ Anubhab Ghosh (anubhabg@kth.se), Antoine Honoré (honore@kth.se), Saikat Chatter
 - Unsupervised KalmanNet
     - The code was adopted from the repository of the authors: [https://github.com/KalmanNet/Unsupervised_EUSIPCO_22](https://github.com/KalmanNet/Unsupervised_EUSIPCO_22)
     - Experimental details taken also from the repository of the supervised KalmanNet: [https://github.com/KalmanNet/KalmanNet_TSP](https://github.com/KalmanNet/KalmanNet_TSP)
-
+- Deep Markov model (DMM)
+    - The code was adopted from the repository: [https://github.com/yjlolo/pytorch-deep-markov-model/blob/master/](https://github.com/yjlolo/pytorch-deep-markov-model/blob/master/)
+    - Experimental details needed to be taken from the official repo in Theano (Theano is no longer maintained): [https://github.com/clinicalml/dmm](https://github.com/clinicalml/dmm)
 ## Code organization
 
 This would be required organization of files and folders for reproducing results. If certain folders are not present, they should be created at that level.
@@ -34,7 +43,13 @@ This would be required organization of files and folders for reproducing results
 - src/ (contains model related files)
 | - danse.py (for training the unsupervised version of DANSE)
 | - danse_supervised.py (for training the supervised version of DANSE, refer to section 2.E of the paper)
-| - ekf.py
+| - kf.py (for running the Kalman filter (KF) at test-time for inference)
+| - ekf.py (for running the extended Kalman filter (EKF) at test-time for inference)
+| - ukf_aliter.py (for running the unscented Kalman filter (UKF) at test-time for inference)
+| - ukf_aliter_one_step.py (for running the unscented Kalman filter (UKF) at test-time for inference related to one-step ahead of forecasting!)
+| - k_net.py (for training the unsupervised KalmanNet model)
+| - dmm_causal.py (for training the deep Markov model with structured-approximation (DMM-ST-L))
+
 |···
 - log/ (contains training and evaluation logs, losses in `.json`, `.log` files)
 - models/ (contains saved model checkpoints saved as `.pt` files)
