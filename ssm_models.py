@@ -9,7 +9,12 @@ from utils.utils import dB_to_lin
 from scipy.integrate import solve_ivp
 
 class LinearSSM(object):
-    
+    """ This class defines the Linear state space model (LinearSSM). The design of the transition 
+    and measurement matrices were inspired from the KalmanNet paper's linear ssm code:
+    https://github.com/KalmanNet/KalmanNet_TSP . Some additional scaling of the transition matrix was
+    done for stability reasons using parameters like `beta`. Typically simulated without a driving 
+    input.
+    """
     def __init__(self, n_states, n_obs, mu_e=None, mu_w=None, gamma=0.8, beta=1.0, drive_noise=False):
         
         self.n_states = n_states
@@ -91,7 +96,6 @@ class LinearSSM(object):
     
     def generate_measurement_sequence(self, x_arr, T, smnr_dB=10.0):
         
-        #signal_p = ((np.einsum('ij,nj->ni', self.H, x_arr) - np.zeros_like(x_arr))**2).mean(axis=None)
         signal_p = np.var(np.einsum('ij,nj->ni', self.H, x_arr)) 
         self.sigma_w2 = signal_p / dB_to_lin(smnr_dB)
         self.setMeasurementCov(sigma_w2=self.sigma_w2)
@@ -118,7 +122,14 @@ class LinearSSM(object):
         return x_arr, y_arr
 
 class LorenzSSM(object):
+    """ 
+    This class defines the state space model for the Lorenz-63 attractor (LorenzSSM) for `alpha=0` or 
+    for the Chen attractor (ChenSSM) using `alpha=1`. The simulation in discrete-time was done using a Taylor series 
+    approximation of the matrix exponential (ref. to equation in the manuscript). 
 
+    The function described in `A_fn` is in accordance with the generalized Lorenz form introduced in
+    Čelikovský, Sergej, and Guanrong Chen. "On the generalized Lorenz canonical form." Chaos, Solitons & Fractals 26.5 (2005): 1271-1276.
+    """
     def __init__(self, n_states, n_obs, J, delta, delta_d, alpha=0.0, decimate=False, mu_e=None, mu_w=None, H=None, use_Taylor=True) -> None:
         
         self.n_states = n_states
@@ -245,7 +256,12 @@ def L96(t, x, N=20, F_mu=8, sigma_e2=.1):
     return d
 
 class Lorenz96SSM(object):
-
+    """ 
+    This class defines the state space model for the high-dimensional Lorenz-96 attractor (Lorenz96SSM). The high-dimensional
+    attractor is simulated using Runge-Kutta method (RK45) which uses the dynamics function defined using
+    `L96`. The driving noise is incorporated in the forcing function of the attractor for the process / state trajectory 
+    instead of conventional additive process noise (as in LinearSSM / LorenzSSM).
+    """
     def __init__(self, n_states, n_obs, delta, delta_d, F_mu=8, decimate=False, mu_w=None, H=None, method='RK45') -> None:
         
         self.n_states = n_states
