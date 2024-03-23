@@ -7,7 +7,7 @@ import numpy as np
 import math
 import torch
 from utils.utils import dB_to_lin, partial_corrupt
-from ssm_models import LinearSSM
+from bin.ssm_models import LinearSSM
 import torch
 import scipy    
 from scipy.linalg import block_diag

@@ -20,8 +20,8 @@ from utils.utils import generate_normal, dB_to_lin, lin_to_dB, \
     mse_loss, nmse_loss, nmse_loss_std, mse_loss_dB, mse_loss_dB_std, \
         load_saved_dataset, save_dataset, NDArrayEncoder, create_diag
 #from parameters import get_parameters
-from parameters_opt import get_parameters
-from generate_data import LinearSSM
+from config.parameters_opt import get_parameters
+from bin.generate_data import LinearSSM
 from src.kf import KF
 from src.danse import DANSE, push_model
 from src.k_net import KalmanNetNN
