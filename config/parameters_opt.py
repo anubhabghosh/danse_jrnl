@@ -3,6 +3,11 @@
 # Feb 2023
 #####################################################
 # This function is used to define the parameters of the model
+import sys
+from os import path
+# __file__ should be defined in this case
+PARENT_DIR = path.dirname(path.dirname(path.abspath(__file__)))
+sys.path.append(PARENT_DIR)
 import numpy as np
 import math
 import torch
