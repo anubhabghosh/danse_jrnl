@@ -563,7 +563,7 @@ def get_parameters(n_states=5, n_obs=5, device='cpu'):
             "obs_dim":n_obs,  # Dimension of the observation / input to RNN
             "latent_dim":n_states, # Dimension of the latent state / output of RNN in case of state estimation
             "use_mean_field_q":False, # Flag to indicate the use of mean-field q(x_{1:T} \vert y_{1:T})
-            "batch_size":64, # Batch size for training
+            "batch_size":128, # Batch size for training
             "rnn_model_type":'gru', # Sets the type of RNN
             "inference_mode":'st-l', # String to indicate the type of DMM inference mode (typically, we will use ST-L or MF-L)
             "combiner_dim":40, # Dimension of hidden layer of combiner network
@@ -601,7 +601,7 @@ def get_parameters(n_states=5, n_obs=5, device='cpu'):
                     "betas": [0.9, 0.999] # Betas for Adam
                 },
                 "num_epochs":2000, # Number of epochs
-                "min_delta":5e-2, # Sets the delta to control the early stopping
+                "min_delta":5e-3, # Sets the delta to control the early stopping
             },
         }
     }

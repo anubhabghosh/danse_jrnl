@@ -122,7 +122,7 @@ def main():
     modelfile_path = "./models/"
 
     #NOTE: Currently this is hardcoded into the system
-    main_exp_name = "{}_dmm_{}_opt_{}_m_{}_n_{}_T_{}_N_{}_sigmae2_{}dB_smnr_{}dB".format(
+    main_exp_name = "{}_dmm_{}_opt_{}_m_{}_n_{}_T_{}_N_{}_sigmae2_{}dB_smnr_{}dB_lmindel".format(
                                                             dataset_type,
                                                             estimator_options["inference_mode"],
                                                             model_type,

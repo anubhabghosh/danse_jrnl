@@ -639,7 +639,7 @@ def train_dmm(model, options, optimizer_params, train_loader, val_loader, logfil
     print("------------------------------ Training ends --------------------------------- \n")
     # Restoring the original std out pointer
     sys.stdout = orig_stdout
-
+    '''
     # Save a plot of training and validation losses
     plot_losses(tr_kl_loss_arr=np.array(tr_kl_losses), 
                 tr_nll_loss_arr=np.array(tr_nll_losses),  
@@ -649,8 +649,8 @@ def train_dmm(model, options, optimizer_params, train_loader, val_loader, logfil
                 val_nvlb_loss_arr=np.array(val_nvlb_losses), 
                 savefig=True,
                 savefig_name=os.path.join(os.path.split(logfile_path)[0], "loss_curves.pdf"))
-
-    return tr_nll_losses, val_nvlb_losses, best_val_loss, tr_loss_for_best_val_loss, model
+    '''
+    return tr_nvlb_losses, val_nvlb_losses, best_val_loss, tr_loss_for_best_val_loss, model
     
 
 
