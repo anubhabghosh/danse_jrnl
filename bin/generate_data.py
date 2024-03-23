@@ -3,6 +3,10 @@
 # Feb 2023
 #####################################################
 # Importing the necessary libraries
+import sys
+import os
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR))
 import numpy as np
 import scipy
 from scipy.linalg import block_diag
