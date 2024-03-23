@@ -38,7 +38,7 @@ output_path="./data/synthetic_data/"
 sigma_e2_dB=-10.0
 
 # RNN model type (e.g. GRU / LSTM)
-rnn_model_type="KNetUoffline"
+knet_model_type="KNetUoffline"
 
 for smnr_dB in -10.0 0.0 10.0 20.0 30.0 # different values separated by space
 do
