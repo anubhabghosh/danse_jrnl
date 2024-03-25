@@ -9,12 +9,18 @@ Pre-print: *Anubhab Ghosh, Antoine Honoré, and Saikat Chatterjee. "DANSE: Data-
 ## Authors
 Anubhab Ghosh (anubhabg@kth.se), Antoine Honoré (honore@kth.se)
 
-## Dependencies
-You can create a virtual environment with the required packages and activate it using [`conda`](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/) :
-```bash
-conda env create -f environment.yml
-conda activate danse_env
-```
+## Dependencies 
+It is recommended to build an environment either in [`pip`](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/) or [`conda`](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/) and install the following packages (I used `conda` as personal preference):
+- PyTorch (1.6.0)
+- Python (>= 3.7.0) with standard packages as part of an Anaconda installation such as Numpy, Scipy, Matplotlib, etc. The settings for the code were:
+    - Numpy (1.20.3)
+    - Matplotlib (3.4.3)
+    - Scipy (1.7.3)
+    - Scikit-learn (1.0.1)
+
+- Filterpy (1.4.5) (for implementation of Unscented Kalman Filter (UKF)): [https://filterpy.readthedocs.io/en/latest/](https://filterpy.readthedocs.io/en/latest/)
+- Jupyter notebook (>= 6.4.6) (for result analysis)
+- Tikzplotlib (for figures) [https://github.com/nschloe/tikzplotlib](https://github.com/nschloe/tikzplotlib)
 
 ## Datasets used 
 
@@ -49,9 +55,11 @@ The training-based methods: DANSE, DMM and KalmanNet, were run on a single NVIDI
 This would be the required organization of files and folders for reproducing results. If certain folders are not present, they should be created at that level.
 
 ````
-- main_danse_opt.py (main function for calling training 'DANSE' model)
-- main_kalmannet.py (main function for calling reference training 'KalmanNet' model)
-[more mains]
+- main_danse_opt.py (main function for training 'DANSE' model)
+- main_kalmannet.py (main function for training unsupervised 'KalmanNet' model)
+- main_danse_supervised_opt.py (main function for training supervised version of 'DANSE')
+- main_dmm_causal.py (main function for training causal deep Markov model)
+- main_danse_gs.py (main function for running grid-search on DANSE for hyperparameter tuning)
 
 - data/ (contains stored datasets in .pkl files)
 | - synthetic_data/ (contains datasets related to SSM models in .pkl files)
