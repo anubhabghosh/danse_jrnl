@@ -7,7 +7,7 @@ Pre-print: *Anubhab Ghosh, Antoine Honoré, and Saikat Chatterjee. "DANSE: Data-
 **Accepted in IEEE Transactions on Signal Processing (IEEE-TSP) (March 2024)**
 
 ## Authors
-**Anubhab Ghosh** (anubhabg@kth.se), Antoine Honoré (honore@kth.se)
+Anubhab Ghosh (anubhabg@kth.se), Antoine Honoré (honore@kth.se)
 
 ## Dependencies
 
@@ -23,6 +23,18 @@ It is recommended to build an environment either in [`pip`](https://packaging.py
 - Jupyter notebook (>= 6.4.6) (for result analysis)
 - Tikzplotlib (for figures) [https://github.com/nschloe/tikzplotlib](https://github.com/nschloe/tikzplotlib)
 
+## Datasets used 
+
+The experiments were mainly carried out using synthetic data generated with linear and non-linear SSMs
+
+- Linear state space models (Linear SSMs)
+- Non-linear state space models (Non-linear SSMs): In our case, we used chaotic attractors:
+    - Lorenz attractor 
+    - Chen attractor
+    - Lorenz-96 attractor
+
+Details about these models and their underlying dynamics can be found in `./bin/ssm_models.py`. 
+
 ## Reference models (implemented in PyTorch + Numpy)
 
 - Kalman filter (KF)
@@ -34,12 +46,18 @@ It is recommended to build an environment either in [`pip`](https://packaging.py
 - Deep Markov model (DMM)
     - The code was adopted from the repository: [https://github.com/yjlolo/pytorch-deep-markov-model/blob/master/](https://github.com/yjlolo/pytorch-deep-markov-model/blob/master/)
     - Experimental details needed to be taken from the official repo in Theano (Theano is no longer maintained): [https://github.com/clinicalml/dmm](https://github.com/clinicalml/dmm)
+
+## GPU Support
+
+The training-based methods such as DANSE, DMM and KalmanNet were run on a single NVIDIA-Tesla P100 GPU with 16 GB of memory. 
+
 ## Code organization
 
 This would be the required organization of files and folders for reproducing results. If certain folders are not present, they should be created at that level.
 
 ````
 - data/ (contains stored datasets in .pkl files)
+| - synthetic_data/ (contains datasets related to SSM models in .pkl files)
 - src/ (contains model-related files)
 | - danse.py (for training the unsupervised version of DANSE)
 | - danse_supervised.py (for training the supervised version of DANSE, refer to section 2.E of the paper)
@@ -70,9 +88,9 @@ This would be the required organization of files and folders for reproducing res
 
 ## Brief outline of DANSE training
 
-1. Generate data by calling `bin/generate_data.py`. This can be done in a simple manner by editing and calling the shell script `run_generate_data.sh`. Data gets stored at `data/synthetic_data/`. For e.g. to generate trajectory data with 500 samples with each trajectory of length 1000, from a Lorenz Attractor model (m=3, n=3), with $\sigma_{e}^{2}= -20$ dB, and $\text{SMNR}$ = $0$ dB, the syntax should be 
+1. Generate data by calling `bin/generate_data.py`. This can be done in a simple manner by editing and calling the shell script `run_generate_data.sh`. Data gets stored at `data/synthetic_data/`. For e.g. to generate trajectory data with 1000 samples with each trajectory of length 100, from a Lorenz Attractor model (m=3, n=3), with $\sigma_{e}^{2}= -10$ dB, and $\text{SMNR}$ = $0$ dB, the syntax should be 
 ````
-[python interpreter e.g. python3.8] ./bin/generate_data.py --n_states 3 --n_obs 3 --num_samples 500 --sequence_length 1000 --sigma_e2_dB -20 --smnr -20 --dataset_type LorenzSSM --output_path [dataset location e.g. ./data/synthetic_data/] \
+[python interpreter e.g. python3.8] ./bin/generate_data.py --n_states 3 --n_obs 3 --num_samples 1000 --sequence_length 100 --sigma_e2_dB -10 --smnr 0 --dataset_type LorenzSSM --output_path [dataset location e.g. ./data/synthetic_data/] \
 ````
 
 The state space models are coded in `./bin/ssm_models.py`, and mainly for nonlinear SSMs, the LorenzSSM class is required. The parameter `alpha` decides whether to simulate a Lorenz attractor (`alpha=0`) or a Chen attractor (`alpha=1`)
@@ -86,8 +104,8 @@ The state space models are coded in `./bin/ssm_models.py`, and mainly for nonlin
 --mode train \
 --rnn_model_type gru \
 --dataset_type LorenzSSM \
---datafile [full path to dataset, e.g. ./data/synthetic_data/trajectories_m_3_n_3_LorenzSSM_data_N_500_T_1000_sigmae2_-20.0dB_smnr_10.0dB.pkl] \
---splits ./data/synthetic_data/splits_m_3_n_3_LorenzSSM_data_N_500_T_1000_sigmae2_-20.0dB_smnr_10.0dB.pkl
+--datafile [full path to dataset, e.g. ./data/synthetic_data/trajectories_m_3_n_3_LorenzSSM_data_N_1000_T_100_sigmae2_-10.0dB_smnr_0.0dB.pkl] \
+--splits ./data/synthetic_data/splits_m_3_n_3_LorenzSSM_data_N_1000_T_100_sigmae2_-10.0dB_smnr_0.0dB.pkl
 ```
 `N` denotes the number of sample trajectories, `T` denotes the length of each sample trajectory. In the `.sh` file, you may find also the variable `n_obs` that denotes the dimension of the observation vector (denoted by $n$ in the paper). The number of states (`n_states`) for the `LorenzSSM` models should be always kept at 3. Assume also, for most cases `n_obs = 3`.
 
