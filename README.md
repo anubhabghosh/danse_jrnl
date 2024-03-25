@@ -71,7 +71,7 @@ This would be the required organization of files and folders for reproducing res
 - log/ (contains training and evaluation logs, losses in `.json`, `.log` files)
 - models/ (contains saved model checkpoints saved as `.pt` files)
 - figs/ (contains resulting model figures)
-- utils/ (contains helping functions for \src\, etc.)
+- utils/ (contains helping functions for /src/, etc.)
 - tests/ (contains files and functions for evaluation at test time)
 - config/ (contains the parameter file)
 | - parameters_opt.py (Pythnon file containing relevant parameters for different architectures)
