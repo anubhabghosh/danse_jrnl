@@ -10,18 +10,11 @@ Pre-print: *Anubhab Ghosh, Antoine Honoré, and Saikat Chatterjee. "DANSE: Data-
 Anubhab Ghosh (anubhabg@kth.se), Antoine Honoré (honore@kth.se)
 
 ## Dependencies
-
-It is recommended to build an environment either in [`pip`](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/) or [`conda`](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/) and install the following packages (I used `conda` as personal preference):
-- PyTorch (1.6.0)
-- Python (>= 3.7.0) with standard packages as part of an Anaconda installation such as Numpy, Scipy, Matplotlib, etc. The settings for the code were:
-    - Numpy (1.20.3)
-    - Matplotlib (3.4.3)
-    - Scipy (1.7.3)
-    - Scikit-learn (1.0.1)
-
-- Filterpy (1.4.5) (for implementation of Unscented Kalman Filter (UKF)): [https://filterpy.readthedocs.io/en/latest/](https://filterpy.readthedocs.io/en/latest/)
-- Jupyter notebook (>= 6.4.6) (for result analysis)
-- Tikzplotlib (for figures) [https://github.com/nschloe/tikzplotlib](https://github.com/nschloe/tikzplotlib)
+You can create a virtual environment with the required packages and activate it using [`conda`](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/) :
+```bash
+conda env create -f environment.yml
+conda activate danse_env
+```
 
 ## Datasets used 
 
