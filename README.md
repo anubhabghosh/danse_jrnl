@@ -49,8 +49,13 @@ The training-based methods: DANSE, DMM and KalmanNet, were run on a single NVIDI
 This would be the required organization of files and folders for reproducing results. If certain folders are not present, they should be created at that level.
 
 ````
+- main_danse_opt.py (main function for calling training 'DANSE' model)
+- main_kalmannet.py (main function for calling reference training 'KalmanNet' model)
+[more mains]
+
 - data/ (contains stored datasets in .pkl files)
 | - synthetic_data/ (contains datasets related to SSM models in .pkl files)
+
 - src/ (contains model-related files)
 | - danse.py (for training the unsupervised version of DANSE)
 | - danse_supervised.py (for training the supervised version of DANSE, refer to section 2.E of the paper)
@@ -60,23 +65,23 @@ This would be the required organization of files and folders for reproducing res
 | - ukf_aliter_one_step.py (for running the unscented Kalman filter (UKF) at test-time for inference related to one-step ahead of forecasting!)
 | - k_net.py (for training the unsupervised KalmanNet model)
 | - dmm_causal.py (for training the deep Markov model with structured-approximation (DMM-ST-L))
-|···
+| - rnn.py (Class definition of the RNN model for DANSE)
+
 - log/ (contains training and evaluation logs, losses in `.json`, `.log` files)
-- models/ (contains saved model checkpoints saved as `.pt` files)
+- models/ (contains saved model checkpoints as `.pt` files)
 - figs/ (contains resulting model figures)
-- utils/ (contains helping functions for /src/, etc.)
+- utils/ (contains helping functions)
 - tests/ (contains files and functions for evaluation at test time)
 - config/ (contains the parameter file)
 | - parameters_opt.py (Pythnon file containing relevant parameters for different architectures)
-- main_danse_opt.py (main function for calling training 'DANSE' model)
-- main_kalmannet.py (main function for calling reference training 'KalmanNet' model)
+
 - bin/ (contains data generation files)
 | - ssm_models.py (contains code for implementing state space models)
 | - generate_data.py (contains code for generating training datasets)
+
 - run/ (folder containing the shell scripts to run the `main` scripts at one go for either different smnr_dB / sigma_e2_dB / N)
 | - run_main_danse.sh 
 | - run_main_knet.sh
-|···
 ````
 
 ## Brief outline of DANSE training
