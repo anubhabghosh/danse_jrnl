@@ -18,7 +18,7 @@ conda activate danse_env
 
 ## Datasets used 
 
-The experiments were mainly carried out using synthetic data generated with linear and non-linear SSMs
+The experiments were carried out using synthetic data generated with linear and non-linear SSMs:
 
 - Linear state space models (Linear SSMs)
 - Non-linear state space models (Non-linear SSMs): In our case, we used chaotic attractors:
@@ -34,18 +34,18 @@ Details about these models and their underlying dynamics can be found in `./bin/
 - Extended Kalman filter (EKF)
 - Unscented Kalman filter (UKF)
 - Unsupervised KalmanNet
-    - The code was adopted from the repository of the authors: [https://github.com/KalmanNet/Unsupervised_EUSIPCO_22](https://github.com/KalmanNet/Unsupervised_EUSIPCO_22)
-    - Experimental details are taken also from the repository of the supervised KalmanNet: [https://github.com/KalmanNet/KalmanNet_TSP](https://github.com/KalmanNet/KalmanNet_TSP)
+    - The model implementation was adapted from [https://github.com/KalmanNet/Unsupervised_EUSIPCO_22](https://github.com/KalmanNet/Unsupervised_EUSIPCO_22)
+    - Hyper-parameters for individual experiments were also taken from another repository of the same authors: [https://github.com/KalmanNet/KalmanNet_TSP](https://github.com/KalmanNet/KalmanNet_TSP)
 - Deep Markov model (DMM)
-    - The code was adopted from the repository: [https://github.com/yjlolo/pytorch-deep-markov-model/blob/master/](https://github.com/yjlolo/pytorch-deep-markov-model/blob/master/)
-    - Experimental details needed to be taken from the official repo in Theano (Theano is no longer maintained): [https://github.com/clinicalml/dmm](https://github.com/clinicalml/dmm)
+    - The original implementation was done in Theano (no longer maintained ML framework for Python): [https://github.com/clinicalml/dmm](https://github.com/clinicalml/dmm)
+    - We used a Pytorch implementation instead: [https://github.com/yjlolo/pytorch-deep-markov-model/blob/master/](https://github.com/yjlolo/pytorch-deep-markov-model/blob/master/)
+    - Hyper-parameters were taken from the original implementation in Theano
 
 ## GPU Support
 
-The training-based methods such as DANSE, DMM and KalmanNet were run on a single NVIDIA-Tesla P100 GPU with 16 GB of memory. 
+The training-based methods: DANSE, DMM and KalmanNet, were run on a single NVIDIA-Tesla P100 GPU with 16 GB of memory. 
 
 ## Code organization
-
 This would be the required organization of files and folders for reproducing results. If certain folders are not present, they should be created at that level.
 
 ````
