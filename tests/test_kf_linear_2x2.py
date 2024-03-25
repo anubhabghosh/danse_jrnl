@@ -21,7 +21,7 @@ from utils.utils import generate_normal, dB_to_lin, lin_to_dB, \
         load_saved_dataset, save_dataset, NDArrayEncoder, create_diag
 #from parameters import get_parameters
 from config.parameters_opt import get_parameters
-from bin.generate_data import LinearSSM
+from bin.ssm_models import LinearSSM
 from src.kf import KF
 from src.danse import DANSE, push_model
 from src.k_net import KalmanNetNN

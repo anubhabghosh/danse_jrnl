@@ -26,7 +26,7 @@ from utils.utils import generate_normal, dB_to_lin, lin_to_dB, mse_loss, nmse_lo
     mse_loss_dB, load_saved_dataset, save_dataset, nmse_loss_std, mse_loss_dB_std, NDArrayEncoder, partial_corrupt
 #from parameters import get_parameters, A_fn, h_fn, f_lorenz_danse, f_lorenz_danse_ukf, delta_t, J_test
 from config.parameters_opt import get_parameters, A_fn, h_fn, f_lorenz_danse, f_lorenz_danse_ukf, delta_t, J_test
-from bin.generate_data import LorenzSSM
+from bin.ssm_models import LorenzSSM
 from src.ekf import EKF
 from src.ukf import UKF
 from src.ukf_aliter import UKF_Aliter
@@ -145,8 +145,11 @@ def test_lorenz(device='cpu', model_file_saved=None, model_file_saved_knet=None,
     print("sigma_e2: {}dB, smnr: {}dB".format(sigma_e2_dB_test, smnr_dB_test))
     print("sigma_e2: {}dB, smnr: {}dB".format(sigma_e2_dB_test, smnr_dB_test), file=orig_stdout)
 
-    Y = Y[:2]
-    X = X[:2]
+
+    # NOTE: This is only for quick testing!! We select 2 trajectories and run 
+    # all the tests using them. Uncomment them usually!
+    #Y = Y[:2]
+    #X = X[:2]
 
     N_test, Ty, dy = Y.shape
     N_test, Tx, dx = X.shape
@@ -403,7 +406,7 @@ if __name__ == "__main__":
     else:
         bias = None
         p = None
-        evaluation_mode = 'full_opt_bias_{}_p_{}_additional_Ttrain_{}_Ntrain_{}'.format(None, None, T_train, N_train)
+        evaluation_mode = 'full_opt_bias_{}_p_{}_quicktest_Ttrain_{}_Ntrain_{}'.format(None, None, T_train, N_train)
 
     os.makedirs('./figs/LorenzModel/{}'.format(evaluation_mode), exist_ok=True)
 

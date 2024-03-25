@@ -26,7 +26,7 @@ from utils.utils import generate_normal, dB_to_lin, lin_to_dB, mse_loss, nmse_lo
     mse_loss_dB, load_saved_dataset, save_dataset, nmse_loss_std, mse_loss_dB_std, NDArrayEncoder, partial_corrupt
 #from parameters import get_parameters, A_fn, h_fn, f_lorenz_danse, f_lorenz_danse_ukf, delta_t, J_test
 from config.parameters_opt import get_parameters, A_fn, h_fn, f_lorenz_danse, f_lorenz_danse_ukf, delta_t, J_test
-from bin.generate_data import LorenzSSM
+from bin.ssm_models import LorenzSSM
 from src.ekf import EKF
 from src.ukf_aliter_one_step import UKF_Aliter
 from src.k_net import KalmanNetNN
