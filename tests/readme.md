@@ -28,7 +28,7 @@ For replicating the results on
 
 - Lorenz-96 SSM (a high-dimensional Lorenz attractor, in this case $20$-dimensional Lorenz attractor)
     - `test_ukf_ekf_danse_L96.py`: This script runs the DANSE trained on the task of state estimation for the high-dimensional Lorenz-96 attractor. In this work, we focused on a 20-dimensional Lorenz-96 attractor. The measurement matrix $\mathbf{H}_{t}$ is an 20-dim. identity matrix $\forall t$. 
-    - [Optional] `test_danse_L96_diff_rn.py` and `test_danse_L96_diff_n.py`: Similar to those for the $3 \times 3$ Lorenz attractor, these scripts runs the DANSE trained on the task of state estimation for the high-dimensional Lorenz-96 attractor, where the measurement matrix $\mathbf{H}_{t} = \mathbf{H} \in \mathbb{R}^{n \times 20}$ is a full-row rank matrix ($\because n < 20$) with i.i.d. Gaussian entries sampled from $\mathcal{N}(0,1)$ (for `*_rnx.py`) and $\mathbf{H}_{t} = \mathbf{H} \in \mathbb{R}^{n \times 20}$ is a block-identity matrix with $n < 20$ (for `*_nx.py`).
+    - [Optional] `test_danse_L96_diff_rn.py` and `test_danse_L96_diff_n.py`: Similar to those for the $3 \times 3$ Lorenz attractor, these scripts runs the DANSE trained on the task of state estimation for the high-dimensional Lorenz-96 attractor, where the measurement matrix $\mathbf{H}\_{t} = \mathbf{H} \in \mathbb{R}^{n \times 20}$ is a full-row rank matrix ($\because n < 20$) with i.i.d. Gaussian entries sampled from $\mathcal{N}(0,1)$ (for `*_rnx.py`) and $\mathbf{H}_{t} = \mathbf{H} \in \mathbb{R}^{n \times 20}$ is a block-identity matrix with $n < 20$ (for `*_nx.py`).
 
 ### Future work
 
