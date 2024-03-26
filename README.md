@@ -73,7 +73,7 @@ This would be the required organization of files and folders for reproducing res
 | - ukf_aliter_one_step.py (for running the unscented Kalman filter (UKF) at test-time for inference related to one-step ahead of forecasting!)
 | - k_net.py (for training the unsupervised KalmanNet model)
 | - dmm_causal.py (for training the deep Markov model with structured-approximation (DMM-ST-L))
-| - rnn.py (Class definition of the RNN model for DANSE)
+| - rnn.py (class definition of the RNN model for DANSE)
 
 - log/ (contains training and evaluation logs, losses in `.json`, `.log` files)
 - models/ (contains saved model checkpoints as `.pt` files)
@@ -84,12 +84,14 @@ This would be the required organization of files and folders for reproducing res
 | - parameters_opt.py (Python file containing relevant parameters for different architectures)
 
 - bin/ (contains data generation files)
-| - ssm_models.py (contains class for state space models)
+| - ssm_models.py (contains the classes for state space models)
 | - generate_data.py (contains code for generating training datasets)
 
-- run/ (folder containing the shell scripts to run the `main` scripts at one go for either different smnr_dB / sigma_e2_dB / N)
+- run/ (folder containing the shell scripts to run the `main` scripts or data-generation scripts at one go for either different smnr_dB / sigma_e2_dB / N)
 | - run_main_danse.sh 
 | - run_main_knet.sh
+| :
+| - run_main_dmm_causal.sh
 ````
 
 ## Brief outline of DANSE training
