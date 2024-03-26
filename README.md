@@ -112,7 +112,7 @@ python3 main_danse_opt.py \
 For the `datafile` and `splits` arguments:
 `N` denotes the number of sample trajectories, `T` denotes the length of each sample trajectory. 
 
-4. To reproduce experiments, for multiple SMNRs, run the shell script `./run/run_main_danse.sh`.
+4. To reproduce experiments, for multiple SMNRs, run the shell script `./run/run_main_danse.sh`. For more info, check this [readme](https://github.com/anubhabghosh/danse_jrnl/blob/main/run/readme.md).
 
 5. Similarly, other `main_...` files and corresponding scripts can be used to reproduce experiments for kalmannet and dmm.
 

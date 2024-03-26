@@ -1,15 +1,15 @@
 #!/bin/bash
-# This script is used to run the main_danse_opt.py or the main_danse_supervised_opt.py file for running DANSE.
+# This script is used to run the main_kalmannet.py for training the unsupervised KalmanNet method
 # Creator: Anubhab Ghosh, Feb 2024.
 
 # The python kernel version e.g. to run on python 3.8 version use: python3.8
 PYTHON="python3.8"
 
 # The number of i.i.d. trajectories each of length T that constitute the training data
-N=50
+N=1000
 
 # Length of each such training data trajectory, default it is set to T=1000
-T=10
+T=100
 
 # Number of hidden states in the process, usually for Lorenz (a.k.a. Lorenz-63), Chen 
 # attractors, the number of hidden states is equal to 3, while for Lorenz-96, this value must be changed to
@@ -37,7 +37,7 @@ output_path="./data/synthetic_data/"
 # Set the process noise level (in dB)
 sigma_e2_dB=-10.0
 
-# RNN model type (e.g. GRU / LSTM)
+# KalmanNet model - Unsupervised (offline) indicated by KNetUoffline
 knet_model_type="KNetUoffline"
 
 for smnr_dB in -10.0 0.0 10.0 20.0 30.0 # different values separated by space

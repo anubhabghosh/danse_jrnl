@@ -7,10 +7,10 @@
 PYTHON="python3.8"
 
 # The number of i.i.d. trajectories each of length T that constitute the training data
-N=50
+N=1000
 
 # Length of each such training data trajectory, default it is set to T=1000
-T=10
+T=100
 
 # Number of hidden states in the process, usually for Lorenz (a.k.a. Lorenz-63), Chen 
 # attractors, the number of hidden states is equal to 3, while for Lorenz-96, this value must be changed to
@@ -41,7 +41,7 @@ smnr_dB=10.0
 # RNN model type (e.g. GRU / LSTM)
 rnn_model_type="gru"
 
-# For different number of samples (N), run the DANSE training
+# For different process noise values, run the DANSE training
 for sigma_e2_dB in -20.0 -10.0 -5.0 0.0 5.0 # different values separated by space
 do
 	${PYTHON} ${script_name} \
