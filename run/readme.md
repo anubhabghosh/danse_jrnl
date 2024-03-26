@@ -23,17 +23,17 @@ sh run/run_main_danse.sh
 ```
 
 ### Overview of different shell scripts for running
-The different scripts are:
+The different scripts in `/run/` are:
 - Data-generation related
-  - run_generate_data.sh (runs data generation for different $\text{SMNR}$ values at a specified $\sigma_e^2$ and $N$)
-  - run_generate_data_diff_N.sh (runs data generation for different $N$ at a specified $\text{SMNR}$ and $\sigma_e^2$)
-  - run_generate_data_diff_sigmae2.sh (runs data generation for different $\sigma_e^2$ at a specified $\text{SMNR}$ and $N$)
+  - `run_generate_data.sh` (runs data generation for different $\text{SMNR}$ values at a specified $\sigma_e^2$ and $N$)
+  - `run_generate_data_diff_N.sh` (runs data generation for different $N$ at a specified $\text{SMNR}$ and $\sigma_e^2$)
+  - `run_generate_data_diff_sigmae2.sh` (runs data generation for different $\sigma_e^2$ at a specified $\text{SMNR}$ and $N$)
 - Training DANSE
-  - run_main_danse.sh
-  - run_main_danse_diff_N.sh
-  - run_main_danse_diff_sigmae2.sh
+  - `run_main_danse.sh` (runs training for DANSE for different $\text{SMNR}$ values at a specified $\sigma_e^2$ and $N$)
+  - `run_main_danse_diff_N.sh` (runs training for DANSE for different $N$ at a specified $\text{SMNR}$ and $\sigma_e^2$)
+  - `run_main_danse_diff_sigmae2.sh` (runs training for DANSE for different $\sigma_e^2$ at a specified $\text{SMNR}$ and $N$)
 - Training DMM
-  - run_main_dmm_causal.sh
+  - `run_main_dmm_causal.sh` (runs training for the causal DMM for different $\text{SMNR}$ values at a specified $\sigma_e^2$ and $N$)
 - Training KalmanNet
-  - run_main_knet.sh
-  - run_main_knet_diff_N.sh    
+  - `run_main_knet.sh` (runs training for KalmanNet for different $\text{SMNR}$ values at a specified $\sigma_e^2$ and $N$)
+  - `run_main_knet_diff_N.sh` (runs training for KalmanNet for different $N$ at a specified $\text{SMNR}$ and $\sigma_e^2$)
