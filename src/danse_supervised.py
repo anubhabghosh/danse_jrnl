@@ -127,7 +127,7 @@ class DANSE_Supervised(nn.Module):
     def compute_logpdf_Gaussian(self, X):
         
         _, T, _ = X.shape 
-        logprob = 0.5 * self.n_obs * T * math.log(math.pi*2) - 0.5 * torch.logdet(self.L_xt_yt_current).sum(1) \
+        logprob = 0.5 * self.n_states * T * math.log(math.pi*2) - 0.5 * torch.logdet(self.L_xt_yt_current).sum(1) \
             - 0.5 * torch.einsum('nti,nti->nt',
             (X - self.mu_xt_yt_current), 
             torch.einsum('ntij,ntj->nti',torch.inverse(self.L_xt_yt_current), (X - self.mu_xt_yt_current))).sum(1)
