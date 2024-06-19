@@ -392,10 +392,10 @@ def test_lorenz(device='cpu', model_file_saved=None, model_file_saved_knet=None,
 if __name__ == "__main__":
 
     # Testing parameters 
-    T_test = 50
-    N_test = 50
-    N_train = 50
-    T_train = 50
+    T_test = 2000
+    N_test = 100
+    N_train = 1000
+    T_train = 100
     sigma_e2_dB_test = -10.0
     device = 'cpu'
     bias = None # By default should be positive, equal to 10.0
