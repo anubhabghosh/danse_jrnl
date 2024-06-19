@@ -7,7 +7,7 @@ from turtle import color
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-import tikzplotlib
+# import tikzplotlib
 import os
 
 def plot_state_trajectory(X, X_est_KF=None, X_est_EKF=None, X_est_UKF=None, X_est_DANSE=None,  X_est_DANSE_sup=None,  X_est_DMM=None, X_est_KNET=None, savefig=False, savefig_name=None):
@@ -68,7 +68,7 @@ def plot_state_trajectory(X, X_est_KF=None, X_est_EKF=None, X_est_UKF=None, X_es
     plt.tight_layout()
     if savefig:
         plt.savefig(savefig_name)
-        tikzplotlib.save(os.path.splitext(savefig_name)[0] + ".tex")
+        # tikzplotlib.save(os.path.splitext(savefig_name)[0] + ".tex")
     #plt.show()
     return None
 
@@ -282,7 +282,7 @@ def plot_state_trajectory_w_lims(X, X_est_KF=None, X_est_KF_std=None,
     plt.tight_layout()
     if savefig:
         plt.savefig(savefig_name)
-        tikzplotlib.save(os.path.splitext(savefig_name)[0] + ".tex")
+        # tikzplotlib.save(os.path.splitext(savefig_name)[0] + ".tex")
     #plt.show()
     return None
 
@@ -419,7 +419,7 @@ def plot_meas_trajectory_w_lims(Y, Y_pred_KF=None, Y_pred_KF_std=None,
     plt.tight_layout()
     if savefig:
         plt.savefig(savefig_name)
-        tikzplotlib.save(os.path.splitext(savefig_name)[0] + ".tex")
+        # tikzplotlib.save(os.path.splitext(savefig_name)[0] + ".tex")
     #plt.show()
     return None
 
@@ -504,7 +504,7 @@ def plot_measurement_data(Y, savefig=False, savefig_name=None):
         plt.tight_layout()
         if savefig:
             plt.savefig(savefig_name)
-            tikzplotlib.save(os.path.splitext(savefig_name)[0] + ".tex")
+            # tikzplotlib.save(os.path.splitext(savefig_name)[0] + ".tex")
 
     elif Y.shape[-1] > 2:
 
@@ -517,7 +517,7 @@ def plot_measurement_data(Y, savefig=False, savefig_name=None):
         plt.tight_layout()
         if savefig:
             plt.savefig(savefig_name)
-            tikzplotlib.save(os.path.splitext(savefig_name)[0] + ".tex")
+            # tikzplotlib.save(os.path.splitext(savefig_name)[0] + ".tex")
 
     #plt.show()
     return None
@@ -663,7 +663,7 @@ def plot_state_trajectory_axes(
     plt.tight_layout()
     if savefig:
         fig.savefig(savefig_name,dpi=300,bbox_inches="tight")
-        tikzplotlib.save(os.path.splitext(savefig_name)[0] + ".tex")
+        # tikzplotlib.save(os.path.splitext(savefig_name)[0] + ".tex")
     #plt.show()
     return None
 
@@ -966,7 +966,7 @@ def plot_measurement_data_axes(Y, Y_est=None, savefig=False, savefig_name=None):
     plt.tight_layout()
     if savefig:
         plt.savefig(savefig_name)
-        tikzplotlib.save(os.path.splitext(savefig_name)[0] + ".tex")
+        # tikzplotlib.save(os.path.splitext(savefig_name)[0] + ".tex")
     #plt.show()
     return None
 
@@ -987,6 +987,6 @@ def plot_losses(tr_kl_loss_arr, tr_nll_loss_arr, tr_nvlb_loss_arr, val_kl_loss_a
 
     if savefig:
         plt.savefig(savefig_name)
-        tikzplotlib.save(os.path.splitext(savefig_name)[0] + ".tex")
+        # tikzplotlib.save(os.path.splitext(savefig_name)[0] + ".tex")
 
     return None

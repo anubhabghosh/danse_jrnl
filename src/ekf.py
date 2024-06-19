@@ -156,7 +156,7 @@ class EKF(nn.Module):
 
         for i in range(0, N):
             self.initialize_stats()
-            for k in range(0, Ty):
+            for k in range(0, Ty - 1):
 
                 x_rec_hat_neg_k, Pk_neg = self.predict_estimate(Pk_pos_prev=self.Pk_pos, Q_k_prev=self.Q_k)
                 
@@ -168,7 +168,7 @@ class EKF(nn.Module):
                 #Also save covariances
                 Pk_estimated[i,k+1,:,:] = Pk_pos
 
-            mse_arr[i] = mse_loss(X[i,1:,:], traj_estimated[i,1:,:]).mean()  # Calculate the squared error across the length of a single sequence
+            mse_arr[i] = mse_loss(X[i,:,:], traj_estimated[i,:,:]).mean()  # Calculate the squared error across the length of a single sequence
             #print("ekf, sample: {}, mse_loss: {}".format(i+1, mse_arr[i]))
 
         #mse_ekf_lin_avg = torch.mean(10*torch.log10(mse_arr), dim=0) # Calculate the MSE by averaging over all examples in a batch

@@ -16,7 +16,7 @@ from torch.autograd.functional import jacobian
 from parse import parse
 from timeit import default_timer as timer
 import json
-import tikzplotlib
+# import tikzplotlib
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
@@ -290,31 +290,31 @@ def test_lorenz(device='cpu', model_file_saved=None, model_file_saved_knet=None,
     
     time_elapsed_knet = timer() - start_time_knet
     
-    nmse_ls = nmse_loss(X[:,1:,:], X_LS[:,0:,:])
-    nmse_ls_std = nmse_loss_std(X[:,1:,:], X_LS[:,0:,:])
-    nmse_ekf = nmse_loss(X[:,1:,:], X_estimated_ekf[:,1:,:])
-    nmse_ekf_std = nmse_loss_std(X[:,1:,:], X_estimated_ekf[:,1:,:])
-    nmse_ukf = nmse_loss(X[:,1:,:], X_estimated_ukf[:,1:,:])
-    nmse_ukf_std = nmse_loss_std(X[:,1:,:], X_estimated_ukf[:,1:,:])
-    nmse_danse = nmse_loss(X[:,1:,:], X_estimated_filtered[:,0:,:])
-    nmse_danse_std = nmse_loss_std(X[:,1:,:], X_estimated_filtered[:,0:,:])
-    nmse_danse_pred = nmse_loss(X[:,1:,:], X_estimated_pred[:,0:,:])
-    nmse_danse_pred_std = nmse_loss_std(X[:,1:,:], X_estimated_pred[:,0:,:])
-    nmse_knet = nmse_loss(X[:,1:,:], X_estimated_filtered_knet[:,0:,:])
-    nmse_knet_std = nmse_loss_std(X[:,1:,:], X_estimated_filtered_knet[:,0:,:])
+    nmse_ls = nmse_loss(X[:,:,:], X_LS[:,0:,:])
+    nmse_ls_std = nmse_loss_std(X[:,:,:], X_LS[:,0:,:])
+    nmse_ekf = nmse_loss(X[:,:,:], X_estimated_ekf[:,:,:])
+    nmse_ekf_std = nmse_loss_std(X[:,:,:], X_estimated_ekf[:,:,:])
+    nmse_ukf = nmse_loss(X[:,:,:], X_estimated_ukf[:,:,:])
+    nmse_ukf_std = nmse_loss_std(X[:,:,:], X_estimated_ukf[:,:,:])
+    nmse_danse = nmse_loss(X[:,:,:], X_estimated_filtered[:,0:,:])
+    nmse_danse_std = nmse_loss_std(X[:,:,:], X_estimated_filtered[:,0:,:])
+    nmse_danse_pred = nmse_loss(X[:,:,:], X_estimated_pred[:,0:,:])
+    nmse_danse_pred_std = nmse_loss_std(X[:,:,:], X_estimated_pred[:,0:,:])
+    nmse_knet = nmse_loss(X[:,:,:], X_estimated_filtered_knet[:,0:,:])
+    nmse_knet_std = nmse_loss_std(X[:,:,:], X_estimated_filtered_knet[:,0:,:])
     
-    mse_dB_ls = mse_loss_dB(X[:,1:,:], X_LS[:,0:,:])
-    mse_dB_ls_std = mse_loss_dB_std(X[:,1:,:], X_LS[:,0:,:])
-    mse_dB_ekf = mse_loss_dB(X[:,1:,:], X_estimated_ekf[:,1:,:])
-    mse_dB_ekf_std = mse_loss_dB_std(X[:,1:,:], X_estimated_ekf[:,1:,:])
-    mse_dB_ukf = mse_loss_dB(X[:,1:,:], X_estimated_ukf[:,1:,:])
-    mse_dB_ukf_std = mse_loss_dB_std(X[:,1:,:], X_estimated_ukf[:,1:,:])
-    mse_dB_danse = mse_loss_dB(X[:,1:,:], X_estimated_filtered[:,0:,:])
-    mse_dB_danse_std = mse_loss_dB_std(X[:,1:,:], X_estimated_filtered[:,0:,:])
-    mse_dB_danse_pred = mse_loss_dB(X[:,1:,:], X_estimated_pred[:,0:,:])
-    mse_dB_danse_pred_std = mse_loss_dB_std(X[:,1:,:], X_estimated_pred[:,0:,:])
-    mse_dB_knet = mse_loss_dB(X[:,1:,:], X_estimated_filtered_knet[:,0:,:])
-    mse_dB_knet_std = mse_loss_dB_std(X[:,1:,:], X_estimated_filtered_knet[:,0:,:])
+    mse_dB_ls = mse_loss_dB(X[:,:,:], X_LS[:,0:,:])
+    mse_dB_ls_std = mse_loss_dB_std(X[:,:,:], X_LS[:,0:,:])
+    mse_dB_ekf = mse_loss_dB(X[:,:,:], X_estimated_ekf[:,:,:])
+    mse_dB_ekf_std = mse_loss_dB_std(X[:,:,:], X_estimated_ekf[:,:,:])
+    mse_dB_ukf = mse_loss_dB(X[:,:,:], X_estimated_ukf[:,:,:])
+    mse_dB_ukf_std = mse_loss_dB_std(X[:,:,:], X_estimated_ukf[:,:,:])
+    mse_dB_danse = mse_loss_dB(X[:,:,:], X_estimated_filtered[:,0:,:])
+    mse_dB_danse_std = mse_loss_dB_std(X[:,:,:], X_estimated_filtered[:,0:,:])
+    mse_dB_danse_pred = mse_loss_dB(X[:,:,:], X_estimated_pred[:,0:,:])
+    mse_dB_danse_pred_std = mse_loss_dB_std(X[:,:,:], X_estimated_pred[:,0:,:])
+    mse_dB_knet = mse_loss_dB(X[:,:,:], X_estimated_filtered_knet[:,0:,:])
+    mse_dB_knet_std = mse_loss_dB_std(X[:,:,:], X_estimated_filtered_knet[:,0:,:])
     
     print("DANSE - MSE LOSS:",mse_dB_danse, "[dB]")
     print("DANSE - MSE STD:", mse_dB_danse_std, "[dB]")
@@ -342,17 +342,17 @@ def test_lorenz(device='cpu', model_file_saved=None, model_file_saved_knet=None,
 
     print("nu_dB: {}".format(nu_dB), file=orig_stdout)
 
-    plot_state_trajectory(X=torch.squeeze(X[0,1:,:],0).numpy(), 
-                        X_est_EKF=torch.squeeze(X_estimated_ekf[0,1:,:],0).numpy(), 
-                        X_est_UKF=torch.squeeze(X_estimated_ukf[0,1:,:],0).numpy(), 
+    plot_state_trajectory(X=torch.squeeze(X[0,:,:],0).numpy(), 
+                        X_est_EKF=torch.squeeze(X_estimated_ekf[0,:,:],0).numpy(), 
+                        X_est_UKF=torch.squeeze(X_estimated_ukf[0,:,:],0).numpy(), 
                         X_est_DANSE=torch.squeeze(X_estimated_filtered[0],0).numpy(),
                         X_est_KNET=torch.squeeze(X_estimated_filtered_knet[0], 0).numpy(),
                         savefig=True,
                         savefig_name="./figs/LorenzModel/{}/3dPlot_sigmae2_{}dB_smnr_{}dB_knet.pdf".format(evaluation_mode, sigma_e2_dB_test, smnr_dB_test))
     
-    plot_state_trajectory_axes(X=torch.squeeze(X[0,1:,:],0).numpy(), 
-                                X_est_EKF=torch.squeeze(X_estimated_ekf[0,1:,:],0).numpy(), 
-                                X_est_UKF=torch.squeeze(X_estimated_ukf[0,1:,:],0).numpy(), 
+    plot_state_trajectory_axes(X=torch.squeeze(X[0,:,:],0).numpy(), 
+                                X_est_EKF=torch.squeeze(X_estimated_ekf[0,:,:],0).numpy(), 
+                                X_est_UKF=torch.squeeze(X_estimated_ukf[0,:,:],0).numpy(), 
                                 X_est_DANSE=torch.squeeze(X_estimated_filtered[0],0).numpy(), 
                                 X_est_KNET=torch.squeeze(X_estimated_filtered_knet[0], 0).numpy(),
                                 savefig=True,
@@ -521,7 +521,7 @@ if __name__ == "__main__":
     plt.legend()
     plt.tight_layout()
     #plt.subplot(212)
-    tikzplotlib.save('./figs/LorenzModel/{}/NMSE_vs_N_Lorenz.tex'.format(evaluation_mode))
+    # tikzplotlib.save('./figs/LorenzModel/{}/NMSE_vs_N_Lorenz.tex'.format(evaluation_mode))
     plt.savefig('./figs/LorenzModel/{}/NMSE_vs_N_Lorenz.pdf'.format(evaluation_mode))
 
     # Plotting the Time-elapsed Curve
@@ -536,7 +536,7 @@ if __name__ == "__main__":
     plt.grid(True)
     plt.legend()
     plt.tight_layout()
-    tikzplotlib.save('./figs/LorenzModel/{}/InferTime_vs_N_Lorenz_w_knet.tex'.format(evaluation_mode))
+    # tikzplotlib.save('./figs/LorenzModel/{}/InferTime_vs_N_Lorenz_w_knet.tex'.format(evaluation_mode))
     plt.savefig('./figs/LorenzModel/{}/InferTime_vs_N_Lorenz_w_knet.pdf'.format(evaluation_mode))
 
     # Plotting the MSE Curve
@@ -552,7 +552,7 @@ if __name__ == "__main__":
     plt.legend()
     plt.tight_layout()
     #plt.subplot(212)
-    tikzplotlib.save('./figs/LorenzModel/{}/MSE_vs_N_Lorenz_w_knet.tex'.format(evaluation_mode))
+    # tikzplotlib.save('./figs/LorenzModel/{}/MSE_vs_N_Lorenz_w_knet.tex'.format(evaluation_mode))
     plt.savefig('./figs/LorenzModel/{}/MSE_vs_N_Lorenz_w_knet.pdf'.format(evaluation_mode))
     
     #plt.show()

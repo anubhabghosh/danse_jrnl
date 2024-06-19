@@ -147,7 +147,7 @@ class KF(nn.Module):
                 #Also save covariances
                 Pk_estimated[i,k+1,:,:] = Pk_pos
 
-            mse_arr[i] = mse_loss(X[i,1:,:], traj_estimated[i,1:,:]).mean()  # Calculate the squared error across the length of a single sequence
+            mse_arr[i] = mse_loss(X[i,:,:], traj_estimated[i,:,:]).mean()  # Calculate the squared error across the length of a single sequence
             #print("kf, sample: {}, mse_loss: {}".format(i+1, mse_arr[i]))
 
         #mse_kf_lin_avg = torch.mean(mse_arr, dim=0) # Calculate the MSE by averaging over all examples in a batch

@@ -172,7 +172,8 @@ def generate_state_observation_pairs(type_, parameters, T=100, N_samples=1000, s
         Z_XY_data_lengths.append(T)
         Z_XY_data.append([Xi, Yi])
 
-    Z_XY["data"] = np.row_stack(Z_XY_data).astype(object)
+    # Z_XY["data"] = np.row_stack(Z_XY_data).astype(object)
+    Z_XY["data"] = np.asarray(Z_XY_data)
     #Z_pM["data"] = Z_pM_data
     Z_XY["trajectory_lengths"] = np.vstack(Z_XY_data_lengths)
 

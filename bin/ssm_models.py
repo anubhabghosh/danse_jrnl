@@ -198,10 +198,10 @@ class LorenzSSM(object):
 
         self.sigma_e2 = dB_to_lin(sigma_e2_dB)
         self.setStateCov(sigma_e2=self.sigma_e2)
-        x_lorenz = np.zeros((T+1, self.n_states))
+        x_lorenz = np.zeros((T, self.n_states))
         e_k_arr = np.random.multivariate_normal(self.mu_e, self.Ce, size=(T+1,))
 
-        for t in range(0,T):
+        for t in range(0, T-1):
             x_lorenz[t+1] = self.f_linearize(x_lorenz[t]) + e_k_arr[t]
         
         if self.decimate == True:

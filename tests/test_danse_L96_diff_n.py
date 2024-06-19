@@ -16,7 +16,7 @@ from torch.autograd.functional import jacobian
 from parse import parse
 from timeit import default_timer as timer
 import json
-import tikzplotlib
+# import tikzplotlib
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
@@ -206,31 +206,31 @@ def test_lorenz(device='cpu', model_file_saved=None, model_file_saved_knet=None,
     time_elapsed_knet = timer() - start_time_knet
     '''
     time_elapsed_knet = None
-    nmse_ls = nmse_loss(X[:,1:,:], X_LS[:,0:,:])
-    nmse_ls_std = nmse_loss_std(X[:,1:,:], X_LS[:,0:,:])
-    nmse_ekf = None #nmse_loss(X[:,1:,:], X_estimated_ekf[:,1:,:])
-    nmse_ekf_std = None # nmse_loss_std(X[:,1:,:], X_estimated_ekf[:,1:,:])
-    nmse_ukf = None #nmse_loss(X[:,1:,:], X_estimated_ukf[:,1:,:])
-    nmse_ukf_std = None #nmse_loss_std(X[:,1:,:], X_estimated_ukf[:,1:,:])
-    nmse_danse = nmse_loss(X[:,1:,:], X_estimated_filtered[:,0:,:])
-    nmse_danse_std = nmse_loss_std(X[:,1:,:], X_estimated_filtered[:,0:,:])
-    nmse_danse_pred = nmse_loss(X[:,1:,:], X_estimated_pred[:,0:,:])
-    nmse_danse_pred_std = nmse_loss_std(X[:,1:,:], X_estimated_pred[:,0:,:])
-    nmse_knet = None #nmse_loss(X[:,1:,:], X_estimated_filtered_knet[:,0:,:])
-    nmse_knet_std = None #nmse_loss_std(X[:,1:,:], X_estimated_filtered_knet[:,0:,:])
+    nmse_ls = nmse_loss(X[:,:,:], X_LS[:,0:,:])
+    nmse_ls_std = nmse_loss_std(X[:,:,:], X_LS[:,0:,:])
+    nmse_ekf = None #nmse_loss(X[:,:,:], X_estimated_ekf[:,:,:])
+    nmse_ekf_std = None # nmse_loss_std(X[:,:,:], X_estimated_ekf[:,:,:])
+    nmse_ukf = None #nmse_loss(X[:,:,:], X_estimated_ukf[:,:,:])
+    nmse_ukf_std = None #nmse_loss_std(X[:,:,:], X_estimated_ukf[:,:,:])
+    nmse_danse = nmse_loss(X[:,:,:], X_estimated_filtered[:,0:,:])
+    nmse_danse_std = nmse_loss_std(X[:,:,:], X_estimated_filtered[:,0:,:])
+    nmse_danse_pred = nmse_loss(X[:,:,:], X_estimated_pred[:,0:,:])
+    nmse_danse_pred_std = nmse_loss_std(X[:,:,:], X_estimated_pred[:,0:,:])
+    nmse_knet = None #nmse_loss(X[:,:,:], X_estimated_filtered_knet[:,0:,:])
+    nmse_knet_std = None #nmse_loss_std(X[:,:,:], X_estimated_filtered_knet[:,0:,:])
     
-    mse_dB_ls = mse_loss_dB(X[:,1:,:], X_LS[:,0:,:])
-    mse_dB_ls_std = mse_loss_dB_std(X[:,1:,:], X_LS[:,0:,:])
-    mse_dB_ekf = None #mse_loss_dB(X[:,1:,:], X_estimated_ekf[:,1:,:])
-    mse_dB_ekf_std = None #mse_loss_dB_std(X[:,1:,:], X_estimated_ekf[:,1:,:])
-    mse_dB_ukf = None #mse_loss_dB(X[:,1:,:], X_estimated_ukf[:,1:,:])
-    mse_dB_ukf_std = None #mse_loss_dB_std(X[:,1:,:], X_estimated_ukf[:,1:,:])
-    mse_dB_danse = mse_loss_dB(X[:,1:,:], X_estimated_filtered[:,0:,:])
-    mse_dB_danse_std = mse_loss_dB_std(X[:,1:,:], X_estimated_filtered[:,0:,:])
-    mse_dB_danse_pred = mse_loss_dB(X[:,1:,:], X_estimated_pred[:,0:,:])
-    mse_dB_danse_pred_std = mse_loss_dB_std(X[:,1:,:], X_estimated_pred[:,0:,:])
-    mse_dB_knet = None #mse_loss_dB(X[:,1:,:], X_estimated_filtered_knet[:,0:,:])
-    mse_dB_knet_std = None #mse_loss_dB_std(X[:,1:,:], X_estimated_filtered_knet[:,0:,:])
+    mse_dB_ls = mse_loss_dB(X[:,:,:], X_LS[:,0:,:])
+    mse_dB_ls_std = mse_loss_dB_std(X[:,:,:], X_LS[:,0:,:])
+    mse_dB_ekf = None #mse_loss_dB(X[:,:,:], X_estimated_ekf[:,:,:])
+    mse_dB_ekf_std = None #mse_loss_dB_std(X[:,:,:], X_estimated_ekf[:,:,:])
+    mse_dB_ukf = None #mse_loss_dB(X[:,:,:], X_estimated_ukf[:,:,:])
+    mse_dB_ukf_std = None #mse_loss_dB_std(X[:,:,:], X_estimated_ukf[:,:,:])
+    mse_dB_danse = mse_loss_dB(X[:,:,:], X_estimated_filtered[:,0:,:])
+    mse_dB_danse_std = mse_loss_dB_std(X[:,:,:], X_estimated_filtered[:,0:,:])
+    mse_dB_danse_pred = mse_loss_dB(X[:,:,:], X_estimated_pred[:,0:,:])
+    mse_dB_danse_pred_std = mse_loss_dB_std(X[:,:,:], X_estimated_pred[:,0:,:])
+    mse_dB_knet = None #mse_loss_dB(X[:,:,:], X_estimated_filtered_knet[:,0:,:])
+    mse_dB_knet_std = None #mse_loss_dB_std(X[:,:,:], X_estimated_filtered_knet[:,0:,:])
     
     print("DANSE - MSE LOSS:",mse_dB_danse, "[dB]")
     print("DANSE - MSE STD:", mse_dB_danse_std, "[dB]")
@@ -255,49 +255,49 @@ def test_lorenz(device='cpu', model_file_saved=None, model_file_saved_knet=None,
 
     # Plot the result
     j = np.random.randint(X.shape[0])
-    plot_state_trajectory(X=torch.squeeze(X[j,1:,:],0).numpy(), 
-                        #X_est_EKF=torch.squeeze(X_estimated_ekf[0,1:,:],0).numpy(), 
-                        #X_est_UKF=torch.squeeze(X_estimated_ukf[0,1:,:],0).numpy(), 
+    plot_state_trajectory(X=torch.squeeze(X[j,:,:],0).numpy(), 
+                        #X_est_EKF=torch.squeeze(X_estimated_ekf[0,:,:],0).numpy(), 
+                        #X_est_UKF=torch.squeeze(X_estimated_ukf[0,:,:],0).numpy(), 
                         X_est_DANSE=torch.squeeze(X_estimated_filtered[j],0).numpy(),
                         #X_est_KNET=torch.squeeze(X_estimated_filtered_knet[0], 0).numpy(),
                         savefig=True,
                         savefig_name="./figs/Lorenz96Model/{}/3dPlot_sigmae2_{}dB_smnr_{}dB_nobs_{}.pdf".format(evaluation_mode, sigma_e2_dB_test, smnr_dB_test, n))
     plt.close()
-    plot_multidim_imshow(X=torch.squeeze(X[j,1:,:],0).numpy(), X_est_DANSE=torch.squeeze(X_estimated_filtered[j],0).numpy(), 
+    plot_multidim_imshow(X=torch.squeeze(X[j,:,:],0).numpy(), X_est_DANSE=torch.squeeze(X_estimated_filtered[j],0).numpy(), 
                          Y=torch.squeeze(Y[j,:,:],0).numpy(),
                          savefig=True, 
                          savefig_name="./figs/Lorenz96Model/{}/Multidim_sigmae2_{}dB_smnr_{}dB_nobs_{}.pdf".format(evaluation_mode, sigma_e2_dB_test, smnr_dB_test, n))
     plt.close()
-    plot_3d_state_trajectory(X=torch.squeeze(X[j, 1:, :], 0).numpy(), legend='$\\mathbf{x}^{true}$', m='b-', savefig_name="./figs/Lorenz96Model/{}/lorenz96ssm_x_true_sigmae2_{}dB_smnr_{}dB_nobs_{}.pdf".format(evaluation_mode, sigma_e2_dB_test, smnr_dB_test, n), savefig=True)
+    plot_3d_state_trajectory(X=torch.squeeze(X[j, :, :], 0).numpy(), legend='$\\mathbf{x}^{true}$', m='b-', savefig_name="./figs/Lorenz96Model/{}/lorenz96ssm_x_true_sigmae2_{}dB_smnr_{}dB_nobs_{}.pdf".format(evaluation_mode, sigma_e2_dB_test, smnr_dB_test, n), savefig=True)
     plt.close()
     plot_3d_state_trajectory(X=torch.squeeze(X_estimated_filtered[j], 0).numpy(), legend='$\\hat{\mathbf{x}}_{DANSE}$', m='k-', savefig_name="./figs/Lorenz96Model/{}/lorenz96ssm_x_danse_sigmae2_{}dB_smnr_{}dB_nobs_{}.pdf".format(evaluation_mode, sigma_e2_dB_test, smnr_dB_test, n), savefig=True)
     plt.close()
     plot_3d_measurment_trajectory(Y=torch.squeeze(Y[j, :, :], 0).numpy(), legend='$\\mathbf{y}^{true}$', m='r-', savefig_name="./figs/Lorenz96Model/{}/lorenz96ssm_y_true_sigmae2_{}dB_smnr_{}dB_nobs_{}.pdf".format(evaluation_mode, sigma_e2_dB_test, smnr_dB_test, n), savefig=True)
     plt.close()
-    plot_state_trajectory_w_lims(X=torch.squeeze(X[j,1:,:],0).numpy(), 
-                        #X_est_KF=torch.squeeze(X_estimated_kf[0,1:,:], 0).numpy(), 
-                        #X_est_KF_std=np.sqrt(torch.diagonal(torch.squeeze(Pk_estimated_kf[0,1:,:,:], 0), offset=0, dim1=1,dim2=2).numpy()), 
-                        #X_est_UKF=torch.squeeze(X_estimated_ukf[j,1:,:], 0).numpy(), 
-                        #X_est_UKF_std=np.sqrt(torch.diagonal(torch.squeeze(Pk_estimated_ukf[j,1:,:,:], 0), offset=0, dim1=1,dim2=2).numpy()), 
+    plot_state_trajectory_w_lims(X=torch.squeeze(X[j,:,:],0).numpy(), 
+                        #X_est_KF=torch.squeeze(X_estimated_kf[0,:,:], 0).numpy(), 
+                        #X_est_KF_std=np.sqrt(torch.diagonal(torch.squeeze(Pk_estimated_kf[0,:,:,:], 0), offset=0, dim1=1,dim2=2).numpy()), 
+                        #X_est_UKF=torch.squeeze(X_estimated_ukf[j,:,:], 0).numpy(), 
+                        #X_est_UKF_std=np.sqrt(torch.diagonal(torch.squeeze(Pk_estimated_ukf[j,:,:,:], 0), offset=0, dim1=1,dim2=2).numpy()), 
                         X_est_DANSE=torch.squeeze(X_estimated_filtered[j], 0).numpy(), 
                         X_est_DANSE_std=np.sqrt(torch.diagonal(torch.squeeze(Pk_estimated_filtered[j], 0), offset=0, dim1=1,dim2=2).numpy()), 
                         #X_est_DANSE_sup=torch.squeeze(X_estimated_filtered_sup[0], 0).numpy(), 
-                        #X_est_DANSE_sup_std=np.diag(torch.squeeze(Pk_estimated_filtered_sup[0,1:,:], 0).numpy()).sqrt(), 
+                        #X_est_DANSE_sup_std=np.diag(torch.squeeze(Pk_estimated_filtered_sup[0,:,:], 0).numpy()).sqrt(), 
                         #X_est_KNET=torch.squeeze(X_estimated_filtered_knet[0], 0).numpy(), 
                         savefig=True,
                         savefig_name="./figs/Lorenz96Model/{}/Trajectories_sigma_e2_{}dB_smnr_{}dB_nobs_{}.pdf".format(evaluation_mode, sigma_e2_dB_test, smnr_dB_test, n))
     plt.close()
-    plot_state_trajectory_axes(X=torch.squeeze(X[j,1:,:],0).numpy(), 
-                                #X_est_EKF=torch.squeeze(X_estimated_ekf[0,1:,:],0).numpy(), 
-                                #X_est_UKF=torch.squeeze(X_estimated_ukf[j,1:,:],0).numpy(), 
+    plot_state_trajectory_axes(X=torch.squeeze(X[j,:,:],0).numpy(), 
+                                #X_est_EKF=torch.squeeze(X_estimated_ekf[0,:,:],0).numpy(), 
+                                #X_est_UKF=torch.squeeze(X_estimated_ukf[j,:,:],0).numpy(), 
                                 X_est_DANSE=torch.squeeze(X_estimated_filtered[j],0).numpy(), 
                                 #X_est_KNET=torch.squeeze(X_estimated_filtered_knet[0], 0).numpy(),
                                 savefig=True,
                                 savefig_name="./figs/Lorenz96Model/{}/AxesWisePlot_sigmae2_{}dB_smnr_{}dB_nobs_{}.pdf".format(evaluation_mode, sigma_e2_dB_test, smnr_dB_test, n))
     plt.close()
-    plot_state_trajectory_axes_all(X=torch.squeeze(X[j,1:,:],0).numpy(), 
-                                #X_est_EKF=torch.squeeze(X_estimated_ekf[0,1:,:],0).numpy(), 
-                                #X_est_UKF=torch.squeeze(X_estimated_ukf[j,1:,:],0).numpy(), 
+    plot_state_trajectory_axes_all(X=torch.squeeze(X[j,:,:],0).numpy(), 
+                                #X_est_EKF=torch.squeeze(X_estimated_ekf[0,:,:],0).numpy(), 
+                                #X_est_UKF=torch.squeeze(X_estimated_ukf[j,:,:],0).numpy(), 
                                 X_est_DANSE=torch.squeeze(X_estimated_filtered[j],0).numpy(), 
                                 #X_est_KNET=torch.squeeze(X_estimated_filtered_knet[0], 0).numpy(),
                                 savefig=True,
@@ -475,7 +475,7 @@ if __name__ == "__main__":
     plt.legend()
     plt.tight_layout()
     #plt.subplot(212)
-    tikzplotlib.save('./figs/Lorenz96Model/{}/NMSE_vs_n_Lorenz.tex'.format(evaluation_mode))
+    # tikzplotlib.save('./figs/Lorenz96Model/{}/NMSE_vs_n_Lorenz.tex'.format(evaluation_mode))
     plt.savefig('./figs/Lorenz96Model/{}/NMSE_vs_n_Lorenz.pdf'.format(evaluation_mode))
 
     # Plotting the Time-elapsed Curve
@@ -490,7 +490,7 @@ if __name__ == "__main__":
     plt.grid(True)
     plt.legend()
     plt.tight_layout()
-    tikzplotlib.save('./figs/Lorenz96Model/{}/InferTime_vs_n_Lorenz_w_knet.tex'.format(evaluation_mode))
+    # tikzplotlib.save('./figs/Lorenz96Model/{}/InferTime_vs_n_Lorenz_w_knet.tex'.format(evaluation_mode))
     plt.savefig('./figs/Lorenz96Model/{}/InferTime_vs_n_Lorenz_w_knet.pdf'.format(evaluation_mode))
 
     # Plotting the MSE Curve
@@ -506,7 +506,7 @@ if __name__ == "__main__":
     plt.legend()
     plt.tight_layout()
     #plt.subplot(212)
-    tikzplotlib.save('./figs/Lorenz96Model/{}/MSE_vs_n_Lorenz_w_knet.tex'.format(evaluation_mode))
+    # tikzplotlib.save('./figs/Lorenz96Model/{}/MSE_vs_n_Lorenz_w_knet.tex'.format(evaluation_mode))
     plt.savefig('./figs/Lorenz96Model/{}/MSE_vs_n_Lorenz_w_knet.pdf'.format(evaluation_mode))
     
     #plt.show()
