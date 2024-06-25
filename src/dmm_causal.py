@@ -508,7 +508,7 @@ def train_dmm(model, options, optimizer_params, train_loader, val_loader, logfil
                         mu_latent_seq=val_mu_latent_seq,
                         var_latent_seq=val_var_latent_seq
                     )
-                    val_mse_loss_batch = mse_criterion(val_X_batch[:,1:,:].to(device), val_mu_latent_q_seq)
+                    val_mse_loss_batch = mse_criterion(val_X_batch[:,:,:].to(device), val_mu_latent_q_seq)
                     # print statistics
                     # print statistics
                     val_nvlb_loss_epoch_sum += val_nvlb_seq_mean_batch.item()

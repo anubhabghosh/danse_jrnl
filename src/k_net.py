@@ -345,7 +345,7 @@ def train_KalmanNetNN(model, options, train_loader, val_loader, nepochs,
             y_out_cv[:,:,t] = model.m1y.squeeze().T
 
         # Compute Training Loss
-        cv_loss = loss_fn(x_out_cv[:,:,:Ty], cv_target[:,:,1:]).item()
+        cv_loss = loss_fn(x_out_cv[:,:,:Ty], cv_target[:,:,:]).item()
         cv_loss_obs =  loss_fn(y_out_cv[:,:,:Ty], y_cv[:,:,:Ty]).item()
 
         # Average
@@ -393,7 +393,7 @@ def train_KalmanNetNN(model, options, train_loader, val_loader, nepochs,
             y_out_training[:,:,t] = model.m1y.squeeze().T
 
         # Compute Training Loss
-        loss  = loss_fn(x_out_training[:,:,:Ty], train_target[:,:,1:])
+        loss  = loss_fn(x_out_training[:,:,:Ty], train_target[:,:,:])
         loss_obs  = loss_fn(y_out_training[:,:,:Ty], y_training[:,:,:Ty])
 
         # Select loss, from which to update the gradient

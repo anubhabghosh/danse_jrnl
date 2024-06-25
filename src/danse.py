@@ -259,7 +259,7 @@ def train_danse(model, options, train_loader, val_loader, nepochs, logfile_path,
                     val_mu_X_predictions_batch, val_var_X_predictions_batch, val_mu_X_filtered_batch, val_var_X_filtered_batch = model.compute_predictions(Y_val_batch)
                     log_pY_val_batch = -model.forward(Y_val_batch)
                     val_loss_epoch_sum += log_pY_val_batch.item()
-                    val_mse_loss_batch = mse_criterion(val_X_batch[:,1:,:].to(device), val_mu_X_filtered_batch)
+                    val_mse_loss_batch = mse_criterion(val_X_batch[:,:,:].to(device), val_mu_X_filtered_batch)
                     # print statistics
                     val_mse_loss_epoch_sum += val_mse_loss_batch.item()
 
