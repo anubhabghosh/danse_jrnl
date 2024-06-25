@@ -123,11 +123,14 @@ class UKF_Aliter(nn.Module):
                 
                 self.ukf.predict()
                 self.ukf.update(Y[i,k,:].numpy())       
-                traj_estimated[i,k+1,:] = torch.from_numpy(self.ukf.x)
-                Pk_estimated[i,k+1,:,:] = torch.from_numpy(self.ukf.P)
+                #traj_estimated[i,k+1,:] = torch.from_numpy(self.ukf.x)
+                #Pk_estimated[i,k+1,:,:] = torch.from_numpy(self.ukf.P)
+                traj_estimated[i,k,:] = torch.from_numpy(self.ukf.x)
+                Pk_estimated[i,k,:,:] = torch.from_numpy(self.ukf.P)
 
             #MSE_UKF_linear_arr[i] = mse_loss(traj_estimated[i], X[i]).item()
-            MSE_UKF_linear_arr[i] = mse_loss(X[i,1:,:], traj_estimated[i,1:,:]).mean().item()
+            #MSE_UKF_linear_arr[i] = mse_loss(X[i,1:,:], traj_estimated[i,1:,:]).mean().item()
+            MSE_UKF_linear_arr[i] = mse_loss(X[i,:,:], traj_estimated[i,:,:]).mean().item()
             #print("ukf, sample: {}, mse_loss: {}".format(i+1, MSE_UKF_linear_arr[i]))
 
         end = timer()

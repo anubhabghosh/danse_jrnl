@@ -114,16 +114,19 @@ class Series_Dataset(Dataset):
         self.trajectory_lengths = Z_XY_dict["trajectory_lengths"]
 
     def __len__(self):
-
-        return len(self.data_dict["data"])
+        return len(self.data_dict["dataX"])
 
     def __getitem__(self, idx):
 
         if torch.is_tensor(idx):
             idx = idx.tolist()
 
-        sample = {"inputs": np.expand_dims(self.data_dict["data"][idx][1], axis=0), 
-                  "targets": np.expand_dims(self.data_dict["data"][idx][0], axis=0)
+        #sample = {"inputs": np.expand_dims(self.data_dict["data"][idx][1], axis=0), 
+        #          "targets": np.expand_dims(self.data_dict["data"][idx][0], axis=0)
+        #          }
+        
+        sample = {"inputs": np.expand_dims(self.data_dict["dataY"][idx], axis=0), 
+                  "targets": np.expand_dims(self.data_dict["dataX"][idx], axis=0)
                   }
 
         return sample
