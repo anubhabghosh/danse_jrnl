@@ -1,3 +1,11 @@
+!data/synthetic_data/.gitkeep
+!log/.gitkeep
+!models/.gitkeep
+
+data/synthetic_data/*
+log/*
+models/*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
