@@ -17,7 +17,7 @@ T=100
 n_states=3
 
 # Number of observations in the measurement system
-n_obs=2
+n_obs=3
 
 # dataset_type defines the type of dynamical system, the general terminology, e.g. for the Lorenz 63 system, 
 # the type is LorenzSSM, similarly for Chen attractor we have ChenSSM.
@@ -26,7 +26,7 @@ n_obs=2
 # Lorenz96SSMrn${n_obs} with deterministic matrix subsampled measurements: LorenzSSMn${n_obs}, ChenSSMn${n_obs}, 
 # Lorenz96SSMn${n_obs}.
 # For the linear system, we have LinearSSM (can handle both full-rank, deterministic downsampled case).
-dataset_type="LorenzSSMrn${n_obs}"
+dataset_type="LorenzSSM"
 
 # The name of the script for generating data with full path name
 script_name="./bin/generate_data.py"
@@ -38,7 +38,7 @@ output_path="./data/synthetic_data/"
 sigma_e2_dB=-10.0
 
 # For different signal-to-measurement-noise ratio (SMNRs), run the data generation 
-for smnr_dB in 10.0 # different values separated by space
+for smnr_dB in -10.0 0.0 10.0 20.0 30.0 # different values separated by space
 do
     ${PYTHON} ${script_name} \
     --n_states ${n_states} \
