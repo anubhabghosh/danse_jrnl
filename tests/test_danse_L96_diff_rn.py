@@ -64,7 +64,7 @@ def test_lorenz(device='cpu', model_file_saved=None, model_file_saved_knet=None,
         # My own data generation scheme
         m, n, T_test, N_test, sigma_e2_dB_test, smnr_dB_test = parse("test_trajectories_m_{:d}_n_{:d}_Lorenz96SSMrn_data_T_{:d}_N_{:d}_sigmae2_{:f}dB_SMNR_{:f}dB.pkl", test_data_file.split('/')[-1])
         #N_test = 100 # No. of trajectories at test time / evaluation
-        X = torch.zeros((N_test, T_test+1, m))
+        X = torch.zeros((N_test, T_test, m))
         Y = torch.zeros((N_test, T_test, n))
 
         lorenz_model = Lorenz96SSM(
