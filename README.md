@@ -109,8 +109,8 @@ python3 main_danse_opt.py \
 --mode train \
 --rnn_model_type gru \
 --dataset_type LorenzSSM \
---datafile ./data/synthetic_data/trajectories_m_3_n_3_LorenzSSM_data_N_1000_T_100_sigmae2_-10.0dB_smnr_0.0dB.pkl \
---splits ./data/synthetic_data/splits_m_3_n_3_LorenzSSM_data_N_1000_T_100_sigmae2_-10.0dB_smnr_0.0dB.pkl
+--datafile ./data/synthetic_data/trajectories_m_3_n_3_LorenzSSM_data_T_100_N_1000_sigmae2_-10.0dB_smnr_0.0dB.pkl \
+--splits ./data/synthetic_data/splits_m_3_n_3_LorenzSSM_data_T_100_N_1000_sigmae2_-10.0dB_smnr_0.0dB.pkl
 ```
 For the `datafile` and `splits` arguments:
 `N` denotes the number of sample trajectories, `T` denotes the length of each sample trajectory. 
