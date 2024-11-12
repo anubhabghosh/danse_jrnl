@@ -123,7 +123,7 @@ def test_lorenz(device='cpu', model_file_saved_danse=None, model_file_saved_dans
         evaluation_mode='Full', p=0.5, bias=30, dirname=None):
 
     _, rnn_type, m, n, T, _, sigma_e2_dB, smnr_dB = parse("{}_danse_opt_{}_m_{:d}_n_{:d}_T_{:d}_N_{:d}_sigmae2_{:f}dB_SMNR_{:f}dB", model_file_saved_danse.split('/')[-2])
-    _, inference_mode_dmm, rnn_type_dmm, m, n, T, _, sigma_e2_dB, smnr_dB = parse("{}_dmm_{}_opt_{}_m_{:d}_n_{:d}_T_{:d}_N_{:d}_sigmae2_{:f}dB_SMNR_{:f}dB_lmindel", model_file_saved_dmm.split('/')[-2])
+    #_, inference_mode_dmm, rnn_type_dmm, m, n, T, _, sigma_e2_dB, smnr_dB = parse("{}_dmm_{}_opt_{}_m_{:d}_n_{:d}_T_{:d}_N_{:d}_sigmae2_{:f}dB_SMNR_{:f}dB_lmindel", model_file_saved_dmm.split('/')[-2])
 
     delta = delta_t # If decimate is True, then set this delta to 1e-5 and run it for long time
     delta_d = 0.02
@@ -179,8 +179,8 @@ def test_lorenz(device='cpu', model_file_saved_danse=None, model_file_saved_dans
     print("sigma_e2: {}dB, smnr: {}dB".format(sigma_e2_dB_test, smnr_dB_test))
     print("sigma_e2: {}dB, smnr: {}dB".format(sigma_e2_dB_test, smnr_dB_test), file=orig_stdout)
 
-    #Y = Y[:2]
-    #X = X[:2]
+    Y = Y[:2]
+    X = X[:2]
 
     N_test, Ty, dy = Y.shape
     N_test, Tx, dx = X.shape
@@ -325,7 +325,7 @@ def test_lorenz(device='cpu', model_file_saved_danse=None, model_file_saved_dans
                                                                                                                                     device=device)
     time_elapsed_danse_supervised = timer() - start_time_danse_supervised
 
-
+    
     print("Testing KalmanNet ...", file=orig_stdout)
     # Initialize the KalmanNet model in PyTorch
     knet_model = KalmanNetNN(
@@ -353,7 +353,7 @@ def test_lorenz(device='cpu', model_file_saved_danse=None, model_file_saved_dans
                                                 device=device)
     
     time_elapsed_knet = timer() - start_time_knet
-
+    
     # Initialize the DMM model in PyTorch
     print("Testing DMM (ST-L)....", file=orig_stdout)
     dmm_causal_model = DMM(
@@ -386,50 +386,49 @@ def test_lorenz(device='cpu', model_file_saved_danse=None, model_file_saved_dans
                                                                                             saved_model_file=model_file_saved_dmm,
                                                                                             Y=Y,
                                                                                             device=device)
-    
     time_elapsed_dmm = timer() - start_time_dmm
 
-    nmse_ls = nmse_loss(X[:,1:,:], X_LS[:,0:,:])
-    nmse_ls_std = nmse_loss_std(X[:,1:,:], X_LS[:,0:,:])
-    nmse_ekf = nmse_loss(X[:,1:,:], X_estimated_ekf[:,1:,:])
-    nmse_ekf_std = nmse_loss_std(X[:,1:,:], X_estimated_ekf[:,1:,:])
-    nmse_ukf = nmse_loss(X[:,1:,:], X_estimated_ukf[:,1:,:])
-    nmse_ukf_std = nmse_loss_std(X[:,1:,:], X_estimated_ukf[:,1:,:])
-    nmse_danse = nmse_loss(X[:,1:,:], X_estimated_filtered[:,0:,:])
-    nmse_danse_std = nmse_loss_std(X[:,1:,:], X_estimated_filtered[:,0:,:])
-    nmse_danse_pred = nmse_loss(X[:,1:,:], X_estimated_pred[:,0:,:])
-    nmse_danse_pred_std = nmse_loss_std(X[:,1:,:], X_estimated_pred[:,0:,:])
-    nmse_danse_supervised = nmse_loss(X[:,1:,:], X_estimated_filtered_supervised[:,0:,:])
-    nmse_danse_supervised_std = nmse_loss_std(X[:,1:,:], X_estimated_filtered_supervised[:,0:,:])
-    nmse_danse_supervised_pred = nmse_loss(X[:,1:,:], X_estimated_pred_supervised[:,0:,:])
-    nmse_danse_supervised_pred_std = nmse_loss_std(X[:,1:,:], X_estimated_pred_supervised[:,0:,:])
-    nmse_knet = nmse_loss(X[:,1:,:], X_estimated_filtered_knet[:,0:,:])
-    nmse_knet_std = nmse_loss_std(X[:,1:,:], X_estimated_filtered_knet[:,0:,:])
-    nmse_dmm = nmse_loss(X[:,1:,:], X_estimated_filtered_dmm_causal[:,0:,:])
-    nmse_dmm_std = nmse_loss_std(X[:,1:,:], X_estimated_filtered_dmm_causal[:,0:,:])
+    nmse_ls = nmse_loss(X[:,:,:], X_LS[:,0:,:])
+    nmse_ls_std = nmse_loss_std(X[:,:,:], X_LS[:,0:,:])
+    nmse_ekf = nmse_loss(X[:,:,:], X_estimated_ekf[:,:,:])
+    nmse_ekf_std = nmse_loss_std(X[:,:,:], X_estimated_ekf[:,:,:])
+    nmse_ukf = nmse_loss(X[:,:,:], X_estimated_ukf[:,:,:])
+    nmse_ukf_std = nmse_loss_std(X[:,:,:], X_estimated_ukf[:,:,:])
+    nmse_danse = nmse_loss(X[:,:,:], X_estimated_filtered[:,0:,:])
+    nmse_danse_std = nmse_loss_std(X[:,:,:], X_estimated_filtered[:,0:,:])
+    nmse_danse_pred = nmse_loss(X[:,:,:], X_estimated_pred[:,0:,:])
+    nmse_danse_pred_std = nmse_loss_std(X[:,:,:], X_estimated_pred[:,0:,:])
+    nmse_danse_supervised = nmse_loss(X[:,:,:], X_estimated_filtered_supervised[:,0:,:])
+    nmse_danse_supervised_std = nmse_loss_std(X[:,:,:], X_estimated_filtered_supervised[:,0:,:])
+    nmse_danse_supervised_pred = nmse_loss(X[:,:,:], X_estimated_pred_supervised[:,0:,:])
+    nmse_danse_supervised_pred_std = nmse_loss_std(X[:,:,:], X_estimated_pred_supervised[:,0:,:])
+    nmse_knet = nmse_loss(X[:,:,:], X_estimated_filtered_knet[:,0:,:])
+    nmse_knet_std = nmse_loss_std(X[:,:,:], X_estimated_filtered_knet[:,0:,:])
+    nmse_dmm = nmse_loss(X[:,:,:], X_estimated_filtered_dmm_causal[:,0:,:])
+    nmse_dmm_std = nmse_loss_std(X[:,:,:], X_estimated_filtered_dmm_causal[:,0:,:])
 
 
-    mse_dB_ls = mse_loss_dB(X[:,1:,:], X_LS[:,0:,:])
-    mse_dB_ls_std = mse_loss_dB_std(X[:,1:,:], X_LS[:,0:,:])
-    mse_dB_ekf = mse_loss_dB(X[:,1:,:], X_estimated_ekf[:,1:,:])
-    mse_dB_ekf_std = mse_loss_dB_std(X[:,1:,:], X_estimated_ekf[:,1:,:])
-    mse_dB_ukf = mse_loss_dB(X[:,1:,:], X_estimated_ukf[:,1:,:])
-    mse_dB_ukf_std = mse_loss_dB_std(X[:,1:,:], X_estimated_ukf[:,1:,:])
-    mse_dB_danse = mse_loss_dB(X[:,1:,:], X_estimated_filtered[:,0:,:])
-    mse_dB_danse_std = mse_loss_dB_std(X[:,1:,:], X_estimated_filtered[:,0:,:])
-    mse_dB_danse_pred = mse_loss_dB(X[:,1:,:], X_estimated_pred[:,0:,:])
-    mse_dB_danse_pred_std = mse_loss_dB_std(X[:,1:,:], X_estimated_pred[:,0:,:])
-    mse_dB_danse_supervised = mse_loss_dB(X[:,1:,:], X_estimated_filtered_supervised[:,0:,:])
-    mse_dB_danse_supervised_std = mse_loss_dB_std(X[:,1:,:], X_estimated_filtered_supervised[:,0:,:])
-    mse_dB_danse_supervised_pred = mse_loss_dB(X[:,1:,:], X_estimated_pred_supervised[:,0:,:])
-    mse_dB_danse_supervised_pred_std = mse_loss_dB_std(X[:,1:,:], X_estimated_pred_supervised[:,0:,:])
-    mse_dB_knet = mse_loss_dB(X[:,1:,:], X_estimated_filtered_knet[:,0:,:])
-    mse_dB_knet_std = mse_loss_dB_std(X[:,1:,:], X_estimated_filtered_knet[:,0:,:])
-    mse_dB_dmm = mse_loss_dB(X[:,1:,:], X_estimated_filtered_dmm_causal[:,0:,:])
-    mse_dB_dmm_std = mse_loss_dB_std(X[:,1:,:], X_estimated_filtered_dmm_causal[:,0:,:])
+    mse_dB_ls = mse_loss_dB(X[:,:,:], X_LS[:,0:,:])
+    mse_dB_ls_std = mse_loss_dB_std(X[:,:,:], X_LS[:,0:,:])
+    mse_dB_ekf = mse_loss_dB(X[:,:,:], X_estimated_ekf[:,:,:])
+    mse_dB_ekf_std = mse_loss_dB_std(X[:,:,:], X_estimated_ekf[:,:,:])
+    mse_dB_ukf = mse_loss_dB(X[:,:,:], X_estimated_ukf[:,:,:])
+    mse_dB_ukf_std = mse_loss_dB_std(X[:,:,:], X_estimated_ukf[:,:,:])
+    mse_dB_danse = mse_loss_dB(X[:,:,:], X_estimated_filtered[:,0:,:])
+    mse_dB_danse_std = mse_loss_dB_std(X[:,:,:], X_estimated_filtered[:,0:,:])
+    mse_dB_danse_pred = mse_loss_dB(X[:,:,:], X_estimated_pred[:,0:,:])
+    mse_dB_danse_pred_std = mse_loss_dB_std(X[:,:,:], X_estimated_pred[:,0:,:])
+    mse_dB_danse_supervised = mse_loss_dB(X[:,:,:], X_estimated_filtered_supervised[:,0:,:])
+    mse_dB_danse_supervised_std = mse_loss_dB_std(X[:,:,:], X_estimated_filtered_supervised[:,0:,:])
+    mse_dB_danse_supervised_pred = mse_loss_dB(X[:,:,:], X_estimated_pred_supervised[:,0:,:])
+    mse_dB_danse_supervised_pred_std = mse_loss_dB_std(X[:,:,:], X_estimated_pred_supervised[:,0:,:])
+    mse_dB_knet = mse_loss_dB(X[:,:,:], X_estimated_filtered_knet[:,0:,:])
+    mse_dB_knet_std = mse_loss_dB_std(X[:,:,:], X_estimated_filtered_knet[:,0:,:])
+    mse_dB_dmm = mse_loss_dB(X[:,:,:], X_estimated_filtered_dmm_causal[:,0:,:])
+    mse_dB_dmm_std = mse_loss_dB_std(X[:,:,:], X_estimated_filtered_dmm_causal[:,0:,:])
     
-    print("DMM CAUSAL - MSE LOSS:",mse_dB_dmm, "[dB]")
-    print("DMM CAUSAL - MSE STD:", mse_dB_dmm, "[dB]")
+    #print("DMM CAUSAL - MSE LOSS:",mse_dB_dmm, "[dB]")
+    #print("DMM CAUSAL - MSE STD:", mse_dB_dmm, "[dB]")
 
     print("DANSE - MSE LOSS:",mse_dB_danse, "[dB]")
     print("DANSE - MSE STD:", mse_dB_danse_std, "[dB]")
@@ -437,8 +436,8 @@ def test_lorenz(device='cpu', model_file_saved_danse=None, model_file_saved_dans
     print("DANSE Supervised - MSE LOSS:",mse_dB_danse_supervised, "[dB]")
     print("DANSE Supervised - MSE STD:", mse_dB_danse_supervised_std, "[dB]")
 
-    print("KNET - MSE LOSS:", mse_dB_knet, "[dB]")
-    print("KNET - MSE STD:", mse_dB_knet_std, "[dB]")
+    #print("KNET - MSE LOSS:", mse_dB_knet, "[dB]")
+    #print("KNET - MSE STD:", mse_dB_knet_std, "[dB]")
 
     print("LS, batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB]".format(N_test, nmse_ls, nmse_ls_std, mse_dB_ls, mse_dB_ls_std))
     print("ekf, batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_ekf, nmse_ekf_std, mse_dB_ekf, mse_dB_ekf_std, time_elapsed_ekf))
@@ -447,8 +446,8 @@ def test_lorenz(device='cpu', model_file_saved_danse=None, model_file_saved_dans
     print("danse (fil.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_danse, nmse_danse_std, mse_dB_danse, mse_dB_danse_std, time_elapsed_danse))
     print("danse sup. (pred.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_danse_supervised_pred, nmse_danse_supervised_pred_std, mse_dB_danse_supervised_pred, mse_dB_danse_supervised_pred_std, time_elapsed_danse_supervised))
     print("danse sup. (fil.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_danse_supervised, nmse_danse_supervised_std, mse_dB_danse_supervised, mse_dB_danse_supervised_std, time_elapsed_danse_supervised))
-    print("knet (fil.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_knet, nmse_knet_std, mse_dB_knet, mse_dB_knet_std, time_elapsed_knet))
-    print("dmm causal (fil.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_dmm, nmse_dmm_std, mse_dB_dmm, mse_dB_dmm_std, time_elapsed_dmm))
+    #print("knet (fil.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_knet, nmse_knet_std, mse_dB_knet, mse_dB_knet_std, time_elapsed_knet))
+    #print("dmm causal (fil.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_dmm, nmse_dmm_std, mse_dB_dmm, mse_dB_dmm_std, time_elapsed_dmm))
 
     # System console print
     print("LS, batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB]".format(N_test, nmse_ls, nmse_ls_std, mse_dB_ls, mse_dB_ls_std), file=orig_stdout)
@@ -458,8 +457,8 @@ def test_lorenz(device='cpu', model_file_saved_danse=None, model_file_saved_dans
     print("danse (fil.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {} secs".format(N_test, nmse_danse, nmse_danse_std, mse_dB_danse, mse_dB_danse_std, time_elapsed_danse), file=orig_stdout)
     print("danse sup. (pred.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_danse_supervised_pred, nmse_danse_supervised_pred_std, mse_dB_danse_supervised_pred, mse_dB_danse_supervised_pred_std, time_elapsed_danse_supervised), file=orig_stdout)
     print("danse sup. (fil.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_danse_supervised, nmse_danse_supervised_std, mse_dB_danse_supervised, mse_dB_danse_supervised_std, time_elapsed_danse_supervised), file=orig_stdout)
-    print("knet (fil.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_knet, nmse_knet_std, mse_dB_knet, mse_dB_knet_std, time_elapsed_knet), file=orig_stdout)
-    print("dmm causal (fil.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_dmm, nmse_dmm_std, mse_dB_dmm, mse_dB_dmm_std, time_elapsed_dmm), file=orig_stdout)
+    #print("knet (fil.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_knet, nmse_knet_std, mse_dB_knet, mse_dB_knet_std, time_elapsed_knet), file=orig_stdout)
+    #print("dmm causal (fil.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_dmm, nmse_dmm_std, mse_dB_dmm, mse_dB_dmm_std, time_elapsed_dmm), file=orig_stdout)
 
     # Plot the result
 
@@ -467,9 +466,9 @@ def test_lorenz(device='cpu', model_file_saved_danse=None, model_file_saved_dans
                         X_est_EKF=torch.squeeze(X_estimated_ekf[0,1:,:],0).numpy(), 
                         X_est_UKF=torch.squeeze(X_estimated_ukf[0,1:,:],0).numpy(), 
                         X_est_DANSE=torch.squeeze(X_estimated_filtered[0],0).numpy(),
-                        X_est_DMM=torch.squeeze(X_estimated_filtered_dmm_causal[0], 0),
+                        #X_est_DMM=torch.squeeze(X_estimated_filtered_dmm_causal[0], 0),
                         X_est_DANSE_sup=torch.squeeze(X_estimated_filtered_supervised[0],0).numpy(),
-                        X_est_KNET=torch.squeeze(X_estimated_filtered_knet[0], 0).numpy(),
+                        #X_est_KNET=torch.squeeze(X_estimated_filtered_knet[0], 0).numpy(),
                         savefig=True,
                         savefig_name="./figs/{}/{}/3dPlot_sigmae2_{}dB_smnr_{}dB_knet.pdf".format(dirname, evaluation_mode, sigma_e2_dB_test, smnr_dB_test))
     
@@ -481,9 +480,9 @@ def test_lorenz(device='cpu', model_file_saved_danse=None, model_file_saved_dans
                                 X_est_EKF=torch.squeeze(X_estimated_ekf[0,1:,:],0).numpy(), 
                                 X_est_UKF=torch.squeeze(X_estimated_ukf[0,1:,:],0).numpy(), 
                                 X_est_DANSE=torch.squeeze(X_estimated_filtered[0],0).numpy(), 
-                                X_est_DMM=torch.squeeze(X_estimated_filtered_dmm_causal[0], 0),
+                                #X_est_DMM=torch.squeeze(X_estimated_filtered_dmm_causal[0], 0),
                                 X_est_DANSE_sup=torch.squeeze(X_estimated_filtered_supervised[0],0).numpy(),
-                                X_est_KNET=torch.squeeze(X_estimated_filtered_knet[0], 0).numpy(),
+                                #X_est_KNET=torch.squeeze(X_estimated_filtered_knet[0], 0).numpy(),
                                 savefig=True,
                                 savefig_name="./figs/{}/{}/AxesWisePlot_sigmae2_{}dB_smnr_{}dB_knet.pdf".format(dirname, evaluation_mode, sigma_e2_dB_test, smnr_dB_test))
     
@@ -491,9 +490,9 @@ def test_lorenz(device='cpu', model_file_saved_danse=None, model_file_saved_dans
                                 X_est_EKF=torch.squeeze(X_estimated_ekf[0,1:,:],0).numpy(), 
                                 X_est_UKF=torch.squeeze(X_estimated_ukf[0,1:,:],0).numpy(), 
                                 X_est_DANSE=torch.squeeze(X_estimated_filtered[0],0).numpy(), 
-                                X_est_DMM=torch.squeeze(X_estimated_filtered_dmm_causal[0], 0),
+                                #X_est_DMM=torch.squeeze(X_estimated_filtered_dmm_causal[0], 0),
                                 X_est_DANSE_sup=torch.squeeze(X_estimated_filtered_supervised[0],0).numpy(),
-                                X_est_KNET=torch.squeeze(X_estimated_filtered_knet[0], 0).numpy(),
+                                #X_est_KNET=torch.squeeze(X_estimated_filtered_knet[0], 0).numpy(),
                                 savefig=True,
                                 savefig_name="./figs/{}/{}/AxesWiseAllPlot_sigmae2_{}dB_smnr_{}dB_knet.pdf".format(dirname, evaluation_mode, sigma_e2_dB_test, smnr_dB_test))
     
@@ -523,7 +522,7 @@ if __name__ == "__main__":
     else:
         bias = None
         p = None
-        evaluation_mode = 'full_opt_bias_{}_p_{}_w_Supervised_Ttrain_{}_Ntrain_{}'.format(None, None, T_train, N_train)
+        evaluation_mode = 'full_opt_bias_{}_p_{}_w_ModTest_Supervised_Ttrain_{}_Ntrain_{}'.format(None, None, T_train, N_train)
 
     dirname = "LorenzModel_w_sup_DMM_lmindel"
     os.makedirs('./figs/{}/{}'.format(dirname, evaluation_mode), exist_ok=True)
@@ -573,10 +572,10 @@ if __name__ == "__main__":
 
     for smnr_dB in smnr_dB_arr:
         
-        model_file_saved_dict_dmm["{}dB".format(smnr_dB)] = glob.glob("./models/*LorenzSSM_dmm_st-l_opt*T_{}_N_{}_sigmae2_{}dB_smnr_{}dB_lmindel/*best*".format(T_train, N_train, sigma_e2_dB_test, smnr_dB))[-1]
+        model_file_saved_dict_dmm["{}dB".format(smnr_dB)] = None #glob.glob("./models/*LorenzSSM_dmm_st-l_opt*T_{}_N_{}_sigmae2_{}dB_smnr_{}dB_lmindel/*best*".format(T_train, N_train, sigma_e2_dB_test, smnr_dB))[-1]
         model_file_saved_dict_danse["{}dB".format(smnr_dB)] = glob.glob("./models/*LorenzSSM_danse_opt_*n_3_T_{}_N_{}*sigmae2_{}dB_smnr_{}dB*/*best*".format(T_train, N_train, sigma_e2_dB_test, smnr_dB))[-1]
         model_file_saved_dict_danse_sup["{}dB".format(smnr_dB)] = glob.glob("./models/*LorenzSSM_danse_supervised_opt_*n_3_T_{}_N_{}*sigmae2_{}dB_smnr_{}dB*/*best*".format(T_train, N_train, sigma_e2_dB_test, smnr_dB))[-1]
-        model_file_saved_dict_knet["{}dB".format(smnr_dB)] = glob.glob("./models/*Lorenz*KNetUoffline_*n_3_T_{}_N_{}*sigmae2_{}dB_smnr_{}dB*/*best*".format(T_train, N_train, sigma_e2_dB_test, smnr_dB))[-1]
+        model_file_saved_dict_knet["{}dB".format(smnr_dB)] = None #glob.glob("./models/*Lorenz*KNetUoffline_*n_3_T_{}_N_{}*sigmae2_{}dB_smnr_{}dB*/*best*".format(T_train, N_train, sigma_e2_dB_test, smnr_dB))[-1]
 
     test_data_file_dict = {}
 
@@ -595,8 +594,8 @@ if __name__ == "__main__":
     print("DMM (ST-L) (Unsupervised) -- ")
     print([(k, m) for k, m in model_file_saved_dict_dmm.items()])
     print("*"*100)
-    test_logfile = "./log/Lorenz_test_{}_T_{}_N_{}_w_knet_DMM_Ttrain_{}_Ntrain_{}.log".format(evaluation_mode, T_test, N_test, T_train, N_train)
-    test_jsonfile = "./log/Lorenz_test_{}_T_{}_N_{}_w_knet_DMM_Ttrain_{}_Ntrain_{}.json".format(evaluation_mode, T_test, N_test, T_train, N_train)
+    test_logfile = "./log/Lorenz_test_{}_T_{}_N_{}_w_knet_sup_ModTest_Ttrain_{}_Ntrain_{}.log".format(evaluation_mode, T_test, N_test, T_train, N_train)
+    test_jsonfile = "./log/Lorenz_test_{}_T_{}_N_{}_w_knet_sup_ModTest_Ttrain_{}_Ntrain_{}.json".format(evaluation_mode, T_test, N_test, T_train, N_train)
 
     for i, smnr_dB in enumerate(smnr_dB_arr):
         
@@ -617,40 +616,40 @@ if __name__ == "__main__":
         nmse_ekf_arr[i] = nmse_ekf_i.numpy().item()
         nmse_ukf_arr[i] = nmse_ukf_i.numpy().item()
         nmse_danse_arr[i] = nmse_danse_i.numpy().item()
-        nmse_dmm_arr[i] = nmse_dmm_i.numpy().item()
+        #nmse_dmm_arr[i] = nmse_dmm_i.numpy().item()
         nmse_danse_supervised_arr[i] = nmse_danse_sup_i.numpy().item()
-        nmse_knet_arr[i] = nmse_knet_i.numpy().item()
+        #nmse_knet_arr[i] = nmse_knet_i.numpy().item()
         nmse_ls_std_arr[i] = nmse_ls_i_std.numpy().item()
         nmse_ekf_std_arr[i] = nmse_ekf_i_std.numpy().item()
         nmse_ukf_std_arr[i] = nmse_ukf_i_std.numpy().item()
         nmse_danse_std_arr[i] = nmse_danse_i_std.numpy().item()
-        nmse_dmm_std_arr[i] = nmse_dmm_std_i.numpy().item()
-        nmse_danse_supervised_std_arr[i] = nmse_danse_sup_i_std.numpy().item()
-        nmse_knet_std_arr[i] = nmse_knet_std_i.numpy().item()
+        #nmse_dmm_std_arr[i] = nmse_dmm_std_i.numpy().item()
+        #nmse_danse_supervised_std_arr[i] = nmse_danse_sup_i_std.numpy().item()
+        #nmse_knet_std_arr[i] = nmse_knet_std_i.numpy().item()
         
         # Store the MSE values and std devs of the MSE values (in dB)
         mse_ls_dB_arr[i] = mse_dB_ls_i.numpy().item()
         mse_ekf_dB_arr[i] = mse_dB_ekf_i.numpy().item()
         mse_ukf_dB_arr[i] = mse_dB_ukf_i.numpy().item()
         mse_danse_dB_arr[i] = mse_dB_danse_i.numpy().item()
-        mse_dmm_dB_arr[i] = mse_dB_dmm_i.numpy().item()
+        #mse_dmm_dB_arr[i] = mse_dB_dmm_i.numpy().item()
         mse_danse_supervised_dB_arr[i] = mse_dB_danse_sup_i.numpy().item()
-        mse_knet_dB_arr[i] = mse_dB_knet_i.numpy().item()
+        #mse_knet_dB_arr[i] = mse_dB_knet_i.numpy().item()
         mse_ls_dB_std_arr[i] = mse_dB_ls_std_i.numpy().item()
         mse_ekf_dB_std_arr[i] = mse_dB_ekf_std_i.numpy().item()
         mse_ukf_dB_std_arr[i] = mse_dB_ukf_std_i.numpy().item()
         mse_danse_dB_std_arr[i] = mse_dB_danse_std_i.numpy().item()
         mse_danse_supervised_dB_std_arr[i] = mse_dB_danse_sup_std_i.numpy().item()
-        mse_dmm_dB_std_arr[i] = mse_dB_dmm_std_i.numpy().item()
-        mse_knet_dB_std_arr[i] = mse_dB_knet_std_i.numpy().item()
+        #mse_dmm_dB_std_arr[i] = mse_dB_dmm_std_i.numpy().item()
+        #mse_knet_dB_std_arr[i] = mse_dB_knet_std_i.numpy().item()
 
         # Store the inference times
         t_ekf_arr[i] = time_elapsed_ekf_i
         t_ukf_arr[i] = time_elapsed_ukf_i
         t_danse_arr[i] = time_elapsed_danse_i
-        t_dmm_arr[i] = time_elapsed_dmm_i
+        #t_dmm_arr[i] = time_elapsed_dmm_i
         t_danse_supervised_arr[i] = time_elapsed_danse_sup_i
-        t_knet_arr[i] = time_elapsed_knet_i
+        #t_knet_arr[i] = time_elapsed_knet_i
     
     
     test_stats = {}
@@ -658,31 +657,31 @@ if __name__ == "__main__":
     test_stats['EKF_mean_nmse'] = nmse_ekf_arr
     test_stats['DANSE_mean_nmse'] = nmse_danse_arr
     test_stats['DANSE_sup_mean_nmse'] = nmse_danse_supervised_arr
-    test_stats['DMM_mean_nmse'] = nmse_dmm_arr
-    test_stats['KNET_mean_nmse'] = nmse_knet_arr
+    #test_stats['DMM_mean_nmse'] = nmse_dmm_arr
+    #test_stats['KNET_mean_nmse'] = nmse_knet_arr
 
     test_stats['UKF_std_nmse'] = nmse_ukf_std_arr
     test_stats['EKF_std_nmse'] = nmse_ekf_std_arr
     test_stats['DANSE_std_nmse'] = nmse_danse_std_arr
-    test_stats['DMM_std_nmse'] = nmse_dmm_std_arr
+    #test_stats['DMM_std_nmse'] = nmse_dmm_std_arr
     test_stats['DANSE_sup_std_nmse'] = nmse_danse_supervised_std_arr
-    test_stats['KNET_std_nmse'] = nmse_knet_std_arr
+    #test_stats['KNET_std_nmse'] = nmse_knet_std_arr
 
 
     test_stats['LS_mean_nmse'] = nmse_ls_arr
     test_stats['LS_std_nmse'] = nmse_ls_std_arr
-    test_stats['DMM_time'] = t_dmm_arr
+    #test_stats['DMM_time'] = t_dmm_arr
     test_stats['EKF_mean_mse'] = mse_ekf_dB_arr
     test_stats['UKF_mean_mse'] = mse_ukf_dB_arr
     test_stats['DANSE_mean_mse'] = mse_danse_dB_arr
-    test_stats['DMM_std_mse'] = mse_dmm_dB_std_arr
+    #test_stats['DMM_std_mse'] = mse_dmm_dB_std_arr
     test_stats['DANSE_sup_mean_mse'] = mse_danse_supervised_dB_arr
-    test_stats['KNET_mean_mse'] = mse_knet_dB_arr
+    #test_stats['KNET_mean_mse'] = mse_knet_dB_arr
     test_stats['EKF_std_mse'] = mse_ekf_dB_std_arr
     test_stats['UKF_std_mse'] = mse_ukf_dB_std_arr
     test_stats['DANSE_std_mse'] = mse_danse_dB_std_arr
     test_stats['DANSE_sup_std_mse'] = mse_danse_supervised_dB_std_arr
-    test_stats['KNET_std_mse'] = mse_knet_dB_std_arr
+    #test_stats['KNET_std_mse'] = mse_knet_dB_std_arr
     test_stats['LS_mean_mse'] = mse_ls_dB_arr
     test_stats['LS_std_mse'] = mse_ls_dB_std_arr
 
@@ -690,7 +689,7 @@ if __name__ == "__main__":
     test_stats['EKF_time'] = t_ekf_arr
     test_stats['DANSE_time'] = t_danse_arr
     test_stats['DANSE_sup_time'] = t_danse_supervised_arr
-    test_stats['KNET_time'] = t_knet_arr
+    #test_stats['KNET_time'] = t_knet_arr
     test_stats['SMNR'] = smnr_dB_arr
     
     with open(test_jsonfile, 'w') as f:
@@ -699,13 +698,13 @@ if __name__ == "__main__":
     # Plotting the NMSE Curve
     plt.rcParams['font.family'] = 'serif'
     plt.figure()
-    plt.errorbar(smnr_dB_arr, nmse_ls_arr, fmt='gp-.', yerr=nmse_ls_std_arr,  linewidth=1.5, label="LS")
+    #plt.errorbar(smnr_dB_arr, nmse_ls_arr, fmt='gp-.', yerr=nmse_ls_std_arr,  linewidth=1.5, label="LS")
     plt.errorbar(smnr_dB_arr, nmse_ekf_arr, fmt='rd--',  yerr=nmse_ekf_std_arr, linewidth=1.5, label="EKF")
     plt.errorbar(smnr_dB_arr, nmse_ukf_arr, fmt='ko-',  yerr=nmse_ukf_std_arr, linewidth=1.5, label="UKF")
     plt.errorbar(smnr_dB_arr, nmse_danse_arr, fmt='b*-', yerr=nmse_danse_std_arr, linewidth=2.0, label="DANSE")
-    plt.errorbar(smnr_dB_arr, nmse_dmm_arr, fmt='y*-', yerr=nmse_dmm_std_arr, linewidth=2.0, label="DMM (ST-L)")
+    #plt.errorbar(smnr_dB_arr, nmse_dmm_arr, fmt='y*-', yerr=nmse_dmm_std_arr, linewidth=2.0, label="DMM (ST-L)")
     plt.errorbar(smnr_dB_arr, nmse_danse_supervised_arr, fmt='c^-', yerr=nmse_danse_std_arr, linewidth=2.0, label="DANSE-Supervised")
-    plt.errorbar(smnr_dB_arr, nmse_knet_arr, fmt='ys-', yerr=nmse_knet_std_arr,  linewidth=1.0, label="KalmanNet")
+    #plt.errorbar(smnr_dB_arr, nmse_knet_arr, fmt='ys-', yerr=nmse_knet_std_arr,  linewidth=1.0, label="KalmanNet")
     plt.xlabel('SMNR (in dB)')
     plt.ylabel('NMSE (in dB)')
     plt.grid(True)
@@ -721,8 +720,8 @@ if __name__ == "__main__":
     plt.plot(smnr_dB_arr, t_ekf_arr, 'rd--', linewidth=1.5, label="EKF")
     plt.plot(smnr_dB_arr, t_ukf_arr, 'ks--', linewidth=1.5, label="UKF")
     plt.plot(smnr_dB_arr, t_danse_arr, 'bo-', linewidth=2.0, label="DANSE")
-    plt.plot(smnr_dB_arr, t_dmm_arr, 'b*-', linewidth=2.0, label="DMM (ST-L)")
-    plt.plot(smnr_dB_arr, t_danse_supervised_arr, 'c^-', linewidth=2.0, label="DANSE-Supervised")
+    #plt.plot(smnr_dB_arr, t_dmm_arr, 'b*-', linewidth=2.0, label="DMM (ST-L)")
+    #plt.plot(smnr_dB_arr, t_danse_supervised_arr, 'c^-', linewidth=2.0, label="DANSE-Supervised")
     plt.plot(smnr_dB_arr, t_knet_arr, 'ys-', linewidth=1.0, label="KalmanNet")
     plt.xlabel('SMNR (in dB)')
     plt.ylabel('Inference time (in s)')
@@ -734,12 +733,12 @@ if __name__ == "__main__":
 
     # Plotting the MSE Curve
     plt.figure()
-    plt.errorbar(smnr_dB_arr, mse_ls_dB_arr, fmt='gp-.', yerr=mse_ls_dB_std_arr,  linewidth=1.5, label="LS")
+    #plt.errorbar(smnr_dB_arr, mse_ls_dB_arr, fmt='gp-.', yerr=mse_ls_dB_std_arr,  linewidth=1.5, label="LS")
     plt.errorbar(smnr_dB_arr, mse_ekf_dB_arr, fmt='rd--',  yerr=mse_ekf_dB_std_arr, linewidth=1.5, label="EKF")
     plt.errorbar(smnr_dB_arr, mse_ukf_dB_arr, fmt='ko-',  yerr=mse_ukf_dB_std_arr, linewidth=1.5, label="UKF")
     plt.errorbar(smnr_dB_arr, mse_danse_dB_arr, fmt='b*-', yerr=mse_danse_dB_std_arr, linewidth=2.0, label="DANSE")
-    plt.errorbar(smnr_dB_arr, mse_dmm_dB_arr, fmt='y*-', yerr=mse_dmm_dB_std_arr, linewidth=2.0, label="DMM (ST-L)")
-    plt.errorbar(smnr_dB_arr, mse_danse_supervised_dB_arr, fmt='c^-', yerr=mse_danse_dB_std_arr, linewidth=2.0, label="DANSE-Supervised")
+    #plt.errorbar(smnr_dB_arr, mse_dmm_dB_arr, fmt='y*-', yerr=mse_dmm_dB_std_arr, linewidth=2.0, label="DMM (ST-L)")
+    #plt.errorbar(smnr_dB_arr, mse_danse_supervised_dB_arr, fmt='c^-', yerr=mse_danse_dB_std_arr, linewidth=2.0, label="DANSE-Supervised")
     plt.errorbar(smnr_dB_arr, mse_knet_dB_arr, fmt='ys-', yerr=mse_knet_dB_std_arr,  linewidth=1.0, label="KalmanNet")
     plt.xlabel('SMNR (in dB)')
     plt.ylabel('MSE (in dB)')

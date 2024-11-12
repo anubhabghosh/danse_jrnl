@@ -110,7 +110,7 @@ def test_lorenz(device='cpu', model_file_saved=None, model_file_saved_knet=None,
         # My own data generation scheme
         m, n, ssm_type, T_test, N_test, sigma_e2_dB_test, smnr_dB_test = parse("test_trajectories_m_{:d}_n_{:d}_{}_data_T_{:d}_N_{:d}_sigmae2_{:f}dB_SMNR_{:f}dB.pkl", test_data_file.split('/')[-1])
         #N_test = 100 # No. of trajectories at test time / evaluation
-        X = torch.zeros((N_test, T_test+1, m))
+        X = torch.zeros((N_test, T_test, m))
         Y = torch.zeros((N_test, T_test, n))
 
         lorenz_model = LorenzSSM(n_states=m, n_obs=n, J=J, delta=delta, 
@@ -293,31 +293,31 @@ def test_lorenz(device='cpu', model_file_saved=None, model_file_saved_knet=None,
     
     time_elapsed_knet = timer() - start_time_knet
     
-    nmse_ls = nmse_loss(X[:,1:,:], X_LS[:,1:,:])
-    nmse_ls_std = nmse_loss_std(X[:,1:,:], X_LS[:,1:,:])
-    nmse_ekf = nmse_loss(X[:,1:,:], X_estimated_ekf[:,1:,:])
-    nmse_ekf_std = nmse_loss_std(X[:,1:,:], X_estimated_ekf[:,1:,:])
-    nmse_ukf = nmse_loss(X[:,1:,:], X_estimated_ukf[:,1:,:])
-    nmse_ukf_std = nmse_loss_std(X[:,1:,:], X_estimated_ukf[:,1:,:])
-    nmse_danse = nmse_loss(X[:,1:,:], X_estimated_filtered[:,0:,:])
-    nmse_danse_std = nmse_loss_std(X[:,1:,:], X_estimated_filtered[:,0:,:])
-    nmse_danse_pred = nmse_loss(X[:,1:,:], X_estimated_pred[:,0:,:])
-    nmse_danse_pred_std = nmse_loss_std(X[:,1:,:], X_estimated_pred[:,0:,:])
-    nmse_knet = nmse_loss(X[:,1:,:], X_estimated_filtered_knet[:,0:,:])
-    nmse_knet_std = nmse_loss_std(X[:,1:,:], X_estimated_filtered_knet[:,0:,:])
+    nmse_ls = nmse_loss(X[:,0:,:], X_LS[:,0:,:])
+    nmse_ls_std = nmse_loss_std(X[:,0:,:], X_LS[:,0:,:])
+    nmse_ekf = nmse_loss(X[:,0:,:], X_estimated_ekf[:,0:,:])
+    nmse_ekf_std = nmse_loss_std(X[:,0:,:], X_estimated_ekf[:,0:,:])
+    nmse_ukf = nmse_loss(X[:,0:,:], X_estimated_ukf[:,0:,:])
+    nmse_ukf_std = nmse_loss_std(X[:,0:,:], X_estimated_ukf[:,0:,:])
+    nmse_danse = nmse_loss(X[:,0:,:], X_estimated_filtered[:,0:,:])
+    nmse_danse_std = nmse_loss_std(X[:,0:,:], X_estimated_filtered[:,0:,:])
+    nmse_danse_pred = nmse_loss(X[:,0:,:], X_estimated_pred[:,0:,:])
+    nmse_danse_pred_std = nmse_loss_std(X[:,0:,:], X_estimated_pred[:,0:,:])
+    nmse_knet = nmse_loss(X[:,0:,:], X_estimated_filtered_knet[:,0:,:])
+    nmse_knet_std = nmse_loss_std(X[:,0:,:], X_estimated_filtered_knet[:,0:,:])
     
-    mse_dB_ls = mse_loss_dB(X[:,1:,:], X_LS[:,1:,:])
-    mse_dB_ls_std = mse_loss_dB_std(X[:,1:,:], X_LS[:,1:,:])
-    mse_dB_ekf = mse_loss_dB(X[:,1:,:], X_estimated_ekf[:,1:,:])
-    mse_dB_ekf_std = mse_loss_dB_std(X[:,1:,:], X_estimated_ekf[:,1:,:])
-    mse_dB_ukf = mse_loss_dB(X[:,1:,:], X_estimated_ukf[:,1:,:])
-    mse_dB_ukf_std = mse_loss_dB_std(X[:,1:,:], X_estimated_ukf[:,1:,:])
-    mse_dB_danse = mse_loss_dB(X[:,1:,:], X_estimated_filtered[:,0:,:])
-    mse_dB_danse_std = mse_loss_dB_std(X[:,1:,:], X_estimated_filtered[:,0:,:])
-    mse_dB_danse_pred = mse_loss_dB(X[:,1:,:], X_estimated_pred[:,0:,:])
-    mse_dB_danse_pred_std = mse_loss_dB_std(X[:,1:,:], X_estimated_pred[:,0:,:])
-    mse_dB_knet = mse_loss_dB(X[:,1:,:], X_estimated_filtered_knet[:,0:,:])
-    mse_dB_knet_std = mse_loss_dB_std(X[:,1:,:], X_estimated_filtered_knet[:,0:,:])
+    mse_dB_ls = mse_loss_dB(X[:,0:,:], X_LS[:,0:,:])
+    mse_dB_ls_std = mse_loss_dB_std(X[:,0:,:], X_LS[:,0:,:])
+    mse_dB_ekf = mse_loss_dB(X[:,0:,:], X_estimated_ekf[:,0:,:])
+    mse_dB_ekf_std = mse_loss_dB_std(X[:,0:,:], X_estimated_ekf[:,0:,:])
+    mse_dB_ukf = mse_loss_dB(X[:,0:,:], X_estimated_ukf[:,0:,:])
+    mse_dB_ukf_std = mse_loss_dB_std(X[:,0:,:], X_estimated_ukf[:,0:,:])
+    mse_dB_danse = mse_loss_dB(X[:,0:,:], X_estimated_filtered[:,0:,:])
+    mse_dB_danse_std = mse_loss_dB_std(X[:,0:,:], X_estimated_filtered[:,0:,:])
+    mse_dB_danse_pred = mse_loss_dB(X[:,0:,:], X_estimated_pred[:,0:,:])
+    mse_dB_danse_pred_std = mse_loss_dB_std(X[:,0:,:], X_estimated_pred[:,0:,:])
+    mse_dB_knet = mse_loss_dB(X[:,0:,:], X_estimated_filtered_knet[:,0:,:])
+    mse_dB_knet_std = mse_loss_dB_std(X[:,0:,:], X_estimated_filtered_knet[:,0:,:])
     
     print("DANSE - MSE LOSS:",mse_dB_danse, "[dB]")
     print("DANSE - MSE STD:", mse_dB_danse_std, "[dB]")
@@ -342,25 +342,25 @@ def test_lorenz(device='cpu', model_file_saved=None, model_file_saved_knet=None,
 
     # Plot the result
 
-    plot_state_trajectory(X=torch.squeeze(X[0,1:,:],0).numpy(), 
-                        X_est_EKF=torch.squeeze(X_estimated_ekf[0,1:,:],0).numpy(), 
-                        X_est_UKF=torch.squeeze(X_estimated_ukf[0,1:,:],0).numpy(), 
+    plot_state_trajectory(X=torch.squeeze(X[0,0:,:],0).numpy(), 
+                        X_est_EKF=torch.squeeze(X_estimated_ekf[0,0:,:],0).numpy(), 
+                        X_est_UKF=torch.squeeze(X_estimated_ukf[0,0:,:],0).numpy(), 
                         X_est_DANSE=torch.squeeze(X_estimated_filtered[0],0).numpy(),
                         X_est_KNET=torch.squeeze(X_estimated_filtered_knet[0], 0).numpy(),
                         savefig=False,
                         savefig_name="./figs/{}/{}/3dPlot_sigmae2_{}dB_smnr_{}dB_knet.pdf".format(figdir, evaluation_mode, sigma_e2_dB_test, smnr_dB_test))
     
-    plot_state_trajectory_axes(X=torch.squeeze(X[0,1:,:],0).numpy(), 
-                                X_est_EKF=torch.squeeze(X_estimated_ekf[0,1:,:],0).numpy(), 
-                                X_est_UKF=torch.squeeze(X_estimated_ukf[0,1:,:],0).numpy(), 
+    plot_state_trajectory_axes(X=torch.squeeze(X[0,0:,:],0).numpy(), 
+                                X_est_EKF=torch.squeeze(X_estimated_ekf[0,0:,:],0).numpy(), 
+                                X_est_UKF=torch.squeeze(X_estimated_ukf[0,0:,:],0).numpy(), 
                                 X_est_DANSE=torch.squeeze(X_estimated_filtered[0],0).numpy(), 
                                 X_est_KNET=torch.squeeze(X_estimated_filtered_knet[0], 0).numpy(),
                                 savefig=True,
                                 savefig_name="./figs/{}/{}/AxesWisePlot_sigmae2_{}dB_smnr_{}dB_knet.pdf".format(figdir, evaluation_mode, sigma_e2_dB_test, smnr_dB_test))
     
-    plot_state_trajectory_axes_all(X=torch.squeeze(X[0,1:,:],0).numpy(), 
-                                X_est_EKF=torch.squeeze(X_estimated_ekf[0,1:,:],0).numpy(), 
-                                X_est_UKF=torch.squeeze(X_estimated_ukf[0,1:,:],0).numpy(), 
+    plot_state_trajectory_axes_all(X=torch.squeeze(X[0,0:,:],0).numpy(), 
+                                X_est_EKF=torch.squeeze(X_estimated_ekf[0,0:,:],0).numpy(), 
+                                X_est_UKF=torch.squeeze(X_estimated_ukf[0,0:,:],0).numpy(), 
                                 X_est_DANSE=torch.squeeze(X_estimated_filtered[0],0).numpy(), 
                                 X_est_KNET=torch.squeeze(X_estimated_filtered_knet[0], 0).numpy(),
                                 savefig=True,

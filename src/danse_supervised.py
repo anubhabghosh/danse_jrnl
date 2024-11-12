@@ -240,7 +240,8 @@ def train_danse_supervised(model, options, train_loader, val_loader, nepochs, lo
                 tr_Y_batch, tr_X_batch = data
                 optimizer.zero_grad()
                 Y_train_batch = Variable(tr_Y_batch, requires_grad=False).type(torch.FloatTensor).to(device)
-                X_train_batch = Variable(tr_X_batch[:, 1:, :], requires_grad=False).type(torch.FloatTensor).to(device)
+                #X_train_batch = Variable(tr_X_batch[:, 1:, :], requires_grad=False).type(torch.FloatTensor).to(device)
+                X_train_batch = Variable(tr_X_batch[:, :, :], requires_grad=False).type(torch.FloatTensor).to(device)
                 log_pXY_train_batch = -model.forward(Y_train_batch, X_train_batch)
                 log_pXY_train_batch.backward()
                 optimizer.step()
@@ -266,7 +267,8 @@ def train_danse_supervised(model, options, train_loader, val_loader, nepochs, lo
                     
                     val_Y_batch, val_X_batch = data
                     Y_val_batch = Variable(val_Y_batch, requires_grad=False).type(torch.FloatTensor).to(device)
-                    X_val_batch = Variable(val_X_batch[:, 1:, :], requires_grad=False).type(torch.FloatTensor).to(device)
+                    #X_val_batch = Variable(val_X_batch[:, 1:, :], requires_grad=False).type(torch.FloatTensor).to(device)
+                    X_val_batch = Variable(val_X_batch[:, :, :], requires_grad=False).type(torch.FloatTensor).to(device)
                     val_mu_X_predictions_batch, val_var_X_predictions_batch, val_mu_X_filtered_batch, val_var_X_filtered_batch = model.compute_predictions(Y_val_batch)
                     log_pY_val_batch = -model.forward(Y_val_batch, X_val_batch)
                     val_loss_epoch_sum += log_pY_val_batch.item()

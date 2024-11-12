@@ -92,7 +92,7 @@ def test_linear(device='cpu', model_file_saved_danse=None, model_file_saved_dmm=
         # My own data generation scheme
         m, n, T_test, N_test, sigma_e2_dB_test, smnr_dB_test = parse("test_trajectories_m_{:d}_n_{:d}_LinearSSM_data_T_{:d}_N_{:d}_sigmae2_{:f}dB_SMNR_{:f}dB.pkl", test_data_file.split('/')[-1])
         #N_test = 100 # No. of trajectories at test time / evaluation
-        X = torch.zeros((N_test, T_test+1, m))
+        X = torch.zeros((N_test, T_test, m))
         Y = torch.zeros((N_test, T_test, n))
 
         # Initialize a Linear SSM with the extracted parameters
@@ -253,31 +253,31 @@ def test_linear(device='cpu', model_file_saved_danse=None, model_file_saved_dmm=
     time_elapsed_dmm = timer() - start_time_dmm
 
     time_elapsed_knet = timer() - start_time_knet
-    nmse_ls = nmse_loss(X[:,1:,:], X_LS[:,0:,:])
-    nmse_ls_std = nmse_loss_std(X[:,1:,:], X_LS[:,0:,:])
-    nmse_kf = nmse_loss(X[:,1:,:], X_estimated_kf[:,1:,:])
-    nmse_kf_std = nmse_loss_std(X[:,1:,:], X_estimated_kf[:,1:,:])
-    nmse_danse = nmse_loss(X[:,1:,:], X_estimated_filtered[:,0:,:])
-    nmse_danse_std = nmse_loss_std(X[:,1:,:], X_estimated_filtered[:,0:,:])
-    nmse_danse_pred = nmse_loss(X[:,1:,:], X_estimated_pred[:,0:,:])
-    nmse_danse_pred_std = nmse_loss_std(X[:,1:,:], X_estimated_pred[:,0:,:])
-    nmse_knet = nmse_loss(X[:,1:,:], X_estimated_filtered_knet[:,0:,:])
-    nmse_knet_std = nmse_loss_std(X[:,1:,:], X_estimated_filtered_knet[:,0:,:])
-    nmse_dmm = nmse_loss(X[:,1:,:], X_estimated_filtered_dmm_causal[:,0:,:])
-    nmse_dmm_std = nmse_loss_std(X[:,1:,:], X_estimated_filtered_dmm_causal[:,0:,:])
+    nmse_ls = nmse_loss(X[:,0:,:], X_LS[:,0:,:])
+    nmse_ls_std = nmse_loss_std(X[:,0:,:], X_LS[:,0:,:])
+    nmse_kf = nmse_loss(X[:,0:,:], X_estimated_kf[:,0:,:])
+    nmse_kf_std = nmse_loss_std(X[:,0:,:], X_estimated_kf[:,0:,:])
+    nmse_danse = nmse_loss(X[:,0:,:], X_estimated_filtered[:,0:,:])
+    nmse_danse_std = nmse_loss_std(X[:,0:,:], X_estimated_filtered[:,0:,:])
+    nmse_danse_pred = nmse_loss(X[:,0:,:], X_estimated_pred[:,0:,:])
+    nmse_danse_pred_std = nmse_loss_std(X[:,0:,:], X_estimated_pred[:,0:,:])
+    nmse_knet = nmse_loss(X[:,0:,:], X_estimated_filtered_knet[:,0:,:])
+    nmse_knet_std = nmse_loss_std(X[:,0:,:], X_estimated_filtered_knet[:,0:,:])
+    nmse_dmm = nmse_loss(X[:,0:,:], X_estimated_filtered_dmm_causal[:,0:,:])
+    nmse_dmm_std = nmse_loss_std(X[:,0:,:], X_estimated_filtered_dmm_causal[:,0:,:])
 
-    mse_dB_ls = mse_loss_dB(X[:,1:,:], X_LS[:,0:,:])
-    mse_dB_ls_std = mse_loss_dB_std(X[:,1:,:], X_LS[:,0:,:])
-    mse_dB_kf = mse_loss_dB(X[:,1:,:], X_estimated_kf[:,1:,:])
-    mse_dB_kf_std = mse_loss_dB_std(X[:,1:,:], X_estimated_kf[:,1:,:])
-    mse_dB_danse = mse_loss_dB(X[:,1:,:], X_estimated_filtered[:,0:,:])
-    mse_dB_danse_std = mse_loss_dB_std(X[:,1:,:], X_estimated_filtered[:,0:,:])
-    mse_dB_danse_pred = mse_loss_dB(X[:,1:,:], X_estimated_pred[:,0:,:])
-    mse_dB_danse_pred_std = mse_loss_dB_std(X[:,1:,:], X_estimated_pred[:,0:,:])
-    mse_dB_knet = mse_loss_dB(X[:,1:,:], X_estimated_filtered_knet[:,0:,:])
-    mse_dB_knet_std = mse_loss_dB_std(X[:,1:,:], X_estimated_filtered_knet[:,0:,:])
-    mse_dB_dmm = mse_loss_dB(X[:,1:,:], X_estimated_filtered_dmm_causal[:,0:,:])
-    mse_dB_dmm_std = mse_loss_dB_std(X[:,1:,:], X_estimated_filtered_dmm_causal[:,0:,:])
+    mse_dB_ls = mse_loss_dB(X[:,0:,:], X_LS[:,0:,:])
+    mse_dB_ls_std = mse_loss_dB_std(X[:,0:,:], X_LS[:,0:,:])
+    mse_dB_kf = mse_loss_dB(X[:,0:,:], X_estimated_kf[:,0:,:])
+    mse_dB_kf_std = mse_loss_dB_std(X[:,0:,:], X_estimated_kf[:,0:,:])
+    mse_dB_danse = mse_loss_dB(X[:,0:,:], X_estimated_filtered[:,0:,:])
+    mse_dB_danse_std = mse_loss_dB_std(X[:,0:,:], X_estimated_filtered[:,0:,:])
+    mse_dB_danse_pred = mse_loss_dB(X[:,0:,:], X_estimated_pred[:,0:,:])
+    mse_dB_danse_pred_std = mse_loss_dB_std(X[:,0:,:], X_estimated_pred[:,0:,:])
+    mse_dB_knet = mse_loss_dB(X[:,0:,:], X_estimated_filtered_knet[:,0:,:])
+    mse_dB_knet_std = mse_loss_dB_std(X[:,0:,:], X_estimated_filtered_knet[:,0:,:])
+    mse_dB_dmm = mse_loss_dB(X[:,0:,:], X_estimated_filtered_dmm_causal[:,0:,:])
+    mse_dB_dmm_std = mse_loss_dB_std(X[:,0:,:], X_estimated_filtered_dmm_causal[:,0:,:])
     
     print("DMM CAUSAL - MSE LOSS:",mse_dB_dmm, "[dB]")
     print("DMM CAUSAL - MSE STD:", mse_dB_dmm, "[dB]")
@@ -305,16 +305,16 @@ def test_linear(device='cpu', model_file_saved_danse=None, model_file_saved_dmm=
     print("dmm causal (fil.), batch size: {}, nmse: {:.4f} ± {:.4f}[dB], mse: {:.4f} ± {:.4f}[dB], time: {:.4f} secs".format(N_test, nmse_dmm, nmse_dmm_std, mse_dB_dmm, mse_dB_dmm_std, time_elapsed_dmm), file=orig_stdout)
     
     # Plot the result
-    plot_state_trajectory_axes(X=torch.squeeze(X[0,1:,:],0), 
-                        X_est_KF=torch.squeeze(X_estimated_kf[0,1:,:], 0), 
+    plot_state_trajectory_axes(X=torch.squeeze(X[0,:,:],0), 
+                        X_est_KF=torch.squeeze(X_estimated_kf[0,:,:], 0), 
                         X_est_DANSE=torch.squeeze(X_estimated_filtered[0], 0),
                         X_est_DMM=torch.squeeze(X_estimated_filtered_dmm_causal[0], 0),
                         X_est_KNET=torch.squeeze(X_estimated_filtered_knet[0], 0),
                         savefig=True,
                         savefig_name="./figs/{}/{}/AxesWisePlot_sigma_e2_{}dB_smnr_{}dB.pdf".format(dirname, evaluation_mode, sigma_e2_dB_test, smnr_dB_test))
     
-    plot_state_trajectory(X=torch.squeeze(X[0,1:,:],0), 
-                        X_est_KF=torch.squeeze(X_estimated_kf[0,1:,:], 0), 
+    plot_state_trajectory(X=torch.squeeze(X[0,:,:],0), 
+                        X_est_KF=torch.squeeze(X_estimated_kf[0,:,:], 0), 
                         X_est_DANSE=torch.squeeze(X_estimated_filtered[0], 0),
                         X_est_KNET=torch.squeeze(X_estimated_filtered_knet[0], 0),
                         X_est_DMM=torch.squeeze(X_estimated_filtered_dmm_causal[0], 0).numpy(), 

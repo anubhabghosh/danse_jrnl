@@ -163,12 +163,15 @@ class EKF(nn.Module):
                 x_rec_hat_pos_k, Pk_pos = self.filtered_estimate(y_k=Y[i,k].view(-1,1))
             
                 # Save filtered state estimates
-                traj_estimated[i,k+1,:] = x_rec_hat_pos_k.view(-1,)
+                #traj_estimated[i,k+1,:] = x_rec_hat_pos_k.view(-1,)
+                traj_estimated[i,k,:] = x_rec_hat_pos_k.view(-1,)
                 
                 #Also save covariances
-                Pk_estimated[i,k+1,:,:] = Pk_pos
+                #Pk_estimated[i,k+1,:,:] = Pk_pos
+                Pk_estimated[i,k,:,:] = Pk_pos
 
-            mse_arr[i] = mse_loss(X[i,1:,:], traj_estimated[i,1:,:]).mean()  # Calculate the squared error across the length of a single sequence
+            #mse_arr[i] = mse_loss(X[i,1:,:], traj_estimated[i,1:,:]).mean()
+            mse_arr[i] = mse_loss(X[i,:,:], traj_estimated[i,:,:]).mean()  # Calculate the squared error across the length of a single sequence
             #print("ekf, sample: {}, mse_loss: {}".format(i+1, mse_arr[i]))
 
         #mse_ekf_lin_avg = torch.mean(10*torch.log10(mse_arr), dim=0) # Calculate the MSE by averaging over all examples in a batch

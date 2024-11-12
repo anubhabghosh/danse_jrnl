@@ -109,8 +109,8 @@ python3 main_danse_opt.py \
 --mode train \
 --rnn_model_type gru \
 --dataset_type LorenzSSM \
---datafile ./data/synthetic_data/trajectories_m_3_n_3_LorenzSSM_data_N_1000_T_100_sigmae2_-10.0dB_smnr_0.0dB.pkl \
---splits ./data/synthetic_data/splits_m_3_n_3_LorenzSSM_data_N_1000_T_100_sigmae2_-10.0dB_smnr_0.0dB.pkl
+--datafile ./data/synthetic_data/trajectories_m_3_n_3_LorenzSSM_data_T_100_N_1000_sigmae2_-10.0dB_smnr_0.0dB.pkl \
+--splits ./data/synthetic_data/splits_m_3_n_3_LorenzSSM_data_T_100_N_1000_sigmae2_-10.0dB_smnr_0.0dB.pkl
 ```
 For the `datafile` and `splits` arguments:
 `N` denotes the number of sample trajectories, `T` denotes the length of each sample trajectory. 
@@ -128,3 +128,8 @@ Can be run by calling the script `main_danse_gs.py` with grid-search parameters 
 
 Once files are created, the evaluation can be done by calling scripts in `/tests/`. Paths to model files and log files should be edited in the script directly. 
 More information in this [readme](https://github.com/anubhabghosh/danse_jrnl/blob/main/tests/readme.md).
+
+## Updates
+
+- Nov 2024: Fixed a part in the data generation (slightly off in the alignment of X and Y sequences) and subsequent evaluation of metrics like NMSE and MSE between estimate and ground-truth sequences. 
+    - NOTE: Currently the DANSE implementation uses the covariance matrix ($\mathbf{C}_{w}$) obtained using the SSM model (found in `./bin/generate_data.py`) for the likelihood calculation and posterior computation. This is accurate, considering scenarios when the same measurement covariance is used for generation of data. In case this changes, e.g. controlling the matrix $\mathbf{C}_{w}$ using another factor such as $\text{SMNR}$ then the corresponding $\mathbf{C}_{w}$ needs to be fed in as an additional batch-wise input in addition to batch-wise measurements $\{{\mathbf{y}^{(i)}_{1:T}}\}_{i=1}^{N_b}$ in the form of $\{{{\mathbf{C}_w}^{(i)}}\}_{i=1}^{N_b}$. Currently, in this paper for the Lorenz attractor, this will be published out in a separate branch as a future modification, but doesn't cause any significant change in reported results. 
