@@ -73,11 +73,11 @@ class LinearSSM(object):
         self.G = np.ones((self.n_states, 1))
         self.sigma_e2 = dB_to_lin(sigma_e2_dB)
         self.setStateCov(sigma_e2=self.sigma_e2)
-        x_arr = np.zeros((T+1, self.n_states))
-        e_k_arr = np.random.multivariate_normal(self.mu_e, self.Ce, size=(T+1,))
+        x_arr = np.zeros((T, self.n_states))
+        e_k_arr = np.random.multivariate_normal(self.mu_e, self.Ce, size=(T,))
         
         # Generate the sequence iteratively
-        for k in range(T):
+        for k in range(0,T-1):
 
             # Generate driving noise (which is time varying)
             # Driving noise should be carefully selected as per value of k (start from k=0 or =1)
@@ -199,7 +199,7 @@ class LorenzSSM(object):
         self.sigma_e2 = dB_to_lin(sigma_e2_dB)
         self.setStateCov(sigma_e2=self.sigma_e2)
         x_lorenz = np.zeros((T, self.n_states))
-        e_k_arr = np.random.multivariate_normal(self.mu_e, self.Ce, size=(T+1,))
+        e_k_arr = np.random.multivariate_normal(self.mu_e, self.Ce, size=(T,))
 
         for t in range(0,T-1):
             x_lorenz[t+1] = self.f_linearize(x_lorenz[t]) + e_k_arr[t]
